@@ -1,0 +1,34 @@
+{
+  "BLUE": {
+    "chinese": "藍",
+    "english": "BLUE"
+  },
+  "ORANGE": {
+    "chinese": "橙",
+    "english": "ORANGE"
+  },
+  "PURPLE": {
+    "chinese": "紫",
+    "english": "PURPLE"
+  },
+  "BLACK": {
+    "chinese": "黑",
+    "english": "BLACK"
+  },
+  "CYAN": {
+    "chinese": "青",
+    "english": "CYAN"
+  },
+  "AMBER": {
+    "chinese": "金",
+    "english": "AMBER"
+  },
+  "MAGENTA": {
+    "chinese": "品",
+    "english": "MAGENTA"
+  },
+  "GRAY": {
+    "chinese": "灰",
+    "english": "GRAY"
+  }
+}

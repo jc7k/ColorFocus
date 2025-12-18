@@ -4,7 +4,7 @@
 
 1. [x] Color Token System — Implement the 8 canonical color tokens (BLUE, ORANGE, PURPLE, BLACK, CYAN, AMBER, MAGENTA, GRAY) with DARK, BASE, and BRIGHT variants, ensuring all colors are distinguishable for common forms of color blindness. `S`
 
-2. [ ] Puzzle Grid Generator — Build the core algorithm that generates 8x8 word jungle grids with color words rendered in different ink colors, creating Stroop interference patterns. `M`
+2. [x] Puzzle Grid Generator — Build the core algorithm that generates 8x8 word jungle grids with color words rendered in different ink colors, creating Stroop interference patterns. `M`
 
 3. [ ] Answer Key Generation — Automatically calculate and store the correct count for each ink color in a generated puzzle, providing immediate verification capability. `S`
 
@@ -16,7 +16,7 @@
 
 7. [ ] Adjustable Grid Spacing — Add user controls for grid density and spacing to accommodate various visual and motor abilities. `S`
 
-8. [ ] Chinese Character Labels — Add single-character Chinese labels as an alternative identifier for each color token, supporting users who may benefit from dual-coding. `XS`
+8. [x] Chinese Character Labels — Add single-character Chinese labels as an alternative identifier for each color token, supporting users who may benefit from dual-coding. `XS`
 
 9. [ ] Basic User Authentication — Implement simple user accounts to enable puzzle history and progress tracking across sessions. `M`
 
