@@ -1,0 +1,96 @@
+{
+  "BLUE": {
+    "variants": {
+      "dark": "#1F4E79",
+      "base": "#2E86DE",
+      "bright": "#6BB6FF"
+    },
+    "hsl_reference": {
+      "dark": "hsl(209, 59%, 30%)",
+      "base": "hsl(209, 75%, 53%)",
+      "bright": "hsl(209, 100%, 71%)"
+    }
+  },
+  "ORANGE": {
+    "variants": {
+      "dark": "#B65D13",
+      "base": "#E67E22",
+      "bright": "#FFB366"
+    },
+    "hsl_reference": {
+      "dark": "hsl(27, 81%, 39%)",
+      "base": "hsl(27, 80%, 52%)",
+      "bright": "hsl(27, 100%, 70%)"
+    }
+  },
+  "PURPLE": {
+    "variants": {
+      "dark": "#6A1B9A",
+      "base": "#9C27B0",
+      "bright": "#CE93D8"
+    },
+    "hsl_reference": {
+      "dark": "hsl(291, 70%, 35%)",
+      "base": "hsl(291, 64%, 42%)",
+      "bright": "hsl(291, 47%, 71%)"
+    }
+  },
+  "BLACK": {
+    "variants": {
+      "base": "#2B2B2B",
+      "bright": "#4A4A4A"
+    },
+    "hsl_reference": {
+      "base": "hsl(0, 0%, 17%)",
+      "bright": "hsl(0, 0%, 29%)"
+    }
+  },
+  "CYAN": {
+    "variants": {
+      "dark": "#0D6977",
+      "base": "#17A2B8",
+      "bright": "#5DD3E8"
+    },
+    "hsl_reference": {
+      "dark": "hsl(187, 79%, 26%)",
+      "base": "hsl(187, 79%, 41%)",
+      "bright": "hsl(187, 75%, 64%)"
+    }
+  },
+  "AMBER": {
+    "variants": {
+      "dark": "#B88600",
+      "base": "#F4B400",
+      "bright": "#FFCF4D"
+    },
+    "hsl_reference": {
+      "dark": "hsl(44, 100%, 36%)",
+      "base": "hsl(44, 100%, 48%)",
+      "bright": "hsl(44, 100%, 65%)"
+    }
+  },
+  "MAGENTA": {
+    "variants": {
+      "dark": "#9C1244",
+      "base": "#D81B60",
+      "bright": "#F06292"
+    },
+    "hsl_reference": {
+      "dark": "hsl(337, 79%, 34%)",
+      "base": "hsl(337, 78%, 48%)",
+      "bright": "hsl(337, 82%, 66%)"
+    }
+  },
+  "GRAY": {
+    "variants": {
+      "dark": "#4A4A4A",
+      "base": "#757575",
+      "bright": "#A0A0A0"
+    },
+    "hsl_reference": {
+      "dark": "hsl(0, 0%, 29%)",
+      "base": "hsl(0, 0%, 46%)",
+      "bright": "hsl(0, 0%, 63%)"
+    }
+  }
+}

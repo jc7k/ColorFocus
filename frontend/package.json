@@ -1,0 +1,17 @@
+{
+  "name": "colorfocus-frontend",
+  "version": "0.1.0",
+  "description": "ColorFocus frontend - Evidence-based visual attention and cognitive control puzzles",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:css": "tailwindcss -i ./src/styles/input.css -o ./dist/output.css"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.1.0"
+  }
+}
