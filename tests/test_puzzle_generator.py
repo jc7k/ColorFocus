@@ -88,8 +88,9 @@ class TestColorDistribution:
     """Test ink color distribution in generated puzzles."""
 
     def test_ink_color_distribution_roughly_equal(self):
-        """Test that ink color distribution is roughly equal (each color ~8 times)."""
-        generator = PuzzleGenerator(seed=42)
+        """Test that ink color distribution is roughly equal based on color_count."""
+        # Test with 8 colors (legacy behavior)
+        generator = PuzzleGenerator(seed=42, color_count=8)
         puzzle = generator.generate()
 
         # Count ink colors
@@ -107,6 +108,36 @@ class TestColorDistribution:
             assert 6 <= count <= 10, (
                 f"Color {token} appears {count} times, expected 6-10"
             )
+
+    def test_ink_color_distribution_with_4_colors(self):
+        """Test that ink color distribution works with default 4 colors."""
+        generator = PuzzleGenerator(seed=42)  # Default is 4 colors
+        puzzle = generator.generate()
+
+        assert puzzle.metadata.color_count == 4
+
+        # Count ink colors
+        ink_colors = []
+        for row in puzzle.cells:
+            for cell in row:
+                ink_colors.append(cell.ink_color)
+
+        counts = Counter(ink_colors)
+
+        # With 4 colors, each should appear ~16 times (64/4)
+        active_colors = [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK]
+        for token in active_colors:
+            count = counts.get(token, 0)
+            assert 14 <= count <= 18, (
+                f"Color {token} appears {count} times, expected 14-18"
+            )
+
+        # Inactive colors should not appear
+        for token in ColorToken:
+            if token not in active_colors:
+                assert counts.get(token, 0) == 0, (
+                    f"Inactive color {token} should not appear"
+                )
 
 
 class TestCongruenceControl:

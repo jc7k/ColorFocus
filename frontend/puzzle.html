@@ -11,49 +11,53 @@
     body {
       font-family: system-ui, -apple-system, sans-serif;
       background: #f8fafc;
-      padding: 2rem;
-      max-width: 900px;
+      padding: 1.5rem;
+      max-width: 800px;
       margin: 0 auto;
     }
     h1 {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: bold;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
     }
     .subtitle {
       color: #64748b;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
     }
     .controls {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
       flex-wrap: wrap;
       align-items: center;
     }
     .control-group {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
     label {
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       color: #475569;
     }
-    input[type="number"] {
-      width: 100px;
-      padding: 0.5rem;
+    input[type="number"], select {
+      width: 70px;
+      padding: 0.4rem;
       border: 1px solid #cbd5e1;
       border-radius: 6px;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
+    }
+    select {
+      width: auto;
     }
     button {
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.75rem;
       background: #2563eb;
       color: white;
       border: none;
       border-radius: 6px;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       cursor: pointer;
       transition: background 0.2s;
     }
@@ -63,15 +67,15 @@
     .puzzle-container {
       background: white;
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
     .puzzle-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
-      gap: 4px;
-      max-width: 600px;
+      gap: 2px;
+      max-width: 520px;
       margin: 0 auto;
     }
     .puzzle-cell {
@@ -79,28 +83,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: bold;
-      border-radius: 8px;
-      background: #f1f5f9;
+      border-radius: 4px;
+      background: #f8fafc;
       transition: transform 0.1s;
     }
     .puzzle-cell:hover {
-      transform: scale(1.05);
+      transform: scale(1.08);
+      z-index: 1;
     }
     .metadata {
       display: flex;
-      gap: 2rem;
-      margin-top: 1rem;
-      padding-top: 1rem;
+      gap: 1.5rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
       border-top: 1px solid #e2e8f0;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       color: #64748b;
+      flex-wrap: wrap;
     }
     .metadata-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
     .metadata-value {
       font-weight: 600;
@@ -109,28 +115,31 @@
     .distribution {
       background: white;
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .distribution h2 {
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
     .distribution-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
     .distribution-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+    }
+    .distribution-item.inactive {
+      opacity: 0.3;
     }
     .color-swatch {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       border-radius: 4px;
     }
     .color-label {
@@ -143,13 +152,14 @@
     .task-instructions {
       background: #fef3c7;
       border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
       color: #92400e;
+      font-size: 0.85rem;
     }
     .task-instructions strong {
       display: block;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.15rem;
     }
   </style>
 </head>
@@ -163,14 +173,26 @@
 
   <div class="controls">
     <div class="control-group">
+      <label for="colorCount">Colors:</label>
+      <select id="colorCount">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+      </select>
+    </div>
+    <div class="control-group">
       <label for="seed">Seed:</label>
       <input type="number" id="seed" value="42" min="0">
     </div>
     <div class="control-group">
-      <label for="congruence">Congruence %:</label>
+      <label for="congruence">Match %:</label>
       <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
     </div>
-    <button onclick="generatePuzzle()">Generate New Puzzle</button>
+    <button onclick="generatePuzzle()">Generate</button>
     <button onclick="randomSeed()">🎲 Random</button>
   </div>
 
@@ -188,8 +210,19 @@
     import colorsJson from '../shared/colors.json' with { type: 'json' };
     import colorLabelsJson from '../shared/color_labels.json' with { type: 'json' };
 
-    // Color token order
-    const COLOR_TOKENS = ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA', 'GRAY'];
+    // All color tokens in order
+    const ALL_COLOR_TOKENS = ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA', 'GRAY'];
+
+    // Color subsets by count (ordered by distinctiveness)
+    const COLOR_SUBSETS = {
+      2: ['BLUE', 'ORANGE'],
+      3: ['BLUE', 'ORANGE', 'PURPLE'],
+      4: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK'],
+      5: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN'],
+      6: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER'],
+      7: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA'],
+      8: ALL_COLOR_TOKENS,
+    };
 
     // Seeded random number generator (mulberry32)
     function mulberry32(seed) {
@@ -215,20 +248,40 @@
     function generatePuzzle() {
       const seedInput = document.getElementById('seed');
       const congruenceInput = document.getElementById('congruence');
+      const colorCountSelect = document.getElementById('colorCount');
 
       const seed = parseInt(seedInput.value) || 42;
       const congruencePercent = parseFloat(congruenceInput.value) || 12.5;
       const congruence = congruencePercent / 100;
+      const colorCount = parseInt(colorCountSelect.value) || 4;
 
       const random = mulberry32(seed);
+      const activeColors = COLOR_SUBSETS[colorCount];
 
-      // Create ink distribution (8 of each color)
+      // Create ink distribution (roughly equal with small variations)
+      const totalCells = 64;
+      const basePerColor = Math.floor(totalCells / colorCount);
+
+      // Create base distribution then add random variation
       let inkColors = [];
-      for (const token of COLOR_TOKENS) {
-        for (let i = 0; i < 8; i++) {
-          inkColors.push(token);
+      let remaining = totalCells;
+
+      activeColors.forEach((token, i) => {
+        if (i === activeColors.length - 1) {
+          // Last color gets whatever remains
+          for (let j = 0; j < remaining; j++) {
+            inkColors.push(token);
+          }
+        } else {
+          // Add variation: ±2 from base, but keep within bounds
+          const variation = Math.floor(random() * 5) - 2; // -2 to +2
+          const count = Math.max(basePerColor - 2, Math.min(basePerColor + 2, basePerColor + variation));
+          for (let j = 0; j < count; j++) {
+            inkColors.push(token);
+          }
+          remaining -= count;
         }
-      }
+      });
       inkColors = shuffle(inkColors, random);
 
       // Assign words with congruence control
@@ -237,8 +290,8 @@
         if (random() < congruence) {
           word = inkColor; // Congruent
         } else {
-          // Pick different color
-          const otherColors = COLOR_TOKENS.filter(c => c !== inkColor);
+          // Pick different color from active colors
+          const otherColors = activeColors.filter(c => c !== inkColor);
           word = otherColors[Math.floor(random() * otherColors.length)];
         }
         return { word, inkColor };
@@ -265,15 +318,15 @@
         if (cell.word === cell.inkColor) congruentCount++;
       });
 
-      // Render distribution
+      // Render distribution (only active colors)
       const distDiv = document.getElementById('distribution');
       distDiv.innerHTML = '';
-      COLOR_TOKENS.forEach(token => {
+      activeColors.forEach(token => {
         const item = document.createElement('div');
         item.className = 'distribution-item';
         item.innerHTML = `
           <div class="color-swatch" style="background-color: ${colorsJson[token].variants.base}"></div>
-          <span class="color-label">${colorLabelsJson[token].chinese} (${token})</span>
+          <span class="color-label">${colorLabelsJson[token].chinese}</span>
           <span class="color-count">${counts[token] || 0}</span>
         `;
         distDiv.appendChild(item);
@@ -287,8 +340,12 @@
           <span class="metadata-value">${seed}</span>
         </div>
         <div class="metadata-item">
+          <span>Colors:</span>
+          <span class="metadata-value">${colorCount}</span>
+        </div>
+        <div class="metadata-item">
           <span>Grid:</span>
-          <span class="metadata-value">8×8 (64 cells)</span>
+          <span class="metadata-value">8×8</span>
         </div>
         <div class="metadata-item">
           <span>Congruent:</span>

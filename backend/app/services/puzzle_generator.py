@@ -71,19 +71,23 @@ class DistributionValidator:
         self.min_count = min_count
         self.max_count = max_count
 
-    def validate(self, color_counts: Dict[ColorToken, int]) -> ValidationResult:
+    def validate(
+        self, color_counts: Dict[ColorToken, int], active_colors: Optional[List[ColorToken]] = None
+    ) -> ValidationResult:
         """
         Validate a color distribution.
 
         Args:
             color_counts: Dictionary mapping ColorToken to count.
+            active_colors: List of colors to validate (defaults to all ColorToken if None).
 
         Returns:
             ValidationResult with is_valid and any issues found.
         """
         issues: List[str] = []
+        colors_to_check = active_colors if active_colors is not None else list(ColorToken)
 
-        for token in ColorToken:
+        for token in colors_to_check:
             count = color_counts.get(token, 0)
 
             if count < self.min_count:
@@ -112,6 +116,7 @@ class PuzzleGenerator:
         seed: The random seed for deterministic generation.
         congruence_percentage: Percentage of cells where word matches ink (0.0-1.0).
         language: Language for color word labels.
+        color_count: Number of colors to use (2-8, default 4).
     """
 
     # Fixed grid dimensions per specification
@@ -122,11 +127,23 @@ class PuzzleGenerator:
     # Retry configuration
     MAX_RETRIES = 3
 
+    # Default color subsets for different color counts (ordered by distinctiveness)
+    DEFAULT_COLOR_SUBSETS = {
+        2: [ColorToken.BLUE, ColorToken.ORANGE],
+        3: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE],
+        4: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK],
+        5: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK, ColorToken.CYAN],
+        6: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK, ColorToken.CYAN, ColorToken.AMBER],
+        7: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK, ColorToken.CYAN, ColorToken.AMBER, ColorToken.MAGENTA],
+        8: list(ColorToken),
+    }
+
     def __init__(
         self,
         seed: Optional[int] = None,
         congruence_percentage: float = 0.125,
         language: Language = Language.CHINESE,
+        color_count: int = 4,
     ):
         """
         Initialize the puzzle generator.
@@ -136,12 +153,22 @@ class PuzzleGenerator:
             congruence_percentage: Percentage of cells where word matches ink color.
                                    Default 0.125 (12.5%) for maximum Stroop interference.
             language: Language for color labels (default: CHINESE).
+            color_count: Number of colors to use (2-8, default 4 for accessibility).
         """
         self.seed = seed if seed is not None else self._generate_seed()
         self.congruence_percentage = congruence_percentage
         self.language = language
+        self.color_count = max(2, min(8, color_count))  # Clamp to 2-8
+        self._colors = self.DEFAULT_COLOR_SUBSETS[self.color_count]
         self._rng = random.Random(self.seed)
-        self._validator = DistributionValidator()
+
+        # Adjust validator bounds based on color count
+        cells_per_color = self.TOTAL_CELLS // self.color_count
+        tolerance = max(2, cells_per_color // 4)
+        self._validator = DistributionValidator(
+            min_count=cells_per_color - tolerance,
+            max_count=cells_per_color + tolerance,
+        )
 
     @staticmethod
     def _generate_seed() -> int:
@@ -183,7 +210,7 @@ class PuzzleGenerator:
 
             # Step 5: Validate distribution
             ink_counts = self._count_ink_colors(cells_2d)
-            validation_result = self._validator.validate(ink_counts)
+            validation_result = self._validator.validate(ink_counts, self._colors)
 
             if validation_result.is_valid:
                 # Build metadata and return valid grid
@@ -192,6 +219,7 @@ class PuzzleGenerator:
                     rows=self.ROWS,
                     cols=self.COLS,
                     congruence_percentage=self.congruence_percentage,
+                    color_count=self.color_count,
                 )
                 return PuzzleGrid(cells=cells_2d, metadata=metadata)
 
@@ -215,6 +243,7 @@ class PuzzleGenerator:
             rows=self.ROWS,
             cols=self.COLS,
             congruence_percentage=self.congruence_percentage,
+            color_count=self.color_count,
         )
         return PuzzleGrid(cells=cells_2d, metadata=metadata)
 
@@ -253,17 +282,19 @@ class PuzzleGenerator:
         """
         Create a list of 64 ink colors with roughly equal distribution.
 
-        Each of the 8 colors appears exactly 8 times for perfect balance.
+        Each active color appears an equal number of times for balance.
 
         Returns:
             List of 64 ColorToken values representing ink colors.
         """
-        color_tokens = list(ColorToken)
-        cells_per_color = self.TOTAL_CELLS // len(color_tokens)  # 8
+        cells_per_color = self.TOTAL_CELLS // self.color_count
+        remainder = self.TOTAL_CELLS % self.color_count
 
         ink_colors: List[ColorToken] = []
-        for token in color_tokens:
-            ink_colors.extend([token] * cells_per_color)
+        for i, token in enumerate(self._colors):
+            # Distribute remainder among first colors
+            extra = 1 if i < remainder else 0
+            ink_colors.extend([token] * (cells_per_color + extra))
 
         # Shuffle to randomize initial distribution
         self._rng.shuffle(ink_colors)
@@ -284,7 +315,6 @@ class PuzzleGenerator:
             List of PuzzleCell objects with word and ink_color assigned.
         """
         cells: List[PuzzleCell] = []
-        all_colors = list(ColorToken)
 
         for ink_color in ink_colors:
             # Decide if this cell should be congruent (word == ink)
@@ -293,8 +323,8 @@ class PuzzleGenerator:
             if is_congruent:
                 word = ink_color
             else:
-                # Select a different color for the word
-                other_colors = [c for c in all_colors if c != ink_color]
+                # Select a different color for the word from active colors
+                other_colors = [c for c in self._colors if c != ink_color]
                 word = self._rng.choice(other_colors)
 
             cells.append(PuzzleCell(word=word, ink_color=ink_color))

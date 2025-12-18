@@ -65,25 +65,28 @@ class PuzzleMetadata:
         rows: Number of rows in the grid.
         cols: Number of columns in the grid.
         congruence_percentage: Percentage of cells where word matches ink color (0.0-1.0).
+        color_count: Number of colors used in the puzzle (2-8, default 4).
     """
 
     seed: int
     rows: int
     cols: int
     congruence_percentage: float
+    color_count: int = 4
 
     def to_dict(self) -> Dict[str, Any]:
         """
         Serialize the metadata to a JSON-compatible dictionary.
 
         Returns:
-            Dictionary with seed, rows, cols, and congruence_percentage keys.
+            Dictionary with seed, rows, cols, congruence_percentage, and color_count keys.
         """
         return {
             "seed": self.seed,
             "rows": self.rows,
             "cols": self.cols,
             "congruence_percentage": self.congruence_percentage,
+            "color_count": self.color_count,
         }
 
 
