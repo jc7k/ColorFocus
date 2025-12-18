@@ -12,7 +12,7 @@
       font-family: system-ui, -apple-system, sans-serif;
       background: #f8fafc;
       padding: 1.5rem;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
     }
     h1 {
@@ -64,6 +64,22 @@
     button:hover {
       background: #1d4ed8;
     }
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    button.secondary {
+      background: #64748b;
+    }
+    button.secondary:hover {
+      background: #475569;
+    }
+    button.success {
+      background: #16a34a;
+    }
+    button.success:hover {
+      background: #15803d;
+    }
     .puzzle-container {
       background: white;
       border-radius: 12px;
@@ -112,43 +128,6 @@
       font-weight: 600;
       color: #334155;
     }
-    .distribution {
-      background: white;
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .distribution h2 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-    .distribution-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
-    }
-    .distribution-item {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.8rem;
-    }
-    .distribution-item.inactive {
-      opacity: 0.3;
-    }
-    .color-swatch {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-    }
-    .color-label {
-      flex: 1;
-    }
-    .color-count {
-      font-weight: 600;
-      color: #334155;
-    }
     .task-instructions {
       background: #fef3c7;
       border-radius: 8px;
@@ -161,17 +140,230 @@
       display: block;
       margin-bottom: 0.15rem;
     }
+
+    /* Answer Submission Section */
+    .answer-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+    .answer-section h2 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 600px) {
+      .answer-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .answer-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 8px;
+      background: #f8fafc;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .answer-item.correct {
+      background: #dcfce7;
+      box-shadow: 0 0 0 2px #16a34a;
+    }
+    .answer-item.incorrect {
+      background: #fee2e2;
+      box-shadow: 0 0 0 2px #dc2626;
+    }
+    .color-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .answer-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      flex: 1;
+      min-width: 0;
+    }
+    .answer-input {
+      width: 50px;
+      padding: 0.35rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+      font-weight: 600;
+    }
+    .answer-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    .answer-input.correct {
+      border-color: #16a34a;
+      background: #f0fdf4;
+    }
+    .answer-input.incorrect {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+    .correct-value {
+      font-size: 0.75rem;
+      color: #16a34a;
+      font-weight: 600;
+      min-width: 30px;
+      text-align: center;
+    }
+    .answer-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Results Section */
+    .results-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .results-section.visible {
+      display: block;
+    }
+    .results-section h2 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .results-summary {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .result-stat {
+      text-align: center;
+    }
+    .result-stat .value {
+      font-size: 2rem;
+      font-weight: bold;
+      line-height: 1;
+    }
+    .result-stat .label {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+    .result-stat.perfect .value {
+      color: #16a34a;
+    }
+    .result-stat.good .value {
+      color: #2563eb;
+    }
+    .result-stat.needs-work .value {
+      color: #dc2626;
+    }
+    .result-message {
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .result-message.perfect {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .result-message.good {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .result-message.needs-work {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Answer Key Section (Hidden by Default) */
+    .answer-key-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .answer-key-section h2 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .answer-key-content {
+      display: none;
+    }
+    .answer-key-content.revealed {
+      display: block;
+    }
+    .answer-key-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    .answer-key-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      padding: 0.4rem;
+      background: #f8fafc;
+      border-radius: 6px;
+    }
+    .answer-key-label {
+      flex: 1;
+    }
+    .answer-key-count {
+      font-weight: 600;
+      color: #334155;
+    }
+    .reveal-warning {
+      background: #fef3c7;
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+    }
   </style>
 </head>
 <body>
-  <h1>🧩 ColorFocus Stroop Puzzle</h1>
+  <h1>ColorFocus Stroop Puzzle</h1>
   <p class="subtitle">Count the INK colors, not the word meanings!</p>
 
-  <div class="task-instructions">
+  <div class="task-instructions" id="taskInstructions">
     <strong>Task:</strong> Count how many cells are printed in each INK color. The Chinese character shows a color name, but you must count the actual ink color used to display it.
   </div>
 
   <div class="controls">
+    <div class="control-group">
+      <label for="language">Language:</label>
+      <select id="language" aria-label="Select display language">
+        <option value="chinese" selected>Chinese</option>
+        <option value="english">English</option>
+        <option value="vietnamese">Vietnamese</option>
+      </select>
+    </div>
     <div class="control-group">
       <label for="colorCount">Colors:</label>
       <select id="colorCount">
@@ -193,7 +385,7 @@
       <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
     </div>
     <button onclick="generatePuzzle()">Generate</button>
-    <button onclick="randomSeed()">🎲 Random</button>
+    <button onclick="randomSeed()" class="secondary">Random</button>
   </div>
 
   <div class="puzzle-container">
@@ -201,9 +393,35 @@
     <div class="metadata" id="metadata"></div>
   </div>
 
-  <div class="distribution">
-    <h2>📊 Ink Color Distribution (Answer Key)</h2>
-    <div class="distribution-grid" id="distribution"></div>
+  <!-- Answer Submission Section -->
+  <div class="answer-section">
+    <h2>Enter Your Answers</h2>
+    <div class="answer-grid" id="answerGrid"></div>
+    <div class="answer-buttons">
+      <button onclick="checkAnswers()" class="success" id="checkBtn">Check Answers</button>
+      <button onclick="clearAnswers()" class="secondary">Clear</button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-section" id="resultsSection">
+    <h2>Results</h2>
+    <div class="results-summary" id="resultsSummary"></div>
+    <div class="result-message" id="resultMessage"></div>
+  </div>
+
+  <!-- Answer Key Section (Hidden by Default) -->
+  <div class="answer-key-section">
+    <h2>
+      <span>Answer Key</span>
+      <button onclick="toggleAnswerKey()" class="secondary" id="revealBtn">Reveal</button>
+    </h2>
+    <div class="reveal-warning" id="revealWarning">
+      Revealing the answer key will end your current attempt. Check your answers first!
+    </div>
+    <div class="answer-key-content" id="answerKeyContent">
+      <div class="answer-key-grid" id="answerKeyGrid"></div>
+    </div>
   </div>
 
   <script type="module">
@@ -223,6 +441,34 @@
       7: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA'],
       8: ALL_COLOR_TOKENS,
     };
+
+    // Language descriptors for task instructions
+    const LANGUAGE_DESCRIPTORS = {
+      chinese: 'Chinese character',
+      english: 'English word',
+      vietnamese: 'Vietnamese word',
+    };
+
+    // State
+    let currentPuzzle = null;
+    let correctAnswers = {};
+    let activeColors = [];
+    let hasChecked = false;
+    let answerKeyRevealed = false;
+    let currentLanguage = localStorage.getItem('colorFocusLanguage') || 'chinese';
+
+    // Initialize language selector with saved preference
+    document.getElementById('language').value = currentLanguage;
+
+    // Add language change event listener
+    document.getElementById('language').addEventListener('change', (e) => {
+      currentLanguage = e.target.value;
+      localStorage.setItem('colorFocusLanguage', currentLanguage);
+      renderPuzzleDisplay();
+      renderAnswerInputs();
+      renderAnswerKey();
+      updateTaskInstructions();
+    });
 
     // Seeded random number generator (mulberry32)
     function mulberry32(seed) {
@@ -244,8 +490,41 @@
       return result;
     }
 
+    // Update task instructions text based on language
+    function updateTaskInstructions() {
+      const descriptor = LANGUAGE_DESCRIPTORS[currentLanguage];
+      document.getElementById('taskInstructions').innerHTML = `
+        <strong>Task:</strong> Count how many cells are printed in each INK color. The ${descriptor} shows a color name, but you must count the actual ink color used to display it.
+      `;
+    }
+
+    // Render the puzzle grid display (without regenerating data)
+    function renderPuzzleDisplay() {
+      if (!currentPuzzle) return;
+
+      const grid = document.getElementById('puzzleGrid');
+      grid.innerHTML = '';
+
+      currentPuzzle.forEach(cell => {
+        const div = document.createElement('div');
+        div.className = 'puzzle-cell';
+        div.textContent = colorLabelsJson[cell.word][currentLanguage];
+        div.style.color = colorsJson[cell.inkColor].variants.base;
+        grid.appendChild(div);
+      });
+    }
+
     // Generate puzzle
     function generatePuzzle() {
+      // Reset state
+      hasChecked = false;
+      answerKeyRevealed = false;
+      document.getElementById('answerKeyContent').classList.remove('revealed');
+      document.getElementById('revealBtn').textContent = 'Reveal';
+      document.getElementById('revealWarning').style.display = 'block';
+      document.getElementById('resultsSection').classList.remove('visible');
+      document.getElementById('checkBtn').disabled = false;
+
       const seedInput = document.getElementById('seed');
       const congruenceInput = document.getElementById('congruence');
       const colorCountSelect = document.getElementById('colorCount');
@@ -256,7 +535,7 @@
       const colorCount = parseInt(colorCountSelect.value) || 4;
 
       const random = mulberry32(seed);
-      const activeColors = COLOR_SUBSETS[colorCount];
+      activeColors = COLOR_SUBSETS[colorCount];
 
       // Create ink distribution (roughly equal with small variations)
       const totalCells = 64;
@@ -297,40 +576,27 @@
         return { word, inkColor };
       });
 
+      currentPuzzle = cells;
+
       // Render grid
-      const grid = document.getElementById('puzzleGrid');
-      grid.innerHTML = '';
+      renderPuzzleDisplay();
 
-      cells.forEach(cell => {
-        const div = document.createElement('div');
-        div.className = 'puzzle-cell';
-        div.textContent = colorLabelsJson[cell.word].chinese;
-        div.style.color = colorsJson[cell.inkColor].variants.base;
-        div.title = `Word: ${cell.word}, Ink: ${cell.inkColor}`;
-        grid.appendChild(div);
-      });
-
-      // Count distribution
-      const counts = {};
+      // Count distribution (correct answers)
+      correctAnswers = {};
       let congruentCount = 0;
       cells.forEach(cell => {
-        counts[cell.inkColor] = (counts[cell.inkColor] || 0) + 1;
+        correctAnswers[cell.inkColor] = (correctAnswers[cell.inkColor] || 0) + 1;
         if (cell.word === cell.inkColor) congruentCount++;
       });
 
-      // Render distribution (only active colors)
-      const distDiv = document.getElementById('distribution');
-      distDiv.innerHTML = '';
-      activeColors.forEach(token => {
-        const item = document.createElement('div');
-        item.className = 'distribution-item';
-        item.innerHTML = `
-          <div class="color-swatch" style="background-color: ${colorsJson[token].variants.base}"></div>
-          <span class="color-label">${colorLabelsJson[token].chinese}</span>
-          <span class="color-count">${counts[token] || 0}</span>
-        `;
-        distDiv.appendChild(item);
-      });
+      // Render answer input grid
+      renderAnswerInputs();
+
+      // Render answer key (hidden)
+      renderAnswerKey();
+
+      // Update task instructions
+      updateTaskInstructions();
 
       // Render metadata
       const metaDiv = document.getElementById('metadata');
@@ -345,13 +611,185 @@
         </div>
         <div class="metadata-item">
           <span>Grid:</span>
-          <span class="metadata-value">8×8</span>
+          <span class="metadata-value">8x8</span>
         </div>
         <div class="metadata-item">
           <span>Congruent:</span>
           <span class="metadata-value">${congruentCount}/64 (${(congruentCount/64*100).toFixed(1)}%)</span>
         </div>
       `;
+    }
+
+    // Render answer input fields (only active colors)
+    function renderAnswerInputs() {
+      const answerGrid = document.getElementById('answerGrid');
+      answerGrid.innerHTML = '';
+
+      // Only show active colors for this puzzle
+      activeColors.forEach(token => {
+        const item = document.createElement('div');
+        item.className = 'answer-item';
+        item.id = `answer-item-${token}`;
+
+        item.innerHTML = `
+          <div class="color-swatch" style="background-color: ${colorsJson[token].variants.base}"></div>
+          <span class="answer-label">${colorLabelsJson[token][currentLanguage]}</span>
+          <input type="number"
+                 class="answer-input"
+                 id="answer-${token}"
+                 min="0"
+                 max="64"
+                 placeholder="?">
+          <span class="correct-value" id="correct-${token}"></span>
+        `;
+        answerGrid.appendChild(item);
+      });
+
+      // Add enter key handler to check answers
+      answerGrid.querySelectorAll('input').forEach(input => {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            checkAnswers();
+          }
+        });
+      });
+    }
+
+    // Render answer key (only active colors, hidden by default)
+    function renderAnswerKey() {
+      const keyGrid = document.getElementById('answerKeyGrid');
+      keyGrid.innerHTML = '';
+
+      // Only show active colors for this puzzle
+      activeColors.forEach(token => {
+        const item = document.createElement('div');
+        item.className = 'answer-key-item';
+
+        item.innerHTML = `
+          <div class="color-swatch" style="background-color: ${colorsJson[token].variants.base}"></div>
+          <span class="answer-key-label">${colorLabelsJson[token][currentLanguage]}</span>
+          <span class="answer-key-count">${correctAnswers[token]}</span>
+        `;
+        keyGrid.appendChild(item);
+      });
+    }
+
+    // Check answers
+    function checkAnswers() {
+      if (!currentPuzzle) return;
+
+      hasChecked = true;
+      let correctCount = 0;
+      let totalOff = 0;
+
+      activeColors.forEach(token => {
+        const input = document.getElementById(`answer-${token}`);
+        const item = document.getElementById(`answer-item-${token}`);
+        const correctSpan = document.getElementById(`correct-${token}`);
+        const userAnswer = parseInt(input.value) || 0;
+        const correct = correctAnswers[token];
+
+        input.classList.remove('correct', 'incorrect');
+        item.classList.remove('correct', 'incorrect');
+
+        if (userAnswer === correct) {
+          input.classList.add('correct');
+          item.classList.add('correct');
+          correctSpan.textContent = '';
+          correctCount++;
+        } else {
+          input.classList.add('incorrect');
+          item.classList.add('incorrect');
+          correctSpan.textContent = correct;
+          totalOff += Math.abs(userAnswer - correct);
+        }
+      });
+
+      // Show results
+      showResults(correctCount, activeColors.length, totalOff);
+    }
+
+    // Show results
+    function showResults(correct, total, totalOff) {
+      const resultsSection = document.getElementById('resultsSection');
+      const resultsSummary = document.getElementById('resultsSummary');
+      const resultMessage = document.getElementById('resultMessage');
+
+      const percentage = Math.round((correct / total) * 100);
+      let scoreClass, message;
+
+      if (correct === total) {
+        scoreClass = 'perfect';
+        message = 'Perfect score! You correctly counted all the ink colors despite the Stroop interference.';
+      } else if (percentage >= 75) {
+        scoreClass = 'good';
+        message = `Great job! You got ${correct} out of ${total} colors correct. The Stroop effect made it tricky!`;
+      } else {
+        scoreClass = 'needs-work';
+        message = `You got ${correct} out of ${total} colors correct. Remember: count the INK color, not the word meaning!`;
+      }
+
+      resultsSummary.innerHTML = `
+        <div class="result-stat ${scoreClass}">
+          <div class="value">${correct}/${total}</div>
+          <div class="label">Colors Correct</div>
+        </div>
+        <div class="result-stat ${scoreClass}">
+          <div class="value">${percentage}%</div>
+          <div class="label">Accuracy</div>
+        </div>
+        <div class="result-stat">
+          <div class="value">${totalOff}</div>
+          <div class="label">Total Off By</div>
+        </div>
+      `;
+
+      resultMessage.className = `result-message ${scoreClass}`;
+      resultMessage.textContent = message;
+
+      resultsSection.classList.add('visible');
+    }
+
+    // Clear answers
+    function clearAnswers() {
+      ALL_COLOR_TOKENS.forEach(token => {
+        const input = document.getElementById(`answer-${token}`);
+        const item = document.getElementById(`answer-item-${token}`);
+        const correctSpan = document.getElementById(`correct-${token}`);
+
+        if (input) {
+          input.value = '';
+          input.classList.remove('correct', 'incorrect');
+        }
+        if (item) {
+          item.classList.remove('correct', 'incorrect');
+        }
+        if (correctSpan) {
+          correctSpan.textContent = '';
+        }
+      });
+
+      document.getElementById('resultsSection').classList.remove('visible');
+      hasChecked = false;
+    }
+
+    // Toggle answer key visibility
+    function toggleAnswerKey() {
+      const content = document.getElementById('answerKeyContent');
+      const btn = document.getElementById('revealBtn');
+      const warning = document.getElementById('revealWarning');
+
+      if (answerKeyRevealed) {
+        content.classList.remove('revealed');
+        btn.textContent = 'Reveal';
+        answerKeyRevealed = false;
+        warning.style.display = 'block';
+      } else {
+        content.classList.add('revealed');
+        btn.textContent = 'Hide';
+        answerKeyRevealed = true;
+        warning.style.display = 'none';
+      }
     }
 
     function randomSeed() {
@@ -362,6 +800,9 @@
     // Make functions global
     window.generatePuzzle = generatePuzzle;
     window.randomSeed = randomSeed;
+    window.checkAnswers = checkAnswers;
+    window.clearAnswers = clearAnswers;
+    window.toggleAnswerKey = toggleAnswerKey;
 
     // Initial generation
     generatePuzzle();

@@ -21,6 +21,9 @@ Usage:
 
     # Get English label
     label = get_color_label(ColorToken.BLUE, Language.ENGLISH)  # "BLUE"
+
+    # Get Vietnamese label
+    label = get_color_label(ColorToken.BLUE, Language.VIETNAMESE)  # "Xanh"
 """
 
 import json
@@ -37,10 +40,12 @@ class Language(StrEnum):
 
     CHINESE: Traditional Chinese single characters (default)
     ENGLISH: English color names in uppercase
+    VIETNAMESE: Vietnamese color names with proper diacritical marks
     """
 
     CHINESE = "chinese"
     ENGLISH = "english"
+    VIETNAMESE = "vietnamese"
 
 
 def _load_labels_from_json() -> Dict[ColorToken, Dict[Language, str]]:
