@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
   <title>ColorFocus - Stroop Puzzle</title>
   <style>
     * {
@@ -523,8 +524,8 @@
       <label for="congruence">Match %:</label>
       <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
     </div>
-    <button onclick="generatePuzzle()">Generate</button>
-    <button onclick="randomSeed()" class="secondary">Random</button>
+    <button id="generateBtn">Generate</button>
+    <button id="randomBtn" class="secondary">Random</button>
   </div>
 
   <div class="puzzle-container">
@@ -537,8 +538,8 @@
     <h2>Enter Your Answers</h2>
     <div class="answer-grid" id="answerGrid"></div>
     <div class="answer-buttons">
-      <button onclick="checkAnswers()" class="success" id="checkBtn">Check Answers</button>
-      <button onclick="clearAnswers()" class="secondary">Clear</button>
+      <button class="success" id="checkBtn">Check Answers</button>
+      <button class="secondary" id="clearBtn">Clear</button>
     </div>
   </div>
 
@@ -553,7 +554,7 @@
   <div class="answer-key-section">
     <h2>
       <span>Answer Key</span>
-      <button onclick="toggleAnswerKey()" class="secondary" id="revealBtn">Reveal</button>
+      <button class="secondary" id="revealBtn">Reveal</button>
     </h2>
     <div class="reveal-warning" id="revealWarning">
       Revealing the answer key will end your current attempt. Check your answers first!
@@ -588,13 +589,36 @@
       vietnamese: 'Vietnamese word',
     };
 
+    // Valid language values for input validation
+    const VALID_LANGUAGES = ['chinese', 'english', 'vietnamese'];
+
+    // Sanitize text content to prevent XSS (escapes HTML entities)
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Validate and sanitize numeric input
+    function sanitizeNumber(value, min, max, defaultValue) {
+      const num = parseFloat(value);
+      if (isNaN(num)) return defaultValue;
+      return Math.max(min, Math.min(max, num));
+    }
+
+    // Validate language selection
+    function validateLanguage(lang) {
+      return VALID_LANGUAGES.includes(lang) ? lang : 'chinese';
+    }
+
     // State
     let currentPuzzle = null;
     let correctAnswers = {};
     let activeColors = [];
     let hasChecked = false;
     let answerKeyRevealed = false;
-    let currentLanguage = localStorage.getItem('colorFocusLanguage') || 'chinese';
+    // Validate language from localStorage
+    let currentLanguage = validateLanguage(localStorage.getItem('colorFocusLanguage') || 'chinese');
 
     // Initialize language selector with saved preference
     document.getElementById('language').value = currentLanguage;
@@ -632,9 +656,16 @@
     // Update task instructions text based on language
     function updateTaskInstructions() {
       const descriptor = LANGUAGE_DESCRIPTORS[currentLanguage];
-      document.getElementById('taskInstructions').innerHTML = `
-        <strong>Task:</strong> Count how many cells are printed in each INK color. The ${descriptor} shows a color name, but you must count the actual ink color used to display it.
-      `;
+      const container = document.getElementById('taskInstructions');
+      container.textContent = ''; // Clear safely
+
+      const strong = document.createElement('strong');
+      strong.textContent = 'Task:';
+      container.appendChild(strong);
+
+      container.appendChild(document.createTextNode(
+        ` Count how many cells are printed in each INK color. The ${descriptor} shows a color name, but you must count the actual ink color used to display it.`
+      ));
     }
 
     // Calculate optimal font size based on viewport and language
@@ -725,10 +756,11 @@
       const congruenceInput = document.getElementById('congruence');
       const colorCountSelect = document.getElementById('colorCount');
 
-      const seed = parseInt(seedInput.value) || 42;
-      const congruencePercent = parseFloat(congruenceInput.value) || 12.5;
+      // Apply input sanitization for security
+      const seed = sanitizeNumber(seedInput.value, 0, 2147483647, 42);
+      const congruencePercent = sanitizeNumber(congruenceInput.value, 0, 100, 12.5);
       const congruence = congruencePercent / 100;
-      const colorCount = parseInt(colorCountSelect.value) || 4;
+      const colorCount = sanitizeNumber(colorCountSelect.value, 2, 8, 4);
 
       const random = mulberry32(seed);
       activeColors = COLOR_SUBSETS[colorCount];
@@ -794,32 +826,38 @@
       // Update task instructions
       updateTaskInstructions();
 
-      // Render metadata
+      // Render metadata using safe DOM manipulation
       const metaDiv = document.getElementById('metadata');
-      metaDiv.innerHTML = `
-        <div class="metadata-item">
-          <span>Seed:</span>
-          <span class="metadata-value">${seed}</span>
-        </div>
-        <div class="metadata-item">
-          <span>Colors:</span>
-          <span class="metadata-value">${colorCount}</span>
-        </div>
-        <div class="metadata-item">
-          <span>Grid:</span>
-          <span class="metadata-value">8x8</span>
-        </div>
-        <div class="metadata-item">
-          <span>Congruent:</span>
-          <span class="metadata-value">${congruentCount}/64 (${(congruentCount/64*100).toFixed(1)}%)</span>
-        </div>
-      `;
+      metaDiv.textContent = ''; // Clear safely
+
+      const metaItems = [
+        { label: 'Seed:', value: String(seed) },
+        { label: 'Colors:', value: String(colorCount) },
+        { label: 'Grid:', value: '8x8' },
+        { label: 'Congruent:', value: `${congruentCount}/64 (${(congruentCount/64*100).toFixed(1)}%)` }
+      ];
+
+      metaItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'metadata-item';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.textContent = item.label;
+        div.appendChild(labelSpan);
+
+        const valueSpan = document.createElement('span');
+        valueSpan.className = 'metadata-value';
+        valueSpan.textContent = item.value;
+        div.appendChild(valueSpan);
+
+        metaDiv.appendChild(div);
+      });
     }
 
     // Render answer input fields (only active colors)
     function renderAnswerInputs() {
       const answerGrid = document.getElementById('answerGrid');
-      answerGrid.innerHTML = '';
+      answerGrid.textContent = ''; // Clear safely
 
       // Only show active colors for this puzzle
       activeColors.forEach(token => {
@@ -827,17 +865,34 @@
         item.className = 'answer-item';
         item.id = `answer-item-${token}`;
 
-        item.innerHTML = `
-          <div class="color-swatch" style="background-color: ${colorsJson[token].variants.base}"></div>
-          <span class="answer-label">${colorLabelsJson[token][currentLanguage]}</span>
-          <input type="number"
-                 class="answer-input"
-                 id="answer-${token}"
-                 min="0"
-                 max="64"
-                 placeholder="?">
-          <span class="correct-value" id="correct-${token}"></span>
-        `;
+        // Create swatch
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.backgroundColor = colorsJson[token].variants.base;
+        item.appendChild(swatch);
+
+        // Create label
+        const label = document.createElement('span');
+        label.className = 'answer-label';
+        label.textContent = colorLabelsJson[token][currentLanguage];
+        item.appendChild(label);
+
+        // Create input
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'answer-input';
+        input.id = `answer-${token}`;
+        input.min = '0';
+        input.max = '64';
+        input.placeholder = '?';
+        item.appendChild(input);
+
+        // Create correct value span
+        const correctSpan = document.createElement('span');
+        correctSpan.className = 'correct-value';
+        correctSpan.id = `correct-${token}`;
+        item.appendChild(correctSpan);
+
         answerGrid.appendChild(item);
       });
 
@@ -854,18 +909,31 @@
     // Render answer key (only active colors, hidden by default)
     function renderAnswerKey() {
       const keyGrid = document.getElementById('answerKeyGrid');
-      keyGrid.innerHTML = '';
+      keyGrid.textContent = ''; // Clear safely
 
       // Only show active colors for this puzzle
       activeColors.forEach(token => {
         const item = document.createElement('div');
         item.className = 'answer-key-item';
 
-        item.innerHTML = `
-          <div class="color-swatch" style="background-color: ${colorsJson[token].variants.base}"></div>
-          <span class="answer-key-label">${colorLabelsJson[token][currentLanguage]}</span>
-          <span class="answer-key-count">${correctAnswers[token]}</span>
-        `;
+        // Create swatch
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.backgroundColor = colorsJson[token].variants.base;
+        item.appendChild(swatch);
+
+        // Create label
+        const label = document.createElement('span');
+        label.className = 'answer-key-label';
+        label.textContent = colorLabelsJson[token][currentLanguage];
+        item.appendChild(label);
+
+        // Create count
+        const count = document.createElement('span');
+        count.className = 'answer-key-count';
+        count.textContent = String(correctAnswers[token]);
+        item.appendChild(count);
+
         keyGrid.appendChild(item);
       });
     }
@@ -882,7 +950,8 @@
         const input = document.getElementById(`answer-${token}`);
         const item = document.getElementById(`answer-item-${token}`);
         const correctSpan = document.getElementById(`correct-${token}`);
-        const userAnswer = parseInt(input.value) || 0;
+        // Sanitize user input
+        const userAnswer = sanitizeNumber(input.value, 0, 64, 0);
         const correct = correctAnswers[token];
 
         input.classList.remove('correct', 'incorrect');
@@ -925,20 +994,31 @@
         message = `You got ${correct} out of ${total} colors correct. Remember: count the INK color, not the word meaning!`;
       }
 
-      resultsSummary.innerHTML = `
-        <div class="result-stat ${scoreClass}">
-          <div class="value">${correct}/${total}</div>
-          <div class="label">Colors Correct</div>
-        </div>
-        <div class="result-stat ${scoreClass}">
-          <div class="value">${percentage}%</div>
-          <div class="label">Accuracy</div>
-        </div>
-        <div class="result-stat">
-          <div class="value">${totalOff}</div>
-          <div class="label">Total Off By</div>
-        </div>
-      `;
+      // Build results using safe DOM manipulation
+      resultsSummary.textContent = ''; // Clear safely
+
+      const stats = [
+        { value: `${correct}/${total}`, label: 'Colors Correct', hasClass: true },
+        { value: `${percentage}%`, label: 'Accuracy', hasClass: true },
+        { value: String(totalOff), label: 'Total Off By', hasClass: false }
+      ];
+
+      stats.forEach(stat => {
+        const div = document.createElement('div');
+        div.className = stat.hasClass ? `result-stat ${scoreClass}` : 'result-stat';
+
+        const valueDiv = document.createElement('div');
+        valueDiv.className = 'value';
+        valueDiv.textContent = stat.value;
+        div.appendChild(valueDiv);
+
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'label';
+        labelDiv.textContent = stat.label;
+        div.appendChild(labelDiv);
+
+        resultsSummary.appendChild(div);
+      });
 
       resultMessage.className = `result-message ${scoreClass}`;
       resultMessage.textContent = message;
@@ -993,12 +1073,12 @@
       generatePuzzle();
     }
 
-    // Make functions global
-    window.generatePuzzle = generatePuzzle;
-    window.randomSeed = randomSeed;
-    window.checkAnswers = checkAnswers;
-    window.clearAnswers = clearAnswers;
-    window.toggleAnswerKey = toggleAnswerKey;
+    // Wire up event listeners (security: avoid global function exposure)
+    document.getElementById('generateBtn').addEventListener('click', generatePuzzle);
+    document.getElementById('randomBtn').addEventListener('click', randomSeed);
+    document.getElementById('checkBtn').addEventListener('click', checkAnswers);
+    document.getElementById('clearBtn').addEventListener('click', clearAnswers);
+    document.getElementById('revealBtn').addEventListener('click', toggleAnswerKey);
 
     // Initial generation
     generatePuzzle();
