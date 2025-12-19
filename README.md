@@ -190,10 +190,26 @@ Contributions are welcome! This project was built to help stroke recovery patien
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Built with AI-Native Development
+
+This entire application went from idea to production deployment in **less than 24 hours** using an AI-native software development workflow:
+
+- **[Claude Code](https://claude.ai/claude-code)** - Anthropic's AI coding assistant for pair programming, code generation, and iterative development
+- **[Agent OS](https://github.com/anthropics/agent-os)** - Orchestration framework for managing specs, tasks, and implementation workflows
+
+The AI-native SDLC enabled rapid iteration through:
+1. **Spec writing** - Translating requirements into detailed technical specifications
+2. **Task decomposition** - Breaking features into implementable task lists
+3. **Implementation** - Code generation with real-time testing and debugging
+4. **Deployment** - Automated Vercel deployment with CI/CD
+
+This workflow demonstrates how AI-assisted development can dramatically accelerate the journey from concept to production, especially for projects with personal urgency like helping a loved one's recovery.
+
 ## Acknowledgments
 
 - Inspired by the classic Stroop test developed by John Ridley Stroop in 1935
 - Built with love for my mother's stroke recovery
+- Thanks to [Anthropic](https://anthropic.com) for Claude Code and the AI-native development tools
 - Thanks to the open source community for making tools like this possible
 
 ---
