@@ -382,32 +382,17 @@
       }
       .puzzle-container {
         padding: 0.5rem;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
       }
       .puzzle-grid {
         gap: 1px;
-        width: max-content;
-        min-width: 100%;
+        width: 100%;
       }
       .puzzle-cell {
         border-radius: 2px;
-        padding: 0.2rem 0.1rem;
-        min-width: 2.5rem;
-        white-space: nowrap;
-      }
-      /* Language-specific font sizes for mobile */
-      .puzzle-grid.lang-chinese .puzzle-cell {
-        font-size: 1.4rem;
-        min-width: 2rem;
-      }
-      .puzzle-grid.lang-english .puzzle-cell {
-        font-size: 0.65rem;
-        min-width: 2.2rem;
-      }
-      .puzzle-grid.lang-vietnamese .puzzle-cell {
-        font-size: 0.75rem;
-        min-width: 2.2rem;
+        padding: 0.1rem;
+        overflow: hidden;
+        text-overflow: clip;
       }
       .puzzle-cell:hover {
         transform: none;
@@ -652,11 +637,51 @@
       `;
     }
 
-    // Update grid language class for responsive font sizing
-    function updateGridLanguageClass() {
+    // Calculate optimal font size based on viewport and language
+    function calculatePuzzleFontSize() {
+      const viewportWidth = window.innerWidth;
+      const isMobile = viewportWidth <= 480;
+
+      // Get actual grid width from DOM
       const grid = document.getElementById('puzzleGrid');
-      grid.classList.remove('lang-chinese', 'lang-english', 'lang-vietnamese');
-      grid.classList.add(`lang-${currentLanguage}`);
+      const gridWidth = grid ? grid.offsetWidth : (isMobile ? viewportWidth - 40 : 520);
+
+      const columns = 8;
+      const gapWidth = isMobile ? 7 : 14; // 1px or 2px * 7 gaps
+      const cellPadding = isMobile ? columns * 3.2 : 0; // mobile has extra padding
+      const cellWidth = (gridWidth - gapWidth - cellPadding) / columns;
+
+      // Font size multipliers based on language (character width relative to font size)
+      // Tuned to fit longest words in each language within cell width
+      // Chinese: single character ~1em wide
+      // Vietnamese: "Xanh", "Vàng" ~2.5em wide
+      // English: "PURPLE", "ORANGE" ~4em wide (uppercase)
+      const widthMultipliers = {
+        chinese: 1.15,
+        vietnamese: 2.6,
+        english: 4.2
+      };
+
+      const multiplier = widthMultipliers[currentLanguage] || 2.5;
+      let fontSize = cellWidth / multiplier;
+
+      // Clamp font size to reasonable bounds (different for mobile vs desktop)
+      const minFontSize = isMobile ? 6 : 10;
+      const maxFontSizes = isMobile
+        ? { chinese: 30, vietnamese: 14, english: 14 }
+        : { chinese: 45, vietnamese: 22, english: 16 };
+      const maxFontSize = maxFontSizes[currentLanguage] || 20;
+      fontSize = Math.max(minFontSize, Math.min(maxFontSize, fontSize));
+
+      return fontSize;
+    }
+
+    // Apply calculated font size to puzzle cells
+    function applyPuzzleFontSize() {
+      const fontSize = calculatePuzzleFontSize();
+      const cells = document.querySelectorAll('.puzzle-cell');
+      // Always apply calculated font size for responsive language support
+      cells.forEach(cell => cell.style.fontSize = `${fontSize}px`);
     }
 
     // Render the puzzle grid display (without regenerating data)
@@ -665,7 +690,6 @@
 
       const grid = document.getElementById('puzzleGrid');
       grid.innerHTML = '';
-      updateGridLanguageClass();
 
       currentPuzzle.forEach(cell => {
         const div = document.createElement('div');
@@ -674,7 +698,17 @@
         div.style.color = colorsJson[cell.inkColor].variants.base;
         grid.appendChild(div);
       });
+
+      // Apply font size after rendering
+      applyPuzzleFontSize();
     }
+
+    // Recalculate font size on window resize
+    window.addEventListener('resize', () => {
+      if (currentPuzzle) {
+        applyPuzzleFontSize();
+      }
+    });
 
     // Generate puzzle
     function generatePuzzle() {
