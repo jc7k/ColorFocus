@@ -345,6 +345,148 @@
       color: #92400e;
       margin-bottom: 0.75rem;
     }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 480px) {
+      body {
+        padding: 0.75rem;
+        max-width: 100%;
+      }
+      h1 {
+        font-size: 1.35rem;
+      }
+      .subtitle {
+        font-size: 0.8rem;
+      }
+      .task-instructions {
+        font-size: 0.75rem;
+        padding: 0.6rem;
+      }
+      .controls {
+        gap: 0.5rem;
+      }
+      .control-group {
+        gap: 0.25rem;
+      }
+      label {
+        font-size: 0.7rem;
+      }
+      input[type="number"], select {
+        width: 55px;
+        padding: 0.3rem;
+        font-size: 0.75rem;
+      }
+      button {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.75rem;
+      }
+      .puzzle-container {
+        padding: 0.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .puzzle-grid {
+        gap: 1px;
+        width: max-content;
+        min-width: 100%;
+      }
+      .puzzle-cell {
+        font-size: 0.85rem;
+        border-radius: 2px;
+        padding: 0.2rem 0.1rem;
+        min-width: 2.5rem;
+        white-space: nowrap;
+      }
+      .puzzle-cell:hover {
+        transform: none;
+      }
+      .metadata {
+        gap: 0.75rem;
+        font-size: 0.7rem;
+        justify-content: center;
+      }
+      .answer-section {
+        padding: 0.75rem;
+      }
+      .answer-section h2 {
+        font-size: 0.85rem;
+      }
+      .answer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+      .answer-item {
+        padding: 0.4rem;
+        gap: 0.3rem;
+      }
+      .color-swatch {
+        width: 18px;
+        height: 18px;
+      }
+      .answer-label {
+        font-size: 0.75rem;
+      }
+      .answer-input {
+        width: 40px;
+        padding: 0.25rem;
+        font-size: 0.8rem;
+      }
+      .correct-value {
+        font-size: 0.65rem;
+        min-width: 20px;
+      }
+      .results-section {
+        padding: 0.75rem;
+      }
+      .results-summary {
+        gap: 1rem;
+        justify-content: center;
+      }
+      .result-stat .value {
+        font-size: 1.5rem;
+      }
+      .result-stat .label {
+        font-size: 0.65rem;
+      }
+      .result-message {
+        font-size: 0.75rem;
+        padding: 0.6rem;
+      }
+      .answer-key-section {
+        padding: 0.75rem;
+      }
+      .answer-key-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+      }
+      .answer-key-item {
+        font-size: 0.7rem;
+        padding: 0.3rem;
+      }
+      .reveal-warning {
+        font-size: 0.7rem;
+        padding: 0.4rem;
+      }
+    }
+
+    /* Extra small devices (iPhone SE, etc.) */
+    @media (max-width: 375px) {
+      body {
+        padding: 0.5rem;
+      }
+      h1 {
+        font-size: 1.2rem;
+      }
+      .puzzle-cell {
+        font-size: 1.25rem;
+      }
+      .controls {
+        justify-content: center;
+      }
+      input[type="number"], select {
+        width: 50px;
+      }
+    }
   </style>
 </head>
 <body>
