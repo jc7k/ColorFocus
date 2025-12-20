@@ -158,5 +158,55 @@
     "chinese": "越南语单词",
     "english": "Vietnamese word",
     "vietnamese": "từ tiếng Việt"
+  },
+  "difficulty_label": {
+    "chinese": "难度：",
+    "english": "Difficulty:",
+    "vietnamese": "Độ khó:"
+  },
+  "difficulty_accessible": {
+    "chinese": "简易",
+    "english": "Accessible",
+    "vietnamese": "Dễ tiếp cận"
+  },
+  "difficulty_standard": {
+    "chinese": "标准",
+    "english": "Standard",
+    "vietnamese": "Tiêu chuẩn"
+  },
+  "difficulty_advanced": {
+    "chinese": "高级",
+    "english": "Advanced",
+    "vietnamese": "Nâng cao"
+  },
+  "difficulty_custom": {
+    "chinese": "自定义",
+    "english": "Custom",
+    "vietnamese": "Tùy chỉnh"
+  },
+  "spacing_label": {
+    "chinese": "间距：",
+    "english": "Spacing:",
+    "vietnamese": "Khoảng cách:"
+  },
+  "spacing_compact": {
+    "chinese": "紧凑",
+    "english": "Compact",
+    "vietnamese": "Thu gọn"
+  },
+  "spacing_normal": {
+    "chinese": "正常",
+    "english": "Normal",
+    "vietnamese": "Bình thường"
+  },
+  "spacing_relaxed": {
+    "chinese": "宽松",
+    "english": "Relaxed",
+    "vietnamese": "Thoải mái"
+  },
+  "spacing_spacious": {
+    "chinese": "宽敞",
+    "english": "Spacious",
+    "vietnamese": "Rộng rãi"
   }
 }

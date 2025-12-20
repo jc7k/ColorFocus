@@ -6,15 +6,15 @@
 
 2. [x] Puzzle Grid Generator — Build the core algorithm that generates 8x8 word jungle grids with color words rendered in different ink colors, creating Stroop interference patterns. `M`
 
-3. [ ] Answer Key Generation — Automatically calculate and store the correct count for each ink color in a generated puzzle, providing immediate verification capability. `S`
+3. [x] Answer Key Generation — Automatically calculate and store the correct count for each ink color in a generated puzzle, providing immediate verification capability. `S`
 
-4. [ ] Difficulty Tier Configuration — Implement three difficulty tiers (Accessible/Recovery, Standard, Advanced) with configurable parameters for grid size, color count, and interference level. `S`
+4. [x] Difficulty Tier Configuration — Implement three difficulty tiers (Accessible/Recovery, Standard, Advanced) with configurable parameters for grid size, color count, and interference level. `S`
 
-5. [ ] Puzzle Display UI — Create the main puzzle interface with large sans-serif fonts, clear grid layout, and the color counting task instructions prominently displayed. `M`
+5. [x] Puzzle Display UI — Create the main puzzle interface with large sans-serif fonts, clear grid layout, and the color counting task instructions prominently displayed. `M`
 
-6. [ ] Answer Submission Interface — Build the UI for users to enter their color counts and receive immediate feedback on accuracy against the answer key. `S`
+6. [x] Answer Submission Interface — Build the UI for users to enter their color counts and receive immediate feedback on accuracy against the answer key. `S`
 
-7. [ ] Adjustable Grid Spacing — Add user controls for grid density and spacing to accommodate various visual and motor abilities. `S`
+7. [x] Adjustable Grid Spacing — Add user controls for grid density and spacing to accommodate various visual and motor abilities. `S`
 
 8. [x] Chinese Character Labels — Add single-character Chinese labels as an alternative identifier for each color token, supporting users who may benefit from dual-coding. `XS`
 

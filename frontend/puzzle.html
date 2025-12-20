@@ -347,6 +347,14 @@
       margin-bottom: 0.75rem;
     }
 
+    /* Custom controls visibility (shown only in Custom difficulty) */
+    .custom-control {
+      display: none;
+    }
+    .custom-control.visible {
+      display: flex;
+    }
+
     /* Mobile Responsive Styles */
     @media (max-width: 480px) {
       body {
@@ -497,6 +505,15 @@
 
   <div class="controls">
     <div class="control-group">
+      <label for="difficulty" id="difficultyLabel">Difficulty:</label>
+      <select id="difficulty" aria-label="Select difficulty tier">
+        <option value="accessible">Accessible</option>
+        <option value="standard" selected>Standard</option>
+        <option value="advanced">Advanced</option>
+        <option value="custom">Custom</option>
+      </select>
+    </div>
+    <div class="control-group">
       <label for="language" id="languageLabel">Language:</label>
       <select id="language" aria-label="Select display language">
         <option value="chinese" selected>Chinese</option>
@@ -505,6 +522,15 @@
       </select>
     </div>
     <div class="control-group">
+      <label for="spacing" id="spacingLabel">Spacing:</label>
+      <select id="spacing" aria-label="Select grid spacing">
+        <option value="compact">Compact</option>
+        <option value="normal" selected>Normal</option>
+        <option value="relaxed">Relaxed</option>
+        <option value="spacious">Spacious</option>
+      </select>
+    </div>
+    <div class="control-group custom-control" id="gridSizeGroup">
       <label for="gridSize" id="gridLabel">Grid:</label>
       <select id="gridSize" aria-label="Select grid size">
         <option value="1">1x1</option>
@@ -517,7 +543,7 @@
         <option value="8">8x8</option>
       </select>
     </div>
-    <div class="control-group">
+    <div class="control-group custom-control" id="colorCountGroup">
       <label for="colorCount" id="colorsLabel">Colors:</label>
       <select id="colorCount">
         <option value="2">2</option>
@@ -529,13 +555,13 @@
         <option value="8">8</option>
       </select>
     </div>
+    <div class="control-group custom-control" id="congruenceGroup">
+      <label for="congruence" id="matchLabel">Match %:</label>
+      <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
+    </div>
     <div class="control-group">
       <label for="seed" id="seedLabel">Seed:</label>
       <input type="number" id="seed" value="42" min="0">
-    </div>
-    <div class="control-group">
-      <label for="congruence" id="matchLabel">Match %:</label>
-      <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
     </div>
     <button id="generateBtn">Generate</button>
     <button id="randomBtn" class="secondary">Random</button>
@@ -602,6 +628,27 @@
     // Valid grid sizes (1-8)
     const VALID_GRID_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 
+    // Valid difficulty tiers
+    const VALID_DIFFICULTIES = ['accessible', 'standard', 'advanced', 'custom'];
+
+    // Valid spacing options
+    const VALID_SPACINGS = ['compact', 'normal', 'relaxed', 'spacious'];
+
+    // Difficulty tier presets: { gridSize, colorCount, congruencePercent }
+    const DIFFICULTY_PRESETS = {
+      accessible: { gridSize: 3, colorCount: 2, congruencePercent: 50 },
+      standard: { gridSize: 4, colorCount: 4, congruencePercent: 12.5 },
+      advanced: { gridSize: 8, colorCount: 8, congruencePercent: 0 }
+    };
+
+    // Spacing presets: gap in pixels
+    const SPACING_VALUES = {
+      compact: 1,
+      normal: 2,
+      relaxed: 6,
+      spacious: 12
+    };
+
     // Sanitize text content to prevent XSS (escapes HTML entities)
     function escapeHtml(text) {
       const div = document.createElement('div');
@@ -625,6 +672,16 @@
     function validateGridSize(size) {
       const num = parseInt(size, 10);
       return VALID_GRID_SIZES.includes(num) ? num : 4;
+    }
+
+    // Validate difficulty selection
+    function validateDifficulty(difficulty) {
+      return VALID_DIFFICULTIES.includes(difficulty) ? difficulty : 'standard';
+    }
+
+    // Validate spacing selection
+    function validateSpacing(spacing) {
+      return VALID_SPACINGS.includes(spacing) ? spacing : 'normal';
     }
 
     // Get UI text for the current language
@@ -655,6 +712,10 @@
     let currentLanguage = validateLanguage(localStorage.getItem('colorFocusLanguage') || 'chinese');
     // Validate grid size from localStorage (default: 4)
     let currentGridSize = validateGridSize(localStorage.getItem('colorFocusGridSize') || 4);
+    // Validate difficulty from localStorage (default: standard)
+    let currentDifficulty = validateDifficulty(localStorage.getItem('colorFocusDifficulty') || 'standard');
+    // Validate spacing from localStorage (default: normal)
+    let currentSpacing = validateSpacing(localStorage.getItem('colorFocusSpacing') || 'normal');
 
     // Initialize language selector with saved preference
     document.getElementById('language').value = currentLanguage;
@@ -662,10 +723,47 @@
     // Initialize grid size selector with saved preference
     document.getElementById('gridSize').value = currentGridSize;
 
-    // Update grid CSS for current grid size
+    // Initialize difficulty selector with saved preference
+    document.getElementById('difficulty').value = currentDifficulty;
+
+    // Initialize spacing selector with saved preference
+    document.getElementById('spacing').value = currentSpacing;
+
+    // Show/hide custom controls based on difficulty
+    function updateCustomControlsVisibility() {
+      const isCustom = currentDifficulty === 'custom';
+      document.querySelectorAll('.custom-control').forEach(el => {
+        el.classList.toggle('visible', isCustom);
+      });
+    }
+
+    // Apply difficulty preset to controls
+    function applyDifficultyPreset(difficulty) {
+      if (difficulty === 'custom') return; // Don't modify values in custom mode
+
+      const preset = DIFFICULTY_PRESETS[difficulty];
+      if (!preset) return;
+
+      // Update state
+      currentGridSize = preset.gridSize;
+
+      // Update UI - grid size and congruence first
+      document.getElementById('gridSize').value = preset.gridSize;
+      document.getElementById('congruence').value = preset.congruencePercent;
+
+      // Save grid size preference
+      localStorage.setItem('colorFocusGridSize', currentGridSize);
+
+      // Update color dropdown options for new grid size, then set color count
+      updateColorDropdownOptions();
+      document.getElementById('colorCount').value = preset.colorCount;
+    }
+
+    // Update grid CSS for current grid size and spacing
     function updateGridCSS() {
       const grid = document.getElementById('puzzleGrid');
       grid.style.gridTemplateColumns = `repeat(${currentGridSize}, 1fr)`;
+      grid.style.gap = `${SPACING_VALUES[currentSpacing]}px`;
     }
 
     // Update Colors dropdown based on grid size (auto-limiting)
@@ -706,11 +804,27 @@
       document.getElementById('subtitle').textContent = getUIText('subtitle');
 
       // Update control labels
+      document.getElementById('difficultyLabel').textContent = getUIText('difficulty_label');
       document.getElementById('languageLabel').textContent = getUIText('language_label');
+      document.getElementById('spacingLabel').textContent = getUIText('spacing_label');
       document.getElementById('gridLabel').textContent = getUIText('grid_label');
       document.getElementById('colorsLabel').textContent = getUIText('colors_label');
       document.getElementById('seedLabel').textContent = getUIText('seed_label');
       document.getElementById('matchLabel').textContent = getUIText('match_label');
+
+      // Update difficulty dropdown options
+      const difficultySelect = document.getElementById('difficulty');
+      difficultySelect.options[0].textContent = getUIText('difficulty_accessible');
+      difficultySelect.options[1].textContent = getUIText('difficulty_standard');
+      difficultySelect.options[2].textContent = getUIText('difficulty_advanced');
+      difficultySelect.options[3].textContent = getUIText('difficulty_custom');
+
+      // Update spacing dropdown options
+      const spacingSelect = document.getElementById('spacing');
+      spacingSelect.options[0].textContent = getUIText('spacing_compact');
+      spacingSelect.options[1].textContent = getUIText('spacing_normal');
+      spacingSelect.options[2].textContent = getUIText('spacing_relaxed');
+      spacingSelect.options[3].textContent = getUIText('spacing_spacious');
 
       // Update button text
       document.getElementById('generateBtn').textContent = getUIText('generate_btn');
@@ -734,6 +848,15 @@
       updateTaskInstructions();
     }
 
+    // Add difficulty change event listener
+    document.getElementById('difficulty').addEventListener('change', (e) => {
+      currentDifficulty = validateDifficulty(e.target.value);
+      localStorage.setItem('colorFocusDifficulty', currentDifficulty);
+      updateCustomControlsVisibility();
+      applyDifficultyPreset(currentDifficulty);
+      generatePuzzle();
+    });
+
     // Add language change event listener
     document.getElementById('language').addEventListener('change', (e) => {
       currentLanguage = e.target.value;
@@ -745,7 +868,16 @@
       updateMetadata();
     });
 
-    // Add grid size change event listener
+    // Add spacing change event listener
+    document.getElementById('spacing').addEventListener('change', (e) => {
+      currentSpacing = validateSpacing(e.target.value);
+      localStorage.setItem('colorFocusSpacing', currentSpacing);
+      updateGridCSS();
+      // Recalculate font size since spacing affects cell width
+      applyPuzzleFontSize();
+    });
+
+    // Add grid size change event listener (only active in Custom mode)
     document.getElementById('gridSize').addEventListener('change', (e) => {
       currentGridSize = validateGridSize(e.target.value);
       localStorage.setItem('colorFocusGridSize', currentGridSize);
@@ -1237,6 +1369,14 @@
     document.getElementById('checkBtn').addEventListener('click', checkAnswers);
     document.getElementById('clearBtn').addEventListener('click', clearAnswers);
     document.getElementById('revealBtn').addEventListener('click', toggleAnswerKey);
+
+    // Initialize custom controls visibility based on difficulty
+    updateCustomControlsVisibility();
+
+    // Apply difficulty preset if not custom (restores settings on page load)
+    if (currentDifficulty !== 'custom') {
+      applyDifficultyPreset(currentDifficulty);
+    }
 
     // Initialize color dropdown options based on initial grid size
     updateColorDropdownOptions();
