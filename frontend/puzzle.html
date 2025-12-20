@@ -488,8 +488,8 @@
   </style>
 </head>
 <body>
-  <h1>ColorFocus Stroop Puzzle</h1>
-  <p class="subtitle">Count the INK colors, not the word meanings!</p>
+  <h1 id="pageTitle">ColorFocus Stroop Puzzle</h1>
+  <p class="subtitle" id="subtitle">Count the INK colors, not the word meanings!</p>
 
   <div class="task-instructions" id="taskInstructions">
     <strong>Task:</strong> Count how many cells are printed in each INK color. The Chinese character shows a color name, but you must count the actual ink color used to display it.
@@ -497,7 +497,7 @@
 
   <div class="controls">
     <div class="control-group">
-      <label for="language">Language:</label>
+      <label for="language" id="languageLabel">Language:</label>
       <select id="language" aria-label="Select display language">
         <option value="chinese" selected>Chinese</option>
         <option value="english">English</option>
@@ -505,7 +505,20 @@
       </select>
     </div>
     <div class="control-group">
-      <label for="colorCount">Colors:</label>
+      <label for="gridSize" id="gridLabel">Grid:</label>
+      <select id="gridSize" aria-label="Select grid size">
+        <option value="1">1x1</option>
+        <option value="2">2x2</option>
+        <option value="3">3x3</option>
+        <option value="4" selected>4x4</option>
+        <option value="5">5x5</option>
+        <option value="6">6x6</option>
+        <option value="7">7x7</option>
+        <option value="8">8x8</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="colorCount" id="colorsLabel">Colors:</label>
       <select id="colorCount">
         <option value="2">2</option>
         <option value="3">3</option>
@@ -517,11 +530,11 @@
       </select>
     </div>
     <div class="control-group">
-      <label for="seed">Seed:</label>
+      <label for="seed" id="seedLabel">Seed:</label>
       <input type="number" id="seed" value="42" min="0">
     </div>
     <div class="control-group">
-      <label for="congruence">Match %:</label>
+      <label for="congruence" id="matchLabel">Match %:</label>
       <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
     </div>
     <button id="generateBtn">Generate</button>
@@ -535,7 +548,7 @@
 
   <!-- Answer Submission Section -->
   <div class="answer-section">
-    <h2>Enter Your Answers</h2>
+    <h2 id="enterAnswersHeader">Enter Your Answers</h2>
     <div class="answer-grid" id="answerGrid"></div>
     <div class="answer-buttons">
       <button class="success" id="checkBtn">Check Answers</button>
@@ -545,7 +558,7 @@
 
   <!-- Results Section -->
   <div class="results-section" id="resultsSection">
-    <h2>Results</h2>
+    <h2 id="resultsHeader">Results</h2>
     <div class="results-summary" id="resultsSummary"></div>
     <div class="result-message" id="resultMessage"></div>
   </div>
@@ -553,7 +566,7 @@
   <!-- Answer Key Section (Hidden by Default) -->
   <div class="answer-key-section">
     <h2>
-      <span>Answer Key</span>
+      <span id="answerKeyHeader">Answer Key</span>
       <button class="secondary" id="revealBtn">Reveal</button>
     </h2>
     <div class="reveal-warning" id="revealWarning">
@@ -567,6 +580,7 @@
   <script type="module">
     import colorsJson from '../shared/colors.json' with { type: 'json' };
     import colorLabelsJson from '../shared/color_labels.json' with { type: 'json' };
+    import uiTextJson from '../shared/ui_text.json' with { type: 'json' };
 
     // All color tokens in order
     const ALL_COLOR_TOKENS = ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA', 'GRAY'];
@@ -582,15 +596,11 @@
       8: ALL_COLOR_TOKENS,
     };
 
-    // Language descriptors for task instructions
-    const LANGUAGE_DESCRIPTORS = {
-      chinese: 'Chinese character',
-      english: 'English word',
-      vietnamese: 'Vietnamese word',
-    };
-
     // Valid language values for input validation
     const VALID_LANGUAGES = ['chinese', 'english', 'vietnamese'];
+
+    // Valid grid sizes (1-8)
+    const VALID_GRID_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 
     // Sanitize text content to prevent XSS (escapes HTML entities)
     function escapeHtml(text) {
@@ -611,6 +621,30 @@
       return VALID_LANGUAGES.includes(lang) ? lang : 'chinese';
     }
 
+    // Validate grid size selection
+    function validateGridSize(size) {
+      const num = parseInt(size, 10);
+      return VALID_GRID_SIZES.includes(num) ? num : 4;
+    }
+
+    // Get UI text for the current language
+    function getUIText(key) {
+      if (uiTextJson[key] && uiTextJson[key][currentLanguage]) {
+        return uiTextJson[key][currentLanguage];
+      }
+      // Fallback to English if key or language not found
+      if (uiTextJson[key] && uiTextJson[key]['english']) {
+        return uiTextJson[key]['english'];
+      }
+      return key; // Return key itself as last resort
+    }
+
+    // Get language descriptor for task instructions
+    function getLanguageDescriptor() {
+      const descriptorKey = `language_descriptor_${currentLanguage}`;
+      return getUIText(descriptorKey);
+    }
+
     // State
     let currentPuzzle = null;
     let correctAnswers = {};
@@ -619,18 +653,105 @@
     let answerKeyRevealed = false;
     // Validate language from localStorage
     let currentLanguage = validateLanguage(localStorage.getItem('colorFocusLanguage') || 'chinese');
+    // Validate grid size from localStorage (default: 4)
+    let currentGridSize = validateGridSize(localStorage.getItem('colorFocusGridSize') || 4);
 
     // Initialize language selector with saved preference
     document.getElementById('language').value = currentLanguage;
+
+    // Initialize grid size selector with saved preference
+    document.getElementById('gridSize').value = currentGridSize;
+
+    // Update grid CSS for current grid size
+    function updateGridCSS() {
+      const grid = document.getElementById('puzzleGrid');
+      grid.style.gridTemplateColumns = `repeat(${currentGridSize}, 1fr)`;
+    }
+
+    // Update Colors dropdown based on grid size (auto-limiting)
+    function updateColorDropdownOptions() {
+      const colorSelect = document.getElementById('colorCount');
+      const maxColors = Math.min(8, currentGridSize);
+      const currentColorValue = parseInt(colorSelect.value, 10);
+
+      // Clear existing options
+      colorSelect.innerHTML = '';
+
+      // Add options from 1 to maxColors (minimum 1 color for 1x1 grid)
+      const minColors = Math.min(2, maxColors);
+      for (let i = minColors; i <= maxColors; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        if (i === Math.min(currentColorValue, maxColors)) {
+          option.selected = true;
+        }
+        colorSelect.appendChild(option);
+      }
+
+      // If current selection exceeds new max, clamp it
+      if (currentColorValue > maxColors) {
+        colorSelect.value = maxColors;
+      }
+    }
+
+    // Update all UI text elements with translations
+    function updateAllUIText() {
+      // Update page title (h1 and document.title)
+      const pageTitle = getUIText('page_title');
+      document.getElementById('pageTitle').textContent = pageTitle;
+      document.title = pageTitle;
+
+      // Update subtitle
+      document.getElementById('subtitle').textContent = getUIText('subtitle');
+
+      // Update control labels
+      document.getElementById('languageLabel').textContent = getUIText('language_label');
+      document.getElementById('gridLabel').textContent = getUIText('grid_label');
+      document.getElementById('colorsLabel').textContent = getUIText('colors_label');
+      document.getElementById('seedLabel').textContent = getUIText('seed_label');
+      document.getElementById('matchLabel').textContent = getUIText('match_label');
+
+      // Update button text
+      document.getElementById('generateBtn').textContent = getUIText('generate_btn');
+      document.getElementById('randomBtn').textContent = getUIText('random_btn');
+      document.getElementById('checkBtn').textContent = getUIText('check_btn');
+      document.getElementById('clearBtn').textContent = getUIText('clear_btn');
+
+      // Update reveal button based on current state
+      const revealBtn = document.getElementById('revealBtn');
+      revealBtn.textContent = answerKeyRevealed ? getUIText('hide_btn') : getUIText('reveal_btn');
+
+      // Update section headers
+      document.getElementById('enterAnswersHeader').textContent = getUIText('enter_answers_header');
+      document.getElementById('resultsHeader').textContent = getUIText('results_header');
+      document.getElementById('answerKeyHeader').textContent = getUIText('answer_key_header');
+
+      // Update reveal warning
+      document.getElementById('revealWarning').textContent = getUIText('reveal_warning');
+
+      // Update task instructions
+      updateTaskInstructions();
+    }
 
     // Add language change event listener
     document.getElementById('language').addEventListener('change', (e) => {
       currentLanguage = e.target.value;
       localStorage.setItem('colorFocusLanguage', currentLanguage);
+      updateAllUIText();
       renderPuzzleDisplay();
       renderAnswerInputs();
       renderAnswerKey();
-      updateTaskInstructions();
+      updateMetadata();
+    });
+
+    // Add grid size change event listener
+    document.getElementById('gridSize').addEventListener('change', (e) => {
+      currentGridSize = validateGridSize(e.target.value);
+      localStorage.setItem('colorFocusGridSize', currentGridSize);
+      updateGridCSS();
+      updateColorDropdownOptions();
+      generatePuzzle();
     });
 
     // Seeded random number generator (mulberry32)
@@ -655,20 +776,20 @@
 
     // Update task instructions text based on language
     function updateTaskInstructions() {
-      const descriptor = LANGUAGE_DESCRIPTORS[currentLanguage];
+      const languageDescriptor = getLanguageDescriptor();
+      const taskInstruction = getUIText('task_instruction').replace('{language_descriptor}', languageDescriptor);
+
       const container = document.getElementById('taskInstructions');
       container.textContent = ''; // Clear safely
 
       const strong = document.createElement('strong');
-      strong.textContent = 'Task:';
+      strong.textContent = getUIText('task_label');
       container.appendChild(strong);
 
-      container.appendChild(document.createTextNode(
-        ` Count how many cells are printed in each INK color. The ${descriptor} shows a color name, but you must count the actual ink color used to display it.`
-      ));
+      container.appendChild(document.createTextNode(' ' + taskInstruction));
     }
 
-    // Calculate optimal font size based on viewport and language
+    // Calculate optimal font size based on viewport, language, and grid size
     function calculatePuzzleFontSize() {
       const viewportWidth = window.innerWidth;
       const isMobile = viewportWidth <= 480;
@@ -677,15 +798,16 @@
       const grid = document.getElementById('puzzleGrid');
       const gridWidth = grid ? grid.offsetWidth : (isMobile ? viewportWidth - 40 : 520);
 
-      const columns = 8;
-      const gapWidth = isMobile ? 7 : 14; // 1px or 2px * 7 gaps
+      // Use currentGridSize for column count (not hardcoded 8)
+      const columns = currentGridSize;
+      const gapWidth = isMobile ? (columns - 1) : (columns - 1) * 2; // 1px or 2px gaps
       const cellPadding = isMobile ? columns * 3.2 : 0; // mobile has extra padding
       const cellWidth = (gridWidth - gapWidth - cellPadding) / columns;
 
       // Font size multipliers based on language (character width relative to font size)
       // Tuned to fit longest words in each language within cell width
       // Chinese: single character ~1em wide
-      // Vietnamese: "Xanh", "Vàng" ~2.5em wide
+      // Vietnamese: "Xanh", "Vang" ~2.5em wide
       // English: "PURPLE", "ORANGE" ~4em wide (uppercase)
       const widthMultipliers = {
         chinese: 1.15,
@@ -741,100 +863,26 @@
       }
     });
 
-    // Generate puzzle
-    function generatePuzzle() {
-      // Reset state
-      hasChecked = false;
-      answerKeyRevealed = false;
-      document.getElementById('answerKeyContent').classList.remove('revealed');
-      document.getElementById('revealBtn').textContent = 'Reveal';
-      document.getElementById('revealWarning').style.display = 'block';
-      document.getElementById('resultsSection').classList.remove('visible');
-      document.getElementById('checkBtn').disabled = false;
+    // Store current puzzle metadata for re-rendering
+    let currentSeed = 42;
+    let currentColorCount = 4;
+    let currentCongruentCount = 0;
 
-      const seedInput = document.getElementById('seed');
-      const congruenceInput = document.getElementById('congruence');
-      const colorCountSelect = document.getElementById('colorCount');
+    // Update metadata display with translated labels
+    function updateMetadata() {
+      if (!currentPuzzle) return;
 
-      // Apply input sanitization for security
-      const seed = sanitizeNumber(seedInput.value, 0, 2147483647, 42);
-      const congruencePercent = sanitizeNumber(congruenceInput.value, 0, 100, 12.5);
-      const congruence = congruencePercent / 100;
-      const colorCount = sanitizeNumber(colorCountSelect.value, 2, 8, 4);
-
-      const random = mulberry32(seed);
-      activeColors = COLOR_SUBSETS[colorCount];
-
-      // Create ink distribution (roughly equal with small variations)
-      const totalCells = 64;
-      const basePerColor = Math.floor(totalCells / colorCount);
-
-      // Create base distribution then add random variation
-      let inkColors = [];
-      let remaining = totalCells;
-
-      activeColors.forEach((token, i) => {
-        if (i === activeColors.length - 1) {
-          // Last color gets whatever remains
-          for (let j = 0; j < remaining; j++) {
-            inkColors.push(token);
-          }
-        } else {
-          // Add variation: ±2 from base, but keep within bounds
-          const variation = Math.floor(random() * 5) - 2; // -2 to +2
-          const count = Math.max(basePerColor - 2, Math.min(basePerColor + 2, basePerColor + variation));
-          for (let j = 0; j < count; j++) {
-            inkColors.push(token);
-          }
-          remaining -= count;
-        }
-      });
-      inkColors = shuffle(inkColors, random);
-
-      // Assign words with congruence control
-      const cells = inkColors.map(inkColor => {
-        let word;
-        if (random() < congruence) {
-          word = inkColor; // Congruent
-        } else {
-          // Pick different color from active colors
-          const otherColors = activeColors.filter(c => c !== inkColor);
-          word = otherColors[Math.floor(random() * otherColors.length)];
-        }
-        return { word, inkColor };
-      });
-
-      currentPuzzle = cells;
-
-      // Render grid
-      renderPuzzleDisplay();
-
-      // Count distribution (correct answers)
-      correctAnswers = {};
-      let congruentCount = 0;
-      cells.forEach(cell => {
-        correctAnswers[cell.inkColor] = (correctAnswers[cell.inkColor] || 0) + 1;
-        if (cell.word === cell.inkColor) congruentCount++;
-      });
-
-      // Render answer input grid
-      renderAnswerInputs();
-
-      // Render answer key (hidden)
-      renderAnswerKey();
-
-      // Update task instructions
-      updateTaskInstructions();
-
-      // Render metadata using safe DOM manipulation
       const metaDiv = document.getElementById('metadata');
       metaDiv.textContent = ''; // Clear safely
 
+      // Use dynamic totalCells based on currentGridSize
+      const totalCells = currentGridSize * currentGridSize;
+      const gridSizeDisplay = `${currentGridSize}x${currentGridSize}`;
       const metaItems = [
-        { label: 'Seed:', value: String(seed) },
-        { label: 'Colors:', value: String(colorCount) },
-        { label: 'Grid:', value: '8x8' },
-        { label: 'Congruent:', value: `${congruentCount}/64 (${(congruentCount/64*100).toFixed(1)}%)` }
+        { label: getUIText('metadata_seed'), value: String(currentSeed) },
+        { label: getUIText('metadata_colors'), value: String(currentColorCount) },
+        { label: getUIText('metadata_grid'), value: gridSizeDisplay },
+        { label: getUIText('metadata_congruent'), value: `${currentCongruentCount}/${totalCells} (${(currentCongruentCount/totalCells*100).toFixed(1)}%)` }
       ];
 
       metaItems.forEach(item => {
@@ -854,10 +902,113 @@
       });
     }
 
+    // Generate puzzle
+    function generatePuzzle() {
+      // Reset state
+      hasChecked = false;
+      answerKeyRevealed = false;
+      document.getElementById('answerKeyContent').classList.remove('revealed');
+      document.getElementById('revealBtn').textContent = getUIText('reveal_btn');
+      document.getElementById('revealWarning').style.display = 'block';
+      document.getElementById('resultsSection').classList.remove('visible');
+      document.getElementById('checkBtn').disabled = false;
+
+      const seedInput = document.getElementById('seed');
+      const congruenceInput = document.getElementById('congruence');
+      const colorCountSelect = document.getElementById('colorCount');
+
+      // Apply input sanitization for security
+      const seed = sanitizeNumber(seedInput.value, 0, 2147483647, 42);
+      const congruencePercent = sanitizeNumber(congruenceInput.value, 0, 100, 12.5);
+      const congruence = congruencePercent / 100;
+      const colorCount = sanitizeNumber(colorCountSelect.value, 1, 8, 4);
+
+      // Store for metadata re-rendering
+      currentSeed = seed;
+      currentColorCount = colorCount;
+
+      const random = mulberry32(seed);
+      activeColors = COLOR_SUBSETS[colorCount] || COLOR_SUBSETS[2];
+
+      // Create ink distribution (roughly equal with small variations)
+      // Use dynamic totalCells based on currentGridSize
+      const totalCells = currentGridSize * currentGridSize;
+      const basePerColor = Math.floor(totalCells / colorCount);
+
+      // Create base distribution then add random variation
+      let inkColors = [];
+      let remaining = totalCells;
+
+      activeColors.forEach((token, i) => {
+        if (i === activeColors.length - 1) {
+          // Last color gets whatever remains
+          for (let j = 0; j < remaining; j++) {
+            inkColors.push(token);
+          }
+        } else {
+          // Add variation: +/-2 from base, but keep within bounds
+          const variation = Math.floor(random() * 5) - 2; // -2 to +2
+          const count = Math.max(1, Math.min(basePerColor + 2, basePerColor + variation));
+          for (let j = 0; j < count; j++) {
+            inkColors.push(token);
+          }
+          remaining -= count;
+        }
+      });
+      inkColors = shuffle(inkColors, random);
+
+      // Assign words with congruence control
+      const cells = inkColors.map(inkColor => {
+        let word;
+        if (random() < congruence) {
+          word = inkColor; // Congruent
+        } else {
+          // Pick different color from active colors
+          const otherColors = activeColors.filter(c => c !== inkColor);
+          word = otherColors.length > 0
+            ? otherColors[Math.floor(random() * otherColors.length)]
+            : inkColor;
+        }
+        return { word, inkColor };
+      });
+
+      currentPuzzle = cells;
+
+      // Update grid CSS for current grid size
+      updateGridCSS();
+
+      // Render grid
+      renderPuzzleDisplay();
+
+      // Count distribution (correct answers)
+      correctAnswers = {};
+      let congruentCount = 0;
+      cells.forEach(cell => {
+        correctAnswers[cell.inkColor] = (correctAnswers[cell.inkColor] || 0) + 1;
+        if (cell.word === cell.inkColor) congruentCount++;
+      });
+      currentCongruentCount = congruentCount;
+
+      // Render answer input grid
+      renderAnswerInputs();
+
+      // Render answer key (hidden)
+      renderAnswerKey();
+
+      // Update task instructions
+      updateTaskInstructions();
+
+      // Render metadata with translated labels
+      updateMetadata();
+    }
+
     // Render answer input fields (only active colors)
     function renderAnswerInputs() {
       const answerGrid = document.getElementById('answerGrid');
       answerGrid.textContent = ''; // Clear safely
+
+      // Calculate max input value based on current grid size
+      const maxInputValue = currentGridSize * currentGridSize;
 
       // Only show active colors for this puzzle
       activeColors.forEach(token => {
@@ -883,7 +1034,7 @@
         input.className = 'answer-input';
         input.id = `answer-${token}`;
         input.min = '0';
-        input.max = '64';
+        input.max = String(maxInputValue);
         input.placeholder = '?';
         item.appendChild(input);
 
@@ -946,12 +1097,15 @@
       let correctCount = 0;
       let totalOff = 0;
 
+      // Calculate max value based on current grid size
+      const maxValue = currentGridSize * currentGridSize;
+
       activeColors.forEach(token => {
         const input = document.getElementById(`answer-${token}`);
         const item = document.getElementById(`answer-item-${token}`);
         const correctSpan = document.getElementById(`correct-${token}`);
         // Sanitize user input
-        const userAnswer = sanitizeNumber(input.value, 0, 64, 0);
+        const userAnswer = sanitizeNumber(input.value, 0, maxValue, 0);
         const correct = correctAnswers[token];
 
         input.classList.remove('correct', 'incorrect');
@@ -974,7 +1128,7 @@
       showResults(correctCount, activeColors.length, totalOff);
     }
 
-    // Show results
+    // Show results with translated messages
     function showResults(correct, total, totalOff) {
       const resultsSection = document.getElementById('resultsSection');
       const resultsSummary = document.getElementById('resultsSummary');
@@ -985,22 +1139,26 @@
 
       if (correct === total) {
         scoreClass = 'perfect';
-        message = 'Perfect score! You correctly counted all the ink colors despite the Stroop interference.';
+        message = getUIText('result_perfect');
       } else if (percentage >= 75) {
         scoreClass = 'good';
-        message = `Great job! You got ${correct} out of ${total} colors correct. The Stroop effect made it tricky!`;
+        message = getUIText('result_good')
+          .replace('{correct}', String(correct))
+          .replace('{total}', String(total));
       } else {
         scoreClass = 'needs-work';
-        message = `You got ${correct} out of ${total} colors correct. Remember: count the INK color, not the word meaning!`;
+        message = getUIText('result_needs_work')
+          .replace('{correct}', String(correct))
+          .replace('{total}', String(total));
       }
 
       // Build results using safe DOM manipulation
       resultsSummary.textContent = ''; // Clear safely
 
       const stats = [
-        { value: `${correct}/${total}`, label: 'Colors Correct', hasClass: true },
-        { value: `${percentage}%`, label: 'Accuracy', hasClass: true },
-        { value: String(totalOff), label: 'Total Off By', hasClass: false }
+        { value: `${correct}/${total}`, label: getUIText('result_colors_correct'), hasClass: true },
+        { value: `${percentage}%`, label: getUIText('result_accuracy'), hasClass: true },
+        { value: String(totalOff), label: getUIText('result_total_off'), hasClass: false }
       ];
 
       stats.forEach(stat => {
@@ -1057,12 +1215,12 @@
 
       if (answerKeyRevealed) {
         content.classList.remove('revealed');
-        btn.textContent = 'Reveal';
+        btn.textContent = getUIText('reveal_btn');
         answerKeyRevealed = false;
         warning.style.display = 'block';
       } else {
         content.classList.add('revealed');
-        btn.textContent = 'Hide';
+        btn.textContent = getUIText('hide_btn');
         answerKeyRevealed = true;
         warning.style.display = 'none';
       }
@@ -1079,6 +1237,12 @@
     document.getElementById('checkBtn').addEventListener('click', checkAnswers);
     document.getElementById('clearBtn').addEventListener('click', clearAnswers);
     document.getElementById('revealBtn').addEventListener('click', toggleAnswerKey);
+
+    // Initialize color dropdown options based on initial grid size
+    updateColorDropdownOptions();
+
+    // Initialize UI text with current language
+    updateAllUIText();
 
     // Initial generation
     generatePuzzle();

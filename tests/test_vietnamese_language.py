@@ -216,22 +216,17 @@ class TestLanguageSwitchingLogic:
 
     def test_language_descriptors_defined_for_instructions(self):
         """
-        Test that language descriptors are defined for task instructions text.
+        Test that language descriptors are available for task instructions text.
 
         This verifies the dynamic instruction text can be updated per language.
+        Now uses ui_text.json instead of hardcoded LANGUAGE_DESCRIPTORS.
         """
         html_content = load_puzzle_html()
 
-        # Check for LANGUAGE_DESCRIPTORS object with all three languages
-        assert "LANGUAGE_DESCRIPTORS" in html_content, (
-            "JavaScript should define LANGUAGE_DESCRIPTORS object"
+        # Check for getLanguageDescriptor function that looks up from ui_text.json
+        assert "getLanguageDescriptor" in html_content, (
+            "JavaScript should define getLanguageDescriptor function"
         )
-        assert "'Chinese character'" in html_content or '"Chinese character"' in html_content, (
-            "LANGUAGE_DESCRIPTORS should include 'Chinese character'"
-        )
-        assert "'English word'" in html_content or '"English word"' in html_content, (
-            "LANGUAGE_DESCRIPTORS should include 'English word'"
-        )
-        assert "'Vietnamese word'" in html_content or '"Vietnamese word"' in html_content, (
-            "LANGUAGE_DESCRIPTORS should include 'Vietnamese word'"
+        assert "language_descriptor_" in html_content, (
+            "JavaScript should reference language_descriptor_ keys from ui_text.json"
         )

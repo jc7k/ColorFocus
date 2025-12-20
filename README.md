@@ -16,14 +16,14 @@ I built this app so she can use it to practice and rehab during her recovery fro
 
 ## Features
 
-- **Interactive 8x8 Stroop Puzzle** - Count ink colors while ignoring word meanings
+- **Configurable Grid Size** - Choose from 1x1 to 8x8 grids for progressive difficulty
 - **Configurable Difficulty** - 2-8 colors, 0-100% congruence levels
-- **Multi-language Support** - Chinese, English, and Vietnamese color labels
-- **Mobile Responsive** - Dynamic font sizing adapts to viewport and language
+- **Full Multi-language UI** - Complete interface localization in Chinese, English, and Vietnamese
+- **Mobile Responsive** - Dynamic font sizing adapts to viewport, language, and grid size
 - **Answer Submission** - Enter counts and check accuracy with scoring feedback
 - **Hidden Answer Key** - Reveal after attempting the puzzle
 - **Seed-based Generation** - Reproducible puzzles for consistent testing
-- **Language Persistence** - Preference saved across sessions via localStorage
+- **Preference Persistence** - Language and grid size saved across sessions via localStorage
 
 ## Supported Languages
 
@@ -34,6 +34,20 @@ I built this app so she can use it to practice and rehab during her recovery fro
 | Vietnamese | Xanh, Cam, Tím, Đen, Lơ, Vàng, Hồng, Xám |
 
 ## Difficulty Levels
+
+### Grid Size (Progressive Difficulty)
+
+| Grid | Cells | Best For |
+|------|-------|----------|
+| 1x1 | 1 | Initial recovery, getting started |
+| 2x2 | 4 | Beginners, building confidence |
+| 3x3 | 9 | Light challenge |
+| 4x4 | 16 | Default, moderate challenge |
+| 8x8 | 64 | Full difficulty, experienced users |
+
+Smaller grids automatically limit the number of available colors (e.g., a 3x3 grid allows max 3 colors).
+
+### Color & Congruence Settings
 
 | Colors | Congruence | Difficulty | Description |
 |--------|------------|------------|-------------|
@@ -97,6 +111,7 @@ The foundation of the application is a color token system optimized for color-bl
 /shared/
   colors.json              # Single source of truth for colors
   color_labels.json        # Multi-language color labels
+  ui_text.json             # Full UI localization (32 translatable strings)
 
 /frontend/
   puzzle.html              # Interactive Stroop puzzle
@@ -104,6 +119,7 @@ The foundation of the application is a color token system optimized for color-bl
 
 /backend/
   app/constants/colors.py  # Python constants (StrEnums)
+  app/constants/ui_text.py # Python UI text loading
 ```
 
 ## Development
