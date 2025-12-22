@@ -2,41 +2,49 @@
   "BLUE": {
     "chinese": "藍",
     "english": "BLUE",
+    "spanish": "AZUL",
     "vietnamese": "Xanh"
   },
   "ORANGE": {
     "chinese": "橙",
     "english": "ORANGE",
+    "spanish": "NARANJA",
     "vietnamese": "Cam"
   },
   "PURPLE": {
     "chinese": "紫",
     "english": "PURPLE",
+    "spanish": "MORADO",
     "vietnamese": "Tím"
   },
   "BLACK": {
     "chinese": "黑",
     "english": "BLACK",
+    "spanish": "NEGRO",
     "vietnamese": "Đen"
   },
   "CYAN": {
     "chinese": "青",
     "english": "CYAN",
+    "spanish": "CIAN",
     "vietnamese": "Lơ"
   },
   "AMBER": {
     "chinese": "金",
     "english": "AMBER",
+    "spanish": "AMBAR",
     "vietnamese": "Vàng"
   },
   "MAGENTA": {
     "chinese": "品",
     "english": "MAGENTA",
+    "spanish": "MAGENTA",
     "vietnamese": "Hồng"
   },
   "GRAY": {
     "chinese": "灰",
     "english": "GRAY",
+    "spanish": "GRIS",
     "vietnamese": "Xám"
   }
 }

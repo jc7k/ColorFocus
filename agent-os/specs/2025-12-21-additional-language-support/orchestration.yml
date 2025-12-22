@@ -1,0 +1,17 @@
+task_groups:
+  - name: Shared JSON Data Updates
+    claude_code_subagent: implementer
+    standards:
+      - all
+  - name: Backend Language Enum Update
+    claude_code_subagent: implementer
+    standards:
+      - all
+  - name: Frontend Language Support
+    claude_code_subagent: implementer
+    standards:
+      - all
+  - name: Test Review and Gap Analysis
+    claude_code_subagent: implementer
+    standards:
+      - all

@@ -518,6 +518,7 @@
       <select id="language" aria-label="Select display language">
         <option value="chinese" selected>Chinese</option>
         <option value="english">English</option>
+        <option value="spanish">Spanish</option>
         <option value="vietnamese">Vietnamese</option>
       </select>
     </div>
@@ -623,7 +624,7 @@
     };
 
     // Valid language values for input validation
-    const VALID_LANGUAGES = ['chinese', 'english', 'vietnamese'];
+    const VALID_LANGUAGES = ['chinese', 'english', 'spanish', 'vietnamese'];
 
     // Valid grid sizes (1-8)
     const VALID_GRID_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -941,10 +942,12 @@
       // Chinese: single character ~1em wide
       // Vietnamese: "Xanh", "Vang" ~2.5em wide
       // English: "PURPLE", "ORANGE" ~4em wide (uppercase)
+      // Spanish: "NARANJA", "MAGENTA" ~4em wide (uppercase, similar to English)
       const widthMultipliers = {
         chinese: 1.15,
         vietnamese: 2.6,
-        english: 4.2
+        english: 4.2,
+        spanish: 4.2
       };
 
       const multiplier = widthMultipliers[currentLanguage] || 2.5;
@@ -953,8 +956,8 @@
       // Clamp font size to reasonable bounds (different for mobile vs desktop)
       const minFontSize = isMobile ? 6 : 10;
       const maxFontSizes = isMobile
-        ? { chinese: 30, vietnamese: 14, english: 14 }
-        : { chinese: 45, vietnamese: 22, english: 16 };
+        ? { chinese: 30, vietnamese: 14, english: 14, spanish: 14 }
+        : { chinese: 45, vietnamese: 22, english: 16, spanish: 16 };
       const maxFontSize = maxFontSizes[currentLanguage] || 20;
       fontSize = Math.max(minFontSize, Math.min(maxFontSize, fontSize));
 
