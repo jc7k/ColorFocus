@@ -296,32 +296,33 @@ class TestFrontendSpanishLanguageSupport:
             "widthMultipliers object should include 'spanish' entry"
         )
 
-    def test_max_font_sizes_includes_spanish_entry(self):
+    def test_dynamic_font_sizing_supports_spanish(self):
         """
-        Test that maxFontSizes objects include "spanish" entry.
+        Test that dynamic font sizing supports Spanish language.
 
-        This verifies the calculatePuzzleFontSize function includes
-        spanish entries in both mobile and desktop maxFontSizes objects.
+        This verifies the calculatePuzzleFontSize function uses dynamic
+        calculation based on cell width and language multipliers, which
+        replaced the old hardcoded maxFontSizes approach.
         """
         html_content = load_puzzle_html()
 
-        # Look for maxFontSizes objects containing spanish
-        # There should be two: one for mobile, one for desktop
-        max_font_sizes_pattern = r"maxFontSizes[^=]*=\s*[^?]+\?\s*\{([^}]+)\}\s*:\s*\{([^}]+)\}"
-        match = re.search(max_font_sizes_pattern, html_content)
-
-        assert match is not None, (
-            "maxFontSizes ternary expression not found in puzzle.html"
+        # Verify widthMultipliers includes spanish (used for dynamic calculation)
+        assert "spanish: 4.2" in html_content or "spanish:4.2" in html_content, (
+            "widthMultipliers should include spanish with value 4.2"
         )
 
-        mobile_content = match.group(1)
-        desktop_content = match.group(2)
-
-        assert "spanish:" in mobile_content or "spanish :" in mobile_content, (
-            "maxFontSizes mobile object should include 'spanish' entry"
+        # Verify dynamic font calculation formula exists (0.8 factor for 80% text width)
+        assert "cellWidth * 0.8" in html_content or "cellWidth*0.8" in html_content, (
+            "Dynamic font calculation should use cellWidth * 0.8 formula"
         )
-        assert "spanish:" in desktop_content or "spanish :" in desktop_content, (
-            "maxFontSizes desktop object should include 'spanish' entry"
+
+        # Verify no hardcoded maxFontSizes with language-specific caps exist
+        # (The old approach had objects like { chinese: 45, vietnamese: 22, ... })
+        max_font_sizes_pattern = r"maxFontSizes\s*=\s*\{[^}]*chinese\s*:\s*\d+"
+        has_hardcoded_max = bool(re.search(max_font_sizes_pattern, html_content))
+
+        assert not has_hardcoded_max, (
+            "Should use dynamic font sizing, not hardcoded maxFontSizes per language"
         )
 
 

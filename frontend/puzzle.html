@@ -92,7 +92,7 @@
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       gap: 2px;
-      max-width: 520px;
+      max-width: 800px;
       margin: 0 auto;
     }
     .puzzle-cell {
@@ -867,6 +867,8 @@
       renderAnswerInputs();
       renderAnswerKey();
       updateMetadata();
+      // Recalculate font size for new language (different word lengths)
+      applyPuzzleFontSize();
     });
 
     // Add spacing change event listener
@@ -923,26 +925,38 @@
     }
 
     // Calculate optimal font size based on viewport, language, and grid size
+    // Uses dynamic calculation: baseFontSize = (cellWidth * 0.8) / languageWidthMultiplier
+    // The 0.8 factor achieves 80% text width with 10% margins on each side
     function calculatePuzzleFontSize() {
       const viewportWidth = window.innerWidth;
       const isMobile = viewportWidth <= 480;
 
       // Get actual grid width from DOM
       const grid = document.getElementById('puzzleGrid');
-      const gridWidth = grid ? grid.offsetWidth : (isMobile ? viewportWidth - 40 : 520);
+      const gridWidth = grid ? grid.offsetWidth : (isMobile ? viewportWidth - 40 : 800);
 
-      // Use currentGridSize for column count (not hardcoded 8)
+      // Use currentGridSize for column count
       const columns = currentGridSize;
-      const gapWidth = isMobile ? (columns - 1) : (columns - 1) * 2; // 1px or 2px gaps
-      const cellPadding = isMobile ? columns * 3.2 : 0; // mobile has extra padding
-      const cellWidth = (gridWidth - gapWidth - cellPadding) / columns;
+
+      // Get current gap value from SPACING_VALUES based on current spacing setting
+      // Mobile media query forces 1px gap, otherwise use the spacing setting
+      const gapValue = isMobile ? 1 : SPACING_VALUES[currentSpacing];
+
+      // Calculate total gap width: (columns - 1) gaps between columns
+      const totalGapWidth = (columns - 1) * gapValue;
+
+      // Mobile has extra cell padding (0.1rem = ~1.6px per cell)
+      const cellPadding = isMobile ? columns * 3.2 : 0;
+
+      // Calculate cell width: (gridWidth - totalGapWidth - cellPadding) / columns
+      const cellWidth = (gridWidth - totalGapWidth - cellPadding) / columns;
 
       // Font size multipliers based on language (character width relative to font size)
-      // Tuned to fit longest words in each language within cell width
-      // Chinese: single character ~1em wide
-      // Vietnamese: "Xanh", "Vang" ~2.5em wide
-      // English: "PURPLE", "ORANGE" ~4em wide (uppercase)
-      // Spanish: "NARANJA", "MAGENTA" ~4em wide (uppercase, similar to English)
+      // These represent the approximate em-width of the longest word in each language
+      // Chinese: single character ~1.15em wide
+      // Vietnamese: "VANG", "XANH" ~2.6em wide
+      // English: "MAGENTA" ~4.2em wide (uppercase)
+      // Spanish: "NARANJA", "MAGENTA" ~4.2em wide (uppercase)
       const widthMultipliers = {
         chinese: 1.15,
         vietnamese: 2.6,
@@ -951,14 +965,16 @@
       };
 
       const multiplier = widthMultipliers[currentLanguage] || 2.5;
-      let fontSize = cellWidth / multiplier;
 
-      // Clamp font size to reasonable bounds (different for mobile vs desktop)
-      const minFontSize = isMobile ? 6 : 10;
-      const maxFontSizes = isMobile
-        ? { chinese: 30, vietnamese: 14, english: 14, spanish: 14 }
-        : { chinese: 45, vietnamese: 22, english: 16, spanish: 16 };
-      const maxFontSize = maxFontSizes[currentLanguage] || 20;
+      // Dynamic font calculation: (cellWidth * 0.8) / multiplier
+      // The 0.8 factor achieves ~80% text width, leaving ~10% margin on each side
+      let fontSize = (cellWidth * 0.8) / multiplier;
+
+      // Apply a practical minimum floor (4px is below readable threshold)
+      // Font cannot be larger than cell dimensions for fitting
+      const minFontSize = 4;
+      const maxFontSize = cellWidth * 0.9; // Font shouldn't exceed 90% of cell width
+
       fontSize = Math.max(minFontSize, Math.min(maxFontSize, fontSize));
 
       return fontSize;
@@ -995,6 +1011,16 @@
     window.addEventListener('resize', () => {
       if (currentPuzzle) {
         applyPuzzleFontSize();
+      }
+    });
+
+    // Recalculate font size on orientation change (mobile devices)
+    window.addEventListener('orientationchange', () => {
+      if (currentPuzzle) {
+        // Small delay to allow viewport to update after orientation change
+        setTimeout(() => {
+          applyPuzzleFontSize();
+        }, 100);
       }
     });
 
