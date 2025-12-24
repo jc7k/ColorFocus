@@ -18,7 +18,7 @@ I built this app so she can use it to practice and rehab during her recovery fro
 
 - **Configurable Grid Size** - Choose from 1x1 to 8x8 grids for progressive difficulty
 - **Configurable Difficulty** - 2-8 colors, 0-100% congruence levels
-- **Full Multi-language UI** - Complete interface localization in Chinese, English, and Vietnamese
+- **Full Multi-language UI** - Complete interface localization in Chinese, English, Spanish, and Vietnamese
 - **Mobile Responsive** - Dynamic font sizing adapts to viewport, language, and grid size
 - **Answer Submission** - Enter counts and check accuracy with scoring feedback
 - **Hidden Answer Key** - Reveal after attempting the puzzle
@@ -31,6 +31,7 @@ I built this app so she can use it to practice and rehab during her recovery fro
 |----------|--------|
 | Chinese | 藍, 橙, 紫, 黑, 青, 金, 品, 灰 |
 | English | Blue, Orange, Purple, Black, Cyan, Amber, Magenta, Gray |
+| Spanish | Azul, Naranja, Morado, Negro, Cian, Ambar, Magenta, Gris |
 | Vietnamese | Xanh, Cam, Tím, Đen, Lơ, Vàng, Hồng, Xám |
 
 ## Difficulty Levels
@@ -173,6 +174,14 @@ vercel --prod
 ```
 
 Your app will be live at `https://your-project.vercel.app`
+
+## Support This Project
+
+If ColorFocus has been helpful for you or someone you care about, consider supporting its continued development:
+
+<a href="https://buymeacoffee.com/xwje4mbv3l" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+
+Your support helps cover hosting costs and enables new features like additional languages, accessibility improvements, and more puzzle modes.
 
 ## Contributing
 

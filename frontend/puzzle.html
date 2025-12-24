@@ -23,8 +23,25 @@
     }
     .subtitle {
       color: #64748b;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       font-size: 0.9rem;
+    }
+    .donation-link {
+      display: inline-block;
+      color: #64748b;
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-bottom: 1rem;
+      padding: 0.25rem 0;
+      transition: color 0.2s;
+    }
+    .donation-link:hover {
+      color: #475569;
+      text-decoration: underline;
+    }
+    .donation-link:focus {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
     }
     .controls {
       display: flex;
@@ -347,6 +364,27 @@
       margin-bottom: 0.75rem;
     }
 
+    /* Donation QR Code Section */
+    .donation-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .donation-qr {
+      width: 140px;
+      height: auto;
+      display: block;
+      margin: 0 auto 0.5rem auto;
+    }
+    .donation-label {
+      color: #64748b;
+      font-size: 0.8rem;
+      margin: 0;
+    }
+
     /* Custom controls visibility (shown only in Custom difficulty) */
     .custom-control {
       display: none;
@@ -366,6 +404,12 @@
       }
       .subtitle {
         font-size: 0.8rem;
+      }
+      .donation-link {
+        font-size: 0.8rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
       }
       .task-instructions {
         font-size: 0.75rem;
@@ -473,6 +517,15 @@
         font-size: 0.7rem;
         padding: 0.4rem;
       }
+      .donation-section {
+        padding: 0.75rem;
+      }
+      .donation-qr {
+        width: 120px;
+      }
+      .donation-label {
+        font-size: 0.75rem;
+      }
     }
 
     /* Extra small devices (iPhone SE, etc.) */
@@ -492,12 +545,24 @@
       input[type="number"], select {
         width: 50px;
       }
+      .donation-qr {
+        width: 100px;
+      }
+      .donation-label {
+        font-size: 0.7rem;
+      }
     }
   </style>
 </head>
 <body>
   <h1 id="pageTitle">ColorFocus Stroop Puzzle</h1>
   <p class="subtitle" id="subtitle">Count the INK colors, not the word meanings!</p>
+  <a href="https://buymeacoffee.com/xwje4mbv3l"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="donation-link"
+     id="donationLink"
+     data-i18n="support_link_text">Support this project</a>
 
   <div class="task-instructions" id="taskInstructions">
     <strong>Task:</strong> Count how many cells are printed in each INK color. The Chinese character shows a color name, but you must count the actual ink color used to display it.
@@ -602,6 +667,12 @@
     <div class="answer-key-content" id="answerKeyContent">
       <div class="answer-key-grid" id="answerKeyGrid"></div>
     </div>
+  </div>
+
+  <!-- Donation QR Code Section -->
+  <div class="donation-section">
+    <img src="bmc_qr.png" alt="QR code to support ColorFocus via Buy Me A Coffee" class="donation-qr">
+    <p class="donation-label" id="donationLabel" data-i18n="qr_code_label">Scan to support ColorFocus</p>
   </div>
 
   <script type="module">
@@ -803,6 +874,12 @@
 
       // Update subtitle
       document.getElementById('subtitle').textContent = getUIText('subtitle');
+
+      // Update donation link text
+      document.getElementById('donationLink').textContent = getUIText('support_link_text');
+
+      // Update donation QR code label
+      document.getElementById('donationLabel').textContent = getUIText('qr_code_label');
 
       // Update control labels
       document.getElementById('difficultyLabel').textContent = getUIText('difficulty_label');
