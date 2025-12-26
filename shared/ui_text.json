@@ -258,10 +258,10 @@
     "vietnamese": "Rộng rãi"
   },
   "support_link_text": {
-    "chinese": "支持这个项目",
-    "english": "Support this project",
-    "spanish": "Apoya este proyecto",
-    "vietnamese": "Ung ho du an nay"
+    "chinese": "☕ 支持这个项目",
+    "english": "☕ Support this project",
+    "spanish": "☕ Apoya este proyecto",
+    "vietnamese": "☕ Ủng hộ dự án này"
   },
   "qr_code_label": {
     "chinese": "扫描二维码支持 ColorFocus",
