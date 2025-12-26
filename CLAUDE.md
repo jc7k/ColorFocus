@@ -24,7 +24,7 @@ uv run pytest tests/test_puzzle_generator.py::TestPuzzleGenerator::test_generate
 
 ### Frontend Tests
 ```bash
-cd frontend && npm test
+cd frontend && pnpm test
 ```
 
 ### Local Development Server

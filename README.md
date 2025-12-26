@@ -128,6 +128,7 @@ The foundation of the application is a color token system optimized for color-bl
 ### Prerequisites
 
 - Node.js 18+
+- pnpm (JavaScript package manager)
 - Python 3.11+
 - uv (Python package manager)
 
@@ -136,8 +137,8 @@ The foundation of the application is a color token system optimized for color-bl
 **Frontend:**
 ```bash
 cd frontend
-npm install
-npm test
+pnpm install
+pnpm test
 ```
 
 **Backend:**
@@ -153,7 +154,7 @@ uv run pytest
 uv run pytest -v
 
 # Frontend tests
-cd frontend && npm test
+cd frontend && pnpm test
 ```
 
 ## Deployment
@@ -164,7 +165,7 @@ The frontend can be deployed as a static site on Vercel's free tier.
 
 ```bash
 # Install Vercel CLI
-npm install -g vercel
+pnpm add -g vercel
 
 # Deploy from project root
 vercel
@@ -200,7 +201,7 @@ Contributions are welcome! This project was built to help stroke recovery patien
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`uv run pytest && cd frontend && npm test`)
+4. Run tests (`uv run pytest && cd frontend && pnpm test`)
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
