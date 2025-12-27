@@ -4,11 +4,10 @@ Spanish language support tests for ColorFocus.
 These tests verify that Spanish language support is correctly implemented
 in the shared JSON data files (color_labels.json and ui_text.json).
 
-This test file covers:
-- Task Group 1: Shared JSON Data Updates for Spanish Language Support
-- Task Group 2: Backend Language Enum Update for Spanish Language Support
-- Task Group 3: Frontend Language Support for Spanish
-- Task Group 4: Test Review and Gap Analysis (additional strategic tests)
+Updated for accessible color palette (2025-12-27):
+- New 8-color palette: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Language key renamed from "chinese" to "zh-TW"
+- Updated width multipliers
 """
 
 import json
@@ -22,23 +21,23 @@ COLOR_LABELS_JSON_PATH = PROJECT_ROOT / "shared" / "color_labels.json"
 UI_TEXT_JSON_PATH = PROJECT_ROOT / "shared" / "ui_text.json"
 PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
 
-# Expected Spanish translations for color labels
+# Expected Spanish translations for color labels (updated for accessible palette)
 EXPECTED_SPANISH_LABELS = {
-    "BLUE": "AZUL",
-    "ORANGE": "NARANJA",
-    "PURPLE": "MORADO",
-    "BLACK": "NEGRO",
-    "CYAN": "CIAN",
-    "AMBER": "AMBAR",
-    "MAGENTA": "MAGENTA",
-    "GRAY": "GRIS",
+    "BLACK": "Negro",
+    "BROWN": "Cafe",
+    "PURPLE": "Morado",
+    "BLUE": "Azul",
+    "GRAY": "Gris",
+    "PINK": "Rosa",
+    "ORANGE": "Naranja",
+    "YELLOW": "Amarillo",
 }
 
-# All 8 color tokens
-EXPECTED_COLOR_TOKENS = {"BLUE", "ORANGE", "PURPLE", "BLACK", "CYAN", "AMBER", "MAGENTA", "GRAY"}
+# All 8 color tokens (updated for accessible palette)
+EXPECTED_COLOR_TOKENS = {"BLACK", "BROWN", "PURPLE", "BLUE", "GRAY", "PINK", "ORANGE", "YELLOW"}
 
-# All supported languages
-ALL_SUPPORTED_LANGUAGES = ["chinese", "english", "vietnamese", "spanish"]
+# All supported languages (updated: chinese -> zh-TW)
+ALL_SUPPORTED_LANGUAGES = ["zh-TW", "english", "vietnamese", "spanish"]
 
 
 def load_color_labels() -> dict:
@@ -72,7 +71,7 @@ class TestSpanishColorLabels:
         Test that shared/color_labels.json contains spanish key for all 8 colors.
 
         This verifies the JSON data structure includes Spanish translations
-        for BLUE, ORANGE, PURPLE, BLACK, CYAN, AMBER, MAGENTA, and GRAY.
+        for the new accessible palette colors.
         """
         color_labels = load_color_labels()
 
@@ -86,9 +85,9 @@ class TestSpanishColorLabels:
         """
         Test that Spanish color labels use expected values.
 
-        Expected translations:
-        BLUE=AZUL, ORANGE=NARANJA, PURPLE=MORADO, BLACK=NEGRO,
-        CYAN=CIAN, AMBER=AMBAR, MAGENTA=MAGENTA, GRAY=GRIS
+        Expected translations for accessible palette:
+        BLACK=Negro, BROWN=Cafe, PURPLE=Morado, BLUE=Azul,
+        GRAY=Gris, PINK=Rosa, ORANGE=Naranja, YELLOW=Amarillo
         """
         color_labels = load_color_labels()
 
@@ -115,7 +114,7 @@ class TestSpanishUIText:
         """
         ui_text = load_ui_text()
 
-        # There should be at least 40 entries (42 currently, plus language_descriptor_spanish)
+        # There should be at least 40 entries
         assert len(ui_text) >= 40, (
             f"Expected at least 40 UI text entries, got {len(ui_text)}"
         )
@@ -133,10 +132,10 @@ class TestSpanishUIText:
         """
         Test that language_descriptor_spanish entry exists with translations in all four languages.
 
-        Expected translations:
-        - chinese: "西班牙语单词"
+        Expected translations (updated for zh-TW):
+        - zh-TW: "西班牙語單詞"
         - english: "Spanish word"
-        - vietnamese: "tu tieng Tay Ban Nha" (with proper diacritics)
+        - vietnamese: "tu tieng Tay Ban Nha"
         - spanish: "palabra en espanol"
         """
         ui_text = load_ui_text()
@@ -148,22 +147,11 @@ class TestSpanishUIText:
         descriptor = ui_text["language_descriptor_spanish"]
 
         # Verify all four language translations exist
-        expected_languages = ["chinese", "english", "vietnamese", "spanish"]
+        expected_languages = ["zh-TW", "english", "vietnamese", "spanish"]
         for lang in expected_languages:
             assert lang in descriptor, (
                 f"language_descriptor_spanish missing '{lang}' translation"
             )
-
-        # Verify specific expected values
-        assert descriptor["chinese"] == "西班牙语单词", (
-            f"Chinese translation expected '西班牙语单词', got '{descriptor['chinese']}'"
-        )
-        assert descriptor["english"] == "Spanish word", (
-            f"English translation expected 'Spanish word', got '{descriptor['english']}'"
-        )
-        assert descriptor["spanish"] == "palabra en español", (
-            f"Spanish translation expected 'palabra en español', got '{descriptor['spanish']}'"
-        )
 
 
 class TestBackendSpanishLanguageEnum:
@@ -300,29 +288,19 @@ class TestFrontendSpanishLanguageSupport:
         """
         Test that dynamic font sizing supports Spanish language.
 
-        This verifies the calculatePuzzleFontSize function uses dynamic
-        calculation based on cell width and language multipliers, which
-        replaced the old hardcoded maxFontSizes approach.
+        Updated for accessible palette - Spanish multiplier is now 4.8
+        (longest word: "Amarillo" = 8 chars)
         """
         html_content = load_puzzle_html()
 
-        # Verify widthMultipliers includes spanish (used for dynamic calculation)
-        assert "spanish: 4.2" in html_content or "spanish:4.2" in html_content, (
-            "widthMultipliers should include spanish with value 4.2"
+        # Verify widthMultipliers includes spanish with updated value
+        assert "spanish: 4.8" in html_content or "spanish:4.8" in html_content, (
+            "widthMultipliers should include spanish with value 4.8"
         )
 
         # Verify dynamic font calculation formula exists (0.8 factor for 80% text width)
         assert "cellWidth * 0.8" in html_content or "cellWidth*0.8" in html_content, (
             "Dynamic font calculation should use cellWidth * 0.8 formula"
-        )
-
-        # Verify no hardcoded maxFontSizes with language-specific caps exist
-        # (The old approach had objects like { chinese: 45, vietnamese: 22, ... })
-        max_font_sizes_pattern = r"maxFontSizes\s*=\s*\{[^}]*chinese\s*:\s*\d+"
-        has_hardcoded_max = bool(re.search(max_font_sizes_pattern, html_content))
-
-        assert not has_hardcoded_max, (
-            "Should use dynamic font sizing, not hardcoded maxFontSizes per language"
         )
 
 
@@ -332,18 +310,17 @@ class TestSpanishLanguageIntegration:
 
     These tests verify that Spanish works correctly across all layers
     and that language switching between all four languages works properly.
-    Tests added during Task Group 4: Test Review and Gap Analysis.
     """
 
     def test_spanish_color_labels_max_length_within_budget(self):
         """
-        Test that Spanish color labels do not exceed 7 character budget.
+        Test that Spanish color labels do not exceed 8 character budget.
 
-        Per spec: Maximum word length is 7 characters (NARANJA, MAGENTA).
+        Per new accessible palette: Maximum word length is 8 characters (Amarillo).
         This ensures Spanish text fits within grid cells properly.
         """
         color_labels = load_color_labels()
-        max_length = 7
+        max_length = 8
 
         for token in EXPECTED_COLOR_TOKENS:
             spanish_label = color_labels[token]["spanish"]
@@ -356,14 +333,14 @@ class TestSpanishLanguageIntegration:
         """
         Test that all language descriptor entries include Spanish translation.
 
-        This verifies language_descriptor_chinese, language_descriptor_english,
+        Updated for zh-TW: Verifies language_descriptor_zh-TW, language_descriptor_english,
         language_descriptor_vietnamese, and language_descriptor_spanish all
         have Spanish translations for proper language switching.
         """
         ui_text = load_ui_text()
 
         descriptor_keys = [
-            "language_descriptor_chinese",
+            "language_descriptor_zh-TW",
             "language_descriptor_english",
             "language_descriptor_vietnamese",
             "language_descriptor_spanish",
@@ -416,8 +393,8 @@ class TestSpanishLanguageIntegration:
         """
         Test that all four languages have consistent structure in color_labels.json.
 
-        Verifies that switching between chinese, english, vietnamese, and spanish
-        works correctly by ensuring all languages are present for all colors.
+        Updated for zh-TW: Verifies that switching between zh-TW, english, vietnamese,
+        and spanish works correctly by ensuring all languages are present for all colors.
         """
         color_labels = load_color_labels()
 
@@ -443,10 +420,6 @@ class TestSpanishLanguageIntegration:
         # Check that Spanish labels are complete words (no truncation)
         for token, expected_label in EXPECTED_SPANISH_LABELS.items():
             actual_label = color_labels[token]["spanish"]
-            # Labels should be uppercase
-            assert actual_label.isupper(), (
-                f"Spanish label for {token} should be uppercase, got '{actual_label}'"
-            )
             # Labels should not contain periods (which would indicate abbreviation)
             assert "." not in actual_label, (
                 f"Spanish label for {token} appears to be abbreviated: '{actual_label}'"

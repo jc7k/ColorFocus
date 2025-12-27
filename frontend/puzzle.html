@@ -126,6 +126,7 @@
       font-weight: bold;
       border-radius: 4px;
       background: #f8fafc;
+      border: 2px solid #1A1A1A;
       transition: transform 0.1s;
     }
     .puzzle-cell:hover {
@@ -212,6 +213,7 @@
       width: 24px;
       height: 24px;
       border-radius: 4px;
+      border: 2px solid #1A1A1A;
       flex-shrink: 0;
     }
     .answer-label {
@@ -586,7 +588,7 @@
     <div class="control-group">
       <label for="language" id="languageLabel">Language:</label>
       <select id="language" aria-label="Select display language">
-        <option value="chinese" selected>Chinese</option>
+        <option value="zh-TW" selected>Chinese</option>
         <option value="english">English</option>
         <option value="spanish">Spanish</option>
         <option value="vietnamese">Vietnamese</option>
@@ -697,22 +699,26 @@
       loadJSON('/shared/ui_text.json')
     ]);
 
-    // All color tokens in order
-    const ALL_COLOR_TOKENS = ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA', 'GRAY'];
+    // All color tokens in luminance order (accessible color palette)
+    // BLACK (10%) -> BROWN (28%) -> PURPLE (35%) -> BLUE (38%) -> GRAY (50%) -> PINK (52%) -> ORANGE (62%) -> YELLOW (84%)
+    const ALL_COLOR_TOKENS = ['BLACK', 'BROWN', 'PURPLE', 'BLUE', 'GRAY', 'PINK', 'ORANGE', 'YELLOW'];
 
-    // Color subsets by count (ordered by distinctiveness)
+    // Color subsets by count (ordered by luminance contrast for accessibility)
+    // Accessible tier (2): Maximum contrast - BLACK and YELLOW
+    // Standard tier (4): Balanced difficulty - BLACK, BLUE, ORANGE, YELLOW
+    // Advanced tier (8): Full palette
     const COLOR_SUBSETS = {
-      2: ['BLUE', 'ORANGE'],
-      3: ['BLUE', 'ORANGE', 'PURPLE'],
-      4: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK'],
-      5: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN'],
-      6: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER'],
-      7: ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA'],
+      2: ['BLACK', 'YELLOW'],
+      3: ['BLACK', 'BLUE', 'YELLOW'],
+      4: ['BLACK', 'BLUE', 'ORANGE', 'YELLOW'],
+      5: ['BLACK', 'PURPLE', 'BLUE', 'ORANGE', 'YELLOW'],
+      6: ['BLACK', 'PURPLE', 'BLUE', 'PINK', 'ORANGE', 'YELLOW'],
+      7: ['BLACK', 'BROWN', 'PURPLE', 'BLUE', 'PINK', 'ORANGE', 'YELLOW'],
       8: ALL_COLOR_TOKENS,
     };
 
     // Valid language values for input validation
-    const VALID_LANGUAGES = ['chinese', 'english', 'spanish', 'vietnamese'];
+    const VALID_LANGUAGES = ['zh-TW', 'english', 'spanish', 'vietnamese'];
 
     // Valid grid sizes (1-8)
     const VALID_GRID_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -754,7 +760,7 @@
 
     // Validate language selection
     function validateLanguage(lang) {
-      return VALID_LANGUAGES.includes(lang) ? lang : 'chinese';
+      return VALID_LANGUAGES.includes(lang) ? lang : 'zh-TW';
     }
 
     // Validate grid size selection
@@ -798,7 +804,7 @@
     let hasChecked = false;
     let answerKeyRevealed = false;
     // Validate language from localStorage
-    let currentLanguage = validateLanguage(localStorage.getItem('colorFocusLanguage') || 'chinese');
+    let currentLanguage = validateLanguage(localStorage.getItem('colorFocusLanguage') || 'zh-TW');
     // Validate grid size from localStorage (default: 4)
     let currentGridSize = validateGridSize(localStorage.getItem('colorFocusGridSize') || 4);
     // Validate difficulty from localStorage (default: standard)
@@ -1047,15 +1053,15 @@
 
       // Font size multipliers based on language (character width relative to font size)
       // These represent the approximate em-width of the longest word in each language
-      // Chinese: single character ~1.15em wide
-      // Vietnamese: "VANG", "XANH" ~2.6em wide
-      // English: "MAGENTA" ~4.2em wide (uppercase)
-      // Spanish: "NARANJA", "MAGENTA" ~4.2em wide (uppercase)
+      // zh-TW: single character ~1.15em wide (e.g., "黑", "黃")
+      // Vietnamese: "Vang" = 4 chars ~2.4em wide
+      // English: "Yellow" = 6 chars ~3.6em wide
+      // Spanish: "Amarillo" = 8 chars ~4.8em wide
       const widthMultipliers = {
-        chinese: 1.15,
-        vietnamese: 2.6,
-        english: 4.2,
-        spanish: 4.2
+        'zh-TW': 1.15,
+        vietnamese: 2.4,
+        english: 3.6,
+        spanish: 4.8
       };
 
       const multiplier = widthMultipliers[currentLanguage] || 2.5;
@@ -1093,7 +1099,7 @@
         const div = document.createElement('div');
         div.className = 'puzzle-cell';
         div.textContent = colorLabelsJson[cell.word][currentLanguage];
-        div.style.color = colorsJson[cell.inkColor].variants.base;
+        div.style.color = colorsJson[cell.inkColor];
         grid.appendChild(div);
       });
 
@@ -1274,7 +1280,7 @@
         // Create swatch
         const swatch = document.createElement('div');
         swatch.className = 'color-swatch';
-        swatch.style.backgroundColor = colorsJson[token].variants.base;
+        swatch.style.backgroundColor = colorsJson[token];
         item.appendChild(swatch);
 
         // Create label
@@ -1325,7 +1331,7 @@
         // Create swatch
         const swatch = document.createElement('div');
         swatch.className = 'color-swatch';
-        swatch.style.backgroundColor = colorsJson[token].variants.base;
+        swatch.style.backgroundColor = colorsJson[token];
         item.appendChild(swatch);
 
         // Create label

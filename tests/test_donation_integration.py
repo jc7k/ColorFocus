@@ -107,11 +107,11 @@ class TestDonationIntegration:
         Test that all 4 supported languages have complete translations
         for both donation feature text keys.
 
-        This ensures the feature works correctly in Chinese, English,
+        This ensures the feature works correctly in zh-TW, English,
         Spanish, and Vietnamese.
         """
         ui_text = load_ui_text()
-        expected_languages = ["chinese", "english", "spanish", "vietnamese"]
+        expected_languages = ["zh-TW", "english", "spanish", "vietnamese"]
         donation_keys = ["support_link_text", "qr_code_label"]
 
         for key in donation_keys:
@@ -143,8 +143,8 @@ class TestDonationIntegration:
             "QR code image file should not be empty"
         )
 
-        # Verify HTML references the correct relative path
+        # Verify HTML references the correct path (absolute path for Vercel deployment)
         html_content = load_puzzle_html()
-        assert 'src="bmc_qr.png"' in html_content, (
-            "puzzle.html should reference bmc_qr.png with relative path"
+        assert 'src="/frontend/bmc_qr.png"' in html_content, (
+            "puzzle.html should reference bmc_qr.png with absolute path for Vercel"
         )

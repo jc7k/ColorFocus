@@ -16,17 +16,17 @@ Usage:
         COLOR_LABELS,
     )
 
-    # Get Chinese label (default)
+    # Get Traditional Chinese label (default)
     label = get_color_label(ColorToken.BLUE)  # "藍"
 
     # Get English label
-    label = get_color_label(ColorToken.BLUE, Language.ENGLISH)  # "BLUE"
+    label = get_color_label(ColorToken.BLUE, Language.ENGLISH)  # "Blue"
 
     # Get Vietnamese label
     label = get_color_label(ColorToken.BLUE, Language.VIETNAMESE)  # "Xanh"
 
     # Get Spanish label
-    label = get_color_label(ColorToken.BLUE, Language.SPANISH)  # "AZUL"
+    label = get_color_label(ColorToken.BLUE, Language.SPANISH)  # "Azul"
 """
 
 import json
@@ -41,13 +41,13 @@ class Language(StrEnum):
     """
     Supported languages for color labels.
 
-    CHINESE: Traditional Chinese single characters (default)
-    ENGLISH: English color names in uppercase
-    VIETNAMESE: Vietnamese color names with proper diacritical marks
-    SPANISH: Spanish color names in uppercase
+    ZH_TW: Traditional Chinese single characters (default)
+    ENGLISH: English color names
+    VIETNAMESE: Vietnamese color names (ASCII-friendly versions without diacritics)
+    SPANISH: Spanish color names
     """
 
-    CHINESE = "chinese"
+    ZH_TW = "zh-TW"
     ENGLISH = "english"
     VIETNAMESE = "vietnamese"
     SPANISH = "spanish"
@@ -85,13 +85,13 @@ def _load_labels_from_json() -> Dict[ColorToken, Dict[Language, str]]:
 COLOR_LABELS: Dict[ColorToken, Dict[Language, str]] = _load_labels_from_json()
 
 
-def get_color_label(token: ColorToken, language: Language = Language.CHINESE) -> str:
+def get_color_label(token: ColorToken, language: Language = Language.ZH_TW) -> str:
     """
     Get the human-readable label for a color token in the specified language.
 
     Args:
         token: The ColorToken to get a label for.
-        language: The language for the label (default: CHINESE).
+        language: The language for the label (default: ZH_TW).
 
     Returns:
         The label string for the color in the specified language.

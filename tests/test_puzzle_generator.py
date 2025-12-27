@@ -11,6 +11,12 @@ These tests verify that:
 7. Auto-generated seed is included in metadata when none provided
 8. Distribution validator catches skewed distributions
 9. JSON output is correct and serializable
+
+Updated for the accessible color palette replacement:
+- New tokens: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Old tokens removed: CYAN, AMBER, MAGENTA
+- Default 4-color subset is now BLACK, BLUE, ORANGE, YELLOW (Standard tier)
+- Language enum uses ZH_TW instead of CHINESE
 """
 
 import json
@@ -24,6 +30,18 @@ from backend.app.services.puzzle_generator import (
     DistributionValidator,
     ValidationResult,
 )
+
+
+# New accessible palette tokens
+NEW_PALETTE_TOKENS = [
+    ColorToken.BLACK, ColorToken.BROWN, ColorToken.PURPLE, ColorToken.BLUE,
+    ColorToken.GRAY, ColorToken.PINK, ColorToken.ORANGE, ColorToken.YELLOW
+]
+
+# Standard tier (4 colors) for default puzzles
+STANDARD_TIER_COLORS = [
+    ColorToken.BLACK, ColorToken.BLUE, ColorToken.ORANGE, ColorToken.YELLOW
+]
 
 
 class TestPuzzleGeneratorBasics:
@@ -89,7 +107,7 @@ class TestColorDistribution:
 
     def test_ink_color_distribution_roughly_equal(self):
         """Test that ink color distribution is roughly equal based on color_count."""
-        # Test with 8 colors (legacy behavior)
+        # Test with 8 colors (all colors in accessible palette)
         generator = PuzzleGenerator(seed=42, color_count=8)
         puzzle = generator.generate()
 
@@ -103,14 +121,14 @@ class TestColorDistribution:
 
         # Each of 8 colors should appear approximately 8 times (64/8)
         # Tolerance: allow 6-10 appearances per color
-        for token in ColorToken:
+        for token in NEW_PALETTE_TOKENS:
             count = counts.get(token, 0)
             assert 6 <= count <= 10, (
                 f"Color {token} appears {count} times, expected 6-10"
             )
 
     def test_ink_color_distribution_with_4_colors(self):
-        """Test that ink color distribution works with default 4 colors."""
+        """Test that ink color distribution works with default 4 colors (Standard tier)."""
         generator = PuzzleGenerator(seed=42)  # Default is 4 colors
         puzzle = generator.generate()
 
@@ -125,19 +143,19 @@ class TestColorDistribution:
         counts = Counter(ink_colors)
 
         # With 4 colors, each should appear ~16 times (64/4)
-        active_colors = [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK]
-        for token in active_colors:
+        # Standard tier: BLACK, BLUE, ORANGE, YELLOW
+        for token in STANDARD_TIER_COLORS:
             count = counts.get(token, 0)
             assert 14 <= count <= 18, (
                 f"Color {token} appears {count} times, expected 14-18"
             )
 
         # Inactive colors should not appear
-        for token in ColorToken:
-            if token not in active_colors:
-                assert counts.get(token, 0) == 0, (
-                    f"Inactive color {token} should not appear"
-                )
+        inactive_colors = [t for t in NEW_PALETTE_TOKENS if t not in STANDARD_TIER_COLORS]
+        for token in inactive_colors:
+            assert counts.get(token, 0) == 0, (
+                f"Inactive color {token} should not appear"
+            )
 
 
 class TestCongruenceControl:
@@ -217,40 +235,40 @@ class TestMetadata:
 
 
 class TestLanguageConfiguration:
-    """Test language configuration support."""
+    """Test language configuration support with new zh-TW locale."""
 
     def test_language_parameter_accepted(self):
         """Test that language parameter is accepted by generator."""
-        # Test Chinese (default)
-        gen_cn = PuzzleGenerator(seed=42, language=Language.CHINESE)
-        assert gen_cn.language == Language.CHINESE
+        # Test zh-TW (new language key)
+        gen_tw = PuzzleGenerator(seed=42, language=Language.ZH_TW)
+        assert gen_tw.language == Language.ZH_TW
 
         # Test English
         gen_en = PuzzleGenerator(seed=42, language=Language.ENGLISH)
         assert gen_en.language == Language.ENGLISH
 
-    def test_default_language_is_chinese(self):
-        """Test that default language is Chinese."""
+    def test_default_language_is_zh_tw(self):
+        """Test that default language is zh-TW (Traditional Chinese)."""
         generator = PuzzleGenerator(seed=42)
-        assert generator.language == Language.CHINESE
+        assert generator.language == Language.ZH_TW
 
 
 class TestDistributionValidation:
-    """Test distribution validation functionality."""
+    """Test distribution validation functionality with new accessible palette."""
 
     def test_validator_rejects_heavily_skewed_distribution(self):
         """Test that validator rejects grids with heavily skewed color distribution."""
         validator = DistributionValidator(min_count=6, max_count=10)
 
-        # Create a heavily skewed count distribution
+        # Create a heavily skewed count distribution using new palette tokens
         skewed_counts = {
             ColorToken.BLUE: 20,
             ColorToken.ORANGE: 2,
             ColorToken.PURPLE: 8,
             ColorToken.BLACK: 8,
-            ColorToken.CYAN: 8,
-            ColorToken.AMBER: 8,
-            ColorToken.MAGENTA: 8,
+            ColorToken.BROWN: 8,
+            ColorToken.PINK: 8,
+            ColorToken.YELLOW: 8,
             ColorToken.GRAY: 2,
         }
 
@@ -263,8 +281,8 @@ class TestDistributionValidation:
         """Test that validator accepts grids within acceptable tolerance."""
         validator = DistributionValidator(min_count=6, max_count=10)
 
-        # Create a balanced distribution (exactly 8 each)
-        balanced_counts = {token: 8 for token in ColorToken}
+        # Create a balanced distribution (exactly 8 each) using new palette
+        balanced_counts = {token: 8 for token in NEW_PALETTE_TOKENS}
 
         result = validator.validate(balanced_counts)
 
@@ -275,15 +293,15 @@ class TestDistributionValidation:
         """Test that validator accepts distribution with minor variation."""
         validator = DistributionValidator(min_count=6, max_count=10)
 
-        # Create distribution with minor variation (6-10 range)
+        # Create distribution with minor variation (6-10 range) using new palette
         varied_counts = {
             ColorToken.BLUE: 6,
             ColorToken.ORANGE: 10,
             ColorToken.PURPLE: 7,
             ColorToken.BLACK: 9,
-            ColorToken.CYAN: 8,
-            ColorToken.AMBER: 8,
-            ColorToken.MAGENTA: 8,
+            ColorToken.BROWN: 8,
+            ColorToken.PINK: 8,
+            ColorToken.YELLOW: 8,
             ColorToken.GRAY: 8,
         }
 
@@ -352,7 +370,7 @@ class TestJsonSerialization:
 
 
 # =============================================================================
-# Task Group 4: Strategic Gap-Filling Tests (up to 5 additional tests)
+# Task Group 5: Strategic Gap-Filling Tests
 # =============================================================================
 
 
@@ -428,7 +446,7 @@ class TestEndToEndGenerationWorkflow:
         generator = PuzzleGenerator(
             seed=seed,
             congruence_percentage=congruence,
-            language=Language.CHINESE,
+            language=Language.ZH_TW,  # Updated from CHINESE to ZH_TW
         )
 
         # Step 2: Generate puzzle
@@ -458,3 +476,51 @@ class TestEndToEndGenerationWorkflow:
             for c in range(8):
                 assert puzzle.cells[r][c].word == puzzle2.cells[r][c].word
                 assert puzzle.cells[r][c].ink_color == puzzle2.cells[r][c].ink_color
+
+
+class TestNewAccessiblePaletteColors:
+    """Test that puzzle generation uses the new accessible color palette correctly."""
+
+    def test_generated_colors_are_from_new_palette(self):
+        """Test that all generated ink colors are from the new accessible palette."""
+        generator = PuzzleGenerator(seed=42, color_count=8)
+        puzzle = generator.generate()
+
+        for row in puzzle.cells:
+            for cell in row:
+                assert cell.ink_color in NEW_PALETTE_TOKENS, (
+                    f"Ink color {cell.ink_color} is not in new accessible palette"
+                )
+                assert cell.word in NEW_PALETTE_TOKENS, (
+                    f"Word {cell.word} is not in new accessible palette"
+                )
+
+    def test_accessible_tier_uses_only_black_and_yellow(self):
+        """Test that 2-color 'Accessible' tier uses only BLACK and YELLOW."""
+        generator = PuzzleGenerator(seed=42, color_count=2)
+        puzzle = generator.generate()
+
+        accessible_colors = [ColorToken.BLACK, ColorToken.YELLOW]
+
+        for row in puzzle.cells:
+            for cell in row:
+                assert cell.ink_color in accessible_colors, (
+                    f"Accessible tier should only use BLACK/YELLOW, got {cell.ink_color}"
+                )
+                assert cell.word in accessible_colors, (
+                    f"Accessible tier should only use BLACK/YELLOW, got {cell.word}"
+                )
+
+    def test_standard_tier_uses_four_colors(self):
+        """Test that 4-color 'Standard' tier uses BLACK, BLUE, ORANGE, YELLOW."""
+        generator = PuzzleGenerator(seed=42, color_count=4)
+        puzzle = generator.generate()
+
+        for row in puzzle.cells:
+            for cell in row:
+                assert cell.ink_color in STANDARD_TIER_COLORS, (
+                    f"Standard tier color {cell.ink_color} not in expected set"
+                )
+                assert cell.word in STANDARD_TIER_COLORS, (
+                    f"Standard tier word {cell.word} not in expected set"
+                )

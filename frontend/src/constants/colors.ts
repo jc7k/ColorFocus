@@ -5,115 +5,82 @@
  * All colors are imported from the shared source of truth (colors.json) to ensure
  * consistency between frontend and backend.
  *
+ * Updated for the accessible color palette replacement:
+ * - New tokens: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+ * - Old tokens removed: CYAN, AMBER, MAGENTA
+ * - Flat hex structure (no variant objects)
+ *
  * @module colors
  */
 
 import colorsData from '../../../shared/colors.json';
 
 /**
- * Canonical color token identifiers.
- * These 8 tokens represent the complete color palette for ColorFocus puzzles.
+ * Canonical color token identifiers for the accessible color palette.
+ * These 8 tokens represent the complete color palette for ColorFocus puzzles,
+ * ordered by luminance from darkest to lightest.
+ *
+ * Luminance order (10% to 84%):
+ *   BLACK (10%) -> BROWN (28%) -> PURPLE (35%) -> BLUE (38%) ->
+ *   GRAY (50%) -> PINK (52%) -> ORANGE (62%) -> YELLOW (84%)
  *
  * @enum {string}
  * @example
  * ```typescript
  * const selectedColor = ColorToken.BLUE;
- * const hexValue = COLORS[selectedColor].base;
+ * const hexValue = COLORS[selectedColor];
  * ```
  */
 export enum ColorToken {
-  /** Blue - Primary color for standard puzzles */
-  BLUE = 'BLUE',
-  /** Orange - High visibility warm color */
-  ORANGE = 'ORANGE',
-  /** Purple - Secondary color for variety */
-  PURPLE = 'PURPLE',
-  /** Black - Neutral anchor color (no dark variant) */
+  /** Black - Darkest color, 10% luminance */
   BLACK = 'BLACK',
-  /** Cyan - Cool color distinct from blue */
-  CYAN = 'CYAN',
-  /** Amber - Warm golden color */
-  AMBER = 'AMBER',
-  /** Magenta - Warm-cool bridge color */
-  MAGENTA = 'MAGENTA',
-  /** Gray - Neutral color for contrast */
+  /** Brown - Earth tone, 28% luminance */
+  BROWN = 'BROWN',
+  /** Purple - Cool accent, 35% luminance */
+  PURPLE = 'PURPLE',
+  /** Blue - Primary cool color, 38% luminance */
+  BLUE = 'BLUE',
+  /** Gray - Neutral midpoint, 50% luminance */
   GRAY = 'GRAY',
+  /** Pink - Warm accent, 52% luminance */
+  PINK = 'PINK',
+  /** Orange - High visibility warm color, 62% luminance */
+  ORANGE = 'ORANGE',
+  /** Yellow - Lightest color, 84% luminance */
+  YELLOW = 'YELLOW',
 }
 
 /**
- * Brightness variant identifiers for color tokens.
- * Each color token (except BLACK) has three variants for accessibility.
+ * Type for the raw colors data imported from JSON (flat hex values).
+ */
+type ColorsJson = Record<string, string>;
+
+/**
+ * Master color registry providing programmatic access to all 8 hex color values.
  *
- * - `dark`: Reduced lightness for high-contrast needs
- * - `base`: Default brightness level
- * - `bright`: Increased lightness for low-vision accessibility
- *
- * @typedef {'dark' | 'base' | 'bright'} ColorVariant
- */
-export type ColorVariant = 'dark' | 'base' | 'bright';
-
-/**
- * Type definition for the variants object of a color token.
- * Maps variant names to hex color values.
- */
-type ColorVariants = Partial<Record<ColorVariant, string>>;
-
-/**
- * Raw color data structure as loaded from JSON.
- */
-interface ColorData {
-  variants: ColorVariants;
-  hsl_reference?: Record<string, string>;
-}
-
-/**
- * Type for the raw colors data imported from JSON.
- */
-type ColorsJson = Record<string, ColorData>;
-
-/**
- * Processed color variants with guaranteed hex values.
- * Used for the public COLORS object.
- */
-interface ProcessedColorVariants {
-  dark?: string;
-  base: string;
-  bright: string;
-}
-
-/**
- * Master color registry providing programmatic access to all 24 hex color values.
- *
- * Structure: `COLORS[ColorToken][ColorVariant]`
+ * Structure: `COLORS[ColorToken]` returns the hex color string directly.
  *
  * @example
  * ```typescript
  * // Get a specific color value
- * const blueBase = COLORS[ColorToken.BLUE].base;      // '#2E86DE'
- * const orangeBright = COLORS[ColorToken.ORANGE].bright; // '#FFB366'
- *
- * // Use with Tailwind classes
- * const className = `text-${ColorToken.BLUE.toLowerCase()}-base`;
+ * const blue = COLORS[ColorToken.BLUE];      // '#0066CC'
+ * const yellow = COLORS[ColorToken.YELLOW];  // '#FFD700'
  * ```
  *
  * @constant
  */
-export const COLORS: Record<ColorToken, ProcessedColorVariants> = (() => {
+export const COLORS: Record<ColorToken, string> = (() => {
   const colors = colorsData as ColorsJson;
-  const result: Record<string, ProcessedColorVariants> = {};
+  const result: Record<string, string> = {};
 
   for (const token of Object.values(ColorToken)) {
-    const colorData = colors[token];
-    if (colorData && colorData.variants) {
-      result[token] = {
-        base: colorData.variants.base!,
-        bright: colorData.variants.bright!,
-        ...(colorData.variants.dark && { dark: colorData.variants.dark }),
-      };
+    const hexValue = colors[token];
+    if (hexValue) {
+      result[token] = hexValue;
     }
   }
 
-  return result as Record<ColorToken, ProcessedColorVariants>;
+  return result as Record<ColorToken, string>;
 })();
 
 /**
@@ -122,7 +89,7 @@ export const COLORS: Record<ColorToken, ProcessedColorVariants> = (() => {
  * @example
  * ```typescript
  * ALL_COLOR_TOKENS.forEach(token => {
- *   console.log(`${token}: ${COLORS[token].base}`);
+ *   console.log(`${token}: ${COLORS[token]}`);
  * });
  * ```
  *
@@ -131,25 +98,16 @@ export const COLORS: Record<ColorToken, ProcessedColorVariants> = (() => {
 export const ALL_COLOR_TOKENS: readonly ColorToken[] = Object.values(ColorToken);
 
 /**
- * Array of all variant names for iteration.
- *
- * @constant
- */
-export const ALL_VARIANTS: readonly ColorVariant[] = ['dark', 'base', 'bright'];
-
-/**
- * Get the hex color value for a specific token and variant combination.
+ * Get the hex color value for a specific token.
  *
  * @param token - The color token
- * @param variant - The brightness variant (defaults to 'base')
- * @returns The hex color value, or undefined if the variant doesn't exist
+ * @returns The hex color value
  *
  * @example
  * ```typescript
- * const color = getColor(ColorToken.BLUE, 'bright'); // '#6BB6FF'
- * const defaultColor = getColor(ColorToken.ORANGE); // '#E67E22' (base)
+ * const color = getColor(ColorToken.BLUE); // '#0066CC'
  * ```
  */
-export function getColor(token: ColorToken, variant: ColorVariant = 'base'): string | undefined {
-  return COLORS[token][variant];
+export function getColor(token: ColorToken): string {
+  return COLORS[token];
 }

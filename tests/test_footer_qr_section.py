@@ -46,9 +46,9 @@ class TestFooterQRSection:
         """
         html_content = load_puzzle_html()
 
-        # Check for img element with bmc_qr.png src
-        assert 'src="bmc_qr.png"' in html_content, (
-            "QR code image should have src='bmc_qr.png' (relative path)"
+        # Check for img element with bmc_qr.png src (absolute path for Vercel deployment)
+        assert 'src="/frontend/bmc_qr.png"' in html_content, (
+            "QR code image should have src='/frontend/bmc_qr.png' (absolute path for Vercel)"
         )
 
         # Verify the image has the donation-qr class
@@ -94,8 +94,8 @@ class TestFooterQRSection:
             "qr_code_label key should exist in ui_text.json"
         )
 
-        # Verify all 4 languages have translations
-        expected_languages = ["chinese", "english", "spanish", "vietnamese"]
+        # Verify all 4 languages have translations (zh-TW replaces chinese)
+        expected_languages = ["zh-TW", "english", "spanish", "vietnamese"]
         for lang in expected_languages:
             assert lang in ui_text["qr_code_label"], (
                 f"qr_code_label should have '{lang}' translation"

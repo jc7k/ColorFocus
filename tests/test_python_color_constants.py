@@ -2,23 +2,32 @@
 Tests for Python color constants module.
 
 These tests verify that:
-1. Python COLORS dictionary matches source JSON structure
-2. ColorToken StrEnum contains all 8 token names
-3. ColorVariant StrEnum contains all 3 variant names
+1. Python COLORS dictionary matches source JSON structure (flat hex values)
+2. ColorToken StrEnum contains all 8 token names for the accessible palette
+3. ColorVariant is removed (no longer needed with flat structure)
+
+Updated for the accessible color palette replacement:
+- New tokens: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Old tokens removed: CYAN, AMBER, MAGENTA
+- Flat hex structure (no variant objects)
 """
 
 import json
+import re
 from pathlib import Path
 
 
 # Path to the shared colors.json file
 COLORS_JSON_PATH = Path(__file__).parent.parent / "shared" / "colors.json"
 
-# Required color tokens
-REQUIRED_TOKENS = ["BLUE", "ORANGE", "PURPLE", "BLACK", "CYAN", "AMBER", "MAGENTA", "GRAY"]
+# Required color tokens (new accessible palette)
+REQUIRED_TOKENS = ["BLACK", "BROWN", "PURPLE", "BLUE", "GRAY", "PINK", "ORANGE", "YELLOW"]
 
-# Required variants
-REQUIRED_VARIANTS = ["DARK", "BASE", "BRIGHT"]
+# Old tokens that should NOT exist
+REMOVED_TOKENS = ["CYAN", "AMBER", "MAGENTA"]
+
+# Hex color pattern (#RRGGBB)
+HEX_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
 
 def load_source_colors():
@@ -28,10 +37,10 @@ def load_source_colors():
 
 
 class TestColorTokenStrEnum:
-    """Test that ColorToken StrEnum contains all 8 token names."""
+    """Test that ColorToken StrEnum contains all 8 token names for the accessible palette."""
 
-    def test_color_token_contains_all_tokens(self):
-        """Test that ColorToken enum has all 8 required token names."""
+    def test_color_token_contains_all_new_tokens(self):
+        """Test that ColorToken enum has all 8 new accessible palette tokens."""
         from backend.app.constants.colors import ColorToken
 
         enum_values = [token.value for token in ColorToken]
@@ -45,28 +54,30 @@ class TestColorTokenStrEnum:
 
         assert len(ColorToken) == 8, f"Expected 8 ColorToken values, got {len(ColorToken)}"
 
+    def test_old_tokens_removed(self):
+        """Test that old tokens (CYAN, AMBER, MAGENTA) are removed from ColorToken."""
+        from backend.app.constants.colors import ColorToken
 
-class TestColorVariantStrEnum:
-    """Test that ColorVariant StrEnum contains all 3 variant names."""
+        enum_values = [token.value for token in ColorToken]
 
-    def test_color_variant_contains_all_variants(self):
-        """Test that ColorVariant enum has all 3 required variant names."""
-        from backend.app.constants.colors import ColorVariant
+        for old_token in REMOVED_TOKENS:
+            assert old_token not in enum_values, f"Old token {old_token} should be removed from ColorToken"
 
-        enum_values = [variant.value for variant in ColorVariant]
 
-        for variant_name in REQUIRED_VARIANTS:
-            assert variant_name in enum_values, f"ColorVariant missing required variant: {variant_name}"
+class TestColorVariantRemoved:
+    """Test that ColorVariant enum is removed (no longer needed with flat structure)."""
 
-    def test_color_variant_count(self):
-        """Test that ColorVariant has exactly 3 variants."""
-        from backend.app.constants.colors import ColorVariant
-
-        assert len(ColorVariant) == 3, f"Expected 3 ColorVariant values, got {len(ColorVariant)}"
+    def test_color_variant_not_importable(self):
+        """Test that ColorVariant is not available for import."""
+        try:
+            from backend.app.constants.colors import ColorVariant
+            assert False, "ColorVariant should not exist in colors module"
+        except ImportError:
+            pass  # Expected - ColorVariant should not be importable
 
 
 class TestColorsDict:
-    """Test that Python COLORS dictionary matches source JSON structure."""
+    """Test that Python COLORS dictionary matches source JSON structure (flat hex values)."""
 
     def test_colors_dict_matches_source_json_tokens(self):
         """Test that COLORS dictionary has all tokens from source JSON."""
@@ -78,20 +89,59 @@ class TestColorsDict:
             token_enum = ColorToken(token_name)
             assert token_enum in COLORS, f"COLORS missing token: {token_name}"
 
+    def test_colors_dict_returns_flat_hex_strings(self):
+        """Test that COLORS returns flat hex strings (not variant dicts)."""
+        from backend.app.constants.colors import COLORS, ColorToken
+
+        for token in ColorToken:
+            hex_value = COLORS[token]
+            # Should be a string, not a dict
+            assert isinstance(hex_value, str), (
+                f"COLORS[{token}] should return str, got {type(hex_value).__name__}"
+            )
+            # Should be valid hex format
+            assert HEX_PATTERN.match(hex_value), (
+                f"COLORS[{token}] should be #RRGGBB format, got {hex_value}"
+            )
+
     def test_colors_dict_hex_values_match_source(self):
         """Test that COLORS hex values match source JSON exactly."""
-        from backend.app.constants.colors import COLORS, ColorToken, ColorVariant
+        from backend.app.constants.colors import COLORS, ColorToken
 
         source_colors = load_source_colors()
 
-        for token_name, token_data in source_colors.items():
+        for token_name, expected_hex in source_colors.items():
             token_enum = ColorToken(token_name)
+            actual_hex = COLORS[token_enum]
 
-            for variant_name, hex_value in token_data["variants"].items():
-                variant_enum = ColorVariant(variant_name.upper())
+            assert actual_hex.upper() == expected_hex.upper(), (
+                f"Hex mismatch for {token_name}: expected {expected_hex}, got {actual_hex}"
+            )
 
-                if variant_enum in COLORS[token_enum]:
-                    assert COLORS[token_enum][variant_enum] == hex_value, (
-                        f"Hex mismatch for {token_name}.{variant_name}: "
-                        f"expected {hex_value}, got {COLORS[token_enum][variant_enum]}"
-                    )
+    def test_colors_dict_count(self):
+        """Test that COLORS dict contains exactly 8 colors."""
+        from backend.app.constants.colors import COLORS
+
+        assert len(COLORS) == 8, f"Expected 8 colors in COLORS dict, got {len(COLORS)}"
+
+
+class TestLoadColorsFromJson:
+    """Test that _load_colors_from_json correctly parses flat hex structure."""
+
+    def test_load_colors_returns_flat_dict(self):
+        """Test that _load_colors_from_json returns Dict[ColorToken, str]."""
+        from backend.app.constants.colors import _load_colors_from_json, ColorToken
+
+        colors = _load_colors_from_json()
+
+        for token, value in colors.items():
+            assert isinstance(token, ColorToken), f"Key should be ColorToken, got {type(token)}"
+            assert isinstance(value, str), f"Value should be str (hex), got {type(value)}"
+            assert HEX_PATTERN.match(value), f"Value should be hex format, got {value}"
+
+    def test_load_colors_returns_correct_count(self):
+        """Test that _load_colors_from_json returns exactly 8 colors."""
+        from backend.app.constants.colors import _load_colors_from_json
+
+        colors = _load_colors_from_json()
+        assert len(colors) == 8, f"Expected 8 colors, got {len(colors)}"

@@ -2,9 +2,14 @@
  * Tests for TypeScript Color Constants
  *
  * These tests verify that:
- * 1. The TypeScript COLORS object matches the source JSON structure
- * 2. The ColorToken enum contains all 8 token names
- * 3. The ColorVariant type accepts only valid variant names
+ * 1. The TypeScript COLORS object matches the source JSON structure (flat hex)
+ * 2. The ColorToken enum contains all 8 token names for the accessible palette
+ * 3. Old tokens (CYAN, AMBER, MAGENTA) are removed
+ *
+ * Updated for the accessible color palette replacement:
+ * - New tokens: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+ * - Old tokens removed: CYAN, AMBER, MAGENTA
+ * - Flat hex structure (no variant objects)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -12,102 +17,122 @@ import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-import { ColorToken, ColorVariant, COLORS, ALL_COLOR_TOKENS, ALL_VARIANTS } from './colors';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load the source JSON for comparison
+// Load the source JSON for comparison (now uses flat structure)
 const colorsJsonPath = resolve(__dirname, '../../../shared/colors.json');
-const sourceJson = JSON.parse(readFileSync(colorsJsonPath, 'utf-8'));
+const sourceJson = JSON.parse(readFileSync(colorsJsonPath, 'utf-8')) as Record<string, string>;
 
-describe('TypeScript Color Constants', () => {
-  describe('COLORS object matches source JSON structure', () => {
-    it('should contain all 8 color tokens from source JSON', () => {
-      const sourceTokens = Object.keys(sourceJson);
-      const exportedTokens = Object.keys(COLORS);
+// Expected color tokens for the new accessible palette
+const EXPECTED_NEW_TOKENS = ['BLACK', 'BROWN', 'PURPLE', 'BLUE', 'GRAY', 'PINK', 'ORANGE', 'YELLOW'];
 
-      expect(exportedTokens).toHaveLength(sourceTokens.length);
-      for (const token of sourceTokens) {
-        expect(COLORS).toHaveProperty(token);
+// Old tokens that should be removed
+const REMOVED_TOKENS = ['CYAN', 'AMBER', 'MAGENTA'];
+
+// Expected hex values for the new accessible palette
+const EXPECTED_HEX_VALUES: Record<string, string> = {
+  BLACK: '#1A1A1A',
+  BROWN: '#8B4513',
+  PURPLE: '#7B4BAF',
+  BLUE: '#0066CC',
+  GRAY: '#808080',
+  PINK: '#E75480',
+  ORANGE: '#FF8C00',
+  YELLOW: '#FFD700',
+};
+
+describe('TypeScript Color Constants - Accessible Palette', () => {
+  describe('colors.json has correct flat structure', () => {
+    it('should contain exactly 8 color tokens', () => {
+      const tokens = Object.keys(sourceJson);
+      expect(tokens).toHaveLength(8);
+    });
+
+    it('should contain all expected accessible palette tokens', () => {
+      for (const token of EXPECTED_NEW_TOKENS) {
+        expect(sourceJson).toHaveProperty(token);
       }
     });
 
-    it('should have matching hex values for all variants', () => {
-      for (const [token, data] of Object.entries(sourceJson)) {
-        const sourceVariants = data.variants;
-        const exportedVariants = COLORS[token as ColorToken];
-
-        for (const [variant, hexValue] of Object.entries(sourceVariants)) {
-          expect(exportedVariants[variant as keyof typeof exportedVariants]).toBe(hexValue);
-        }
+    it('should NOT contain removed tokens (CYAN, AMBER, MAGENTA)', () => {
+      for (const token of REMOVED_TOKENS) {
+        expect(sourceJson).not.toHaveProperty(token);
       }
     });
 
-    it('should have correct number of total color values (23-24)', () => {
-      let totalValues = 0;
-      for (const token of Object.values(ColorToken)) {
-        const variants = COLORS[token];
-        totalValues += Object.keys(variants).length;
-      }
-
-      // BLACK omits dark variant, so we expect 23 values
-      expect(totalValues).toBeGreaterThanOrEqual(23);
-      expect(totalValues).toBeLessThanOrEqual(24);
-    });
-  });
-
-  describe('ColorToken enum contains all 8 token names', () => {
-    const expectedTokens = ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA', 'GRAY'];
-
-    it('should have exactly 8 color tokens', () => {
-      expect(ALL_COLOR_TOKENS).toHaveLength(8);
-    });
-
-    it('should contain all required token names', () => {
-      for (const token of expectedTokens) {
-        expect(ColorToken).toHaveProperty(token);
-        expect(ColorToken[token as keyof typeof ColorToken]).toBe(token);
+    it('should have flat hex values (not variant objects)', () => {
+      for (const [token, value] of Object.entries(sourceJson)) {
+        // Value should be a string (hex), not an object
+        expect(typeof value).toBe('string');
+        // Should be valid hex format
+        expect(value).toMatch(/^#[0-9A-Fa-f]{6}$/);
       }
     });
 
-    it('should have enum values matching their keys', () => {
-      for (const token of Object.values(ColorToken)) {
-        expect(typeof token).toBe('string');
-        expect(token).toMatch(/^[A-Z]+$/);
+    it('should have correct hex values for each color', () => {
+      for (const [token, expectedHex] of Object.entries(EXPECTED_HEX_VALUES)) {
+        expect(sourceJson[token].toUpperCase()).toBe(expectedHex.toUpperCase());
       }
     });
   });
 
-  describe('ColorVariant type accepts only valid variant names', () => {
-    it('should export ALL_VARIANTS with exactly 3 variants', () => {
-      expect(ALL_VARIANTS).toHaveLength(3);
+  describe('ColorToken enum should match new palette', () => {
+    it('should expect exactly 8 tokens in the new palette', () => {
+      expect(EXPECTED_NEW_TOKENS).toHaveLength(8);
     });
 
-    it('should include dark, base, and bright as valid variants', () => {
-      expect(ALL_VARIANTS).toContain('dark');
-      expect(ALL_VARIANTS).toContain('base');
-      expect(ALL_VARIANTS).toContain('bright');
+    it('should have tokens ordered by luminance', () => {
+      // Luminance order: BLACK (10%) -> BROWN (28%) -> PURPLE (35%) -> BLUE (38%)
+      //                  -> GRAY (50%) -> PINK (52%) -> ORANGE (62%) -> YELLOW (84%)
+      const expectedOrder = ['BLACK', 'BROWN', 'PURPLE', 'BLUE', 'GRAY', 'PINK', 'ORANGE', 'YELLOW'];
+      expect(EXPECTED_NEW_TOKENS).toEqual(expectedOrder);
     });
 
-    it('should allow accessing colors with valid variant names', () => {
-      // Type check: these should compile without errors
-      const variants: ColorVariant[] = ['dark', 'base', 'bright'];
+    it('should have all tokens in source JSON', () => {
+      for (const token of EXPECTED_NEW_TOKENS) {
+        expect(Object.keys(sourceJson)).toContain(token);
+      }
+    });
+  });
 
-      for (const variant of variants) {
-        // base and bright are guaranteed to exist
-        if (variant === 'base' || variant === 'bright') {
-          expect(typeof COLORS[ColorToken.BLUE][variant]).toBe('string');
-        }
+  describe('Accessible difficulty tier colors', () => {
+    it('should have BLACK for minimum luminance (darkest)', () => {
+      expect(sourceJson).toHaveProperty('BLACK');
+      expect(sourceJson['BLACK']).toBe('#1A1A1A');
+    });
+
+    it('should have YELLOW for maximum luminance (lightest)', () => {
+      expect(sourceJson).toHaveProperty('YELLOW');
+      expect(sourceJson['YELLOW']).toBe('#FFD700');
+    });
+
+    it('should have accessible tier colors (BLACK, YELLOW) with high contrast', () => {
+      // These two form the "Accessible" (2-color) tier
+      expect(sourceJson).toHaveProperty('BLACK');
+      expect(sourceJson).toHaveProperty('YELLOW');
+    });
+
+    it('should have standard tier colors (BLACK, BLUE, ORANGE, YELLOW)', () => {
+      // These four form the "Standard" (4-color) tier
+      const standardColors = ['BLACK', 'BLUE', 'ORANGE', 'YELLOW'];
+      for (const color of standardColors) {
+        expect(sourceJson).toHaveProperty(color);
+      }
+    });
+  });
+
+  describe('Color hex value format validation', () => {
+    it('should have all values in #RRGGBB format', () => {
+      for (const [token, hex] of Object.entries(sourceJson)) {
+        expect(hex).toMatch(/^#[0-9A-Fa-f]{6}$/);
+        expect(hex.length).toBe(7);
       }
     });
 
-    it('should have base and bright variants for all tokens', () => {
-      for (const token of ALL_COLOR_TOKENS) {
-        expect(COLORS[token].base).toBeDefined();
-        expect(COLORS[token].bright).toBeDefined();
-        expect(COLORS[token].base).toMatch(/^#[0-9A-Fa-f]{6}$/);
-        expect(COLORS[token].bright).toMatch(/^#[0-9A-Fa-f]{6}$/);
+    it('should have hex values starting with #', () => {
+      for (const hex of Object.values(sourceJson)) {
+        expect(hex.startsWith('#')).toBe(true);
       }
     });
   });

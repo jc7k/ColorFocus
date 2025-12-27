@@ -3,9 +3,13 @@ Tests for color token validation.
 
 These tests verify that the shared colors.json file:
 1. Is valid JSON with correct structure
-2. Contains all 24 color values in valid hex format
-3. Has all 8 color tokens with required variants
+2. Contains all 8 color values in valid hex format
+3. Has all 8 color tokens in flat hex format (no variants)
 4. Meets minimum luminance separation thresholds for accessibility
+
+Updated for the accessible color palette replacement:
+- New tokens: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Flat hex structure (no variant objects)
 """
 
 import json
@@ -16,14 +20,11 @@ from pathlib import Path
 # Path to the shared colors.json file
 COLORS_JSON_PATH = Path(__file__).parent.parent / "shared" / "colors.json"
 
-# Required color tokens
-REQUIRED_TOKENS = ["BLUE", "ORANGE", "PURPLE", "BLACK", "CYAN", "AMBER", "MAGENTA", "GRAY"]
+# Required color tokens (new accessible palette)
+REQUIRED_TOKENS = ["BLACK", "BROWN", "PURPLE", "BLUE", "GRAY", "PINK", "ORANGE", "YELLOW"]
 
-# Required variants for most tokens
-REQUIRED_VARIANTS = ["dark", "base", "bright"]
-
-# BLACK may omit dark variant per PRD precedent
-BLACK_REQUIRED_VARIANTS = ["base", "bright"]
+# Old tokens that should NOT exist
+REMOVED_TOKENS = ["CYAN", "AMBER", "MAGENTA"]
 
 # Hex color pattern (#RRGGBB)
 HEX_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -82,94 +83,84 @@ class TestColorsJsonStructure:
         for token in REQUIRED_TOKENS:
             assert token in colors, f"Missing required color token: {token}"
 
-    def test_each_token_has_variants_object(self):
-        """Test that each token has a 'variants' object."""
+    def test_old_tokens_not_present(self):
+        """Test that old tokens (CYAN, AMBER, MAGENTA) are removed."""
         colors = load_colors()
 
-        for token in REQUIRED_TOKENS:
-            assert "variants" in colors[token], f"{token} missing 'variants' object"
-            assert isinstance(colors[token]["variants"], dict), f"{token} 'variants' should be an object"
+        for token in REMOVED_TOKENS:
+            assert token not in colors, f"Old token {token} should be removed from colors.json"
+
+    def test_exactly_8_tokens(self):
+        """Test that colors.json has exactly 8 color tokens."""
+        colors = load_colors()
+        assert len(colors) == 8, f"Expected 8 color tokens, got {len(colors)}"
+
+    def test_flat_hex_structure(self):
+        """Test that colors.json uses flat hex values (no variant nesting)."""
+        colors = load_colors()
+
+        for token, value in colors.items():
+            # Value should be a string (hex), not a dict
+            assert isinstance(value, str), (
+                f"{token} should be a flat hex string, got {type(value).__name__}"
+            )
+            # Should not have 'variants' key at root level
+            assert "variants" not in colors.get(token, ""), (
+                f"{token} should not have nested variants structure"
+            )
 
 
 class TestHexValueFormat:
     """Test that all color values are valid hex format (#RRGGBB)."""
 
     def test_all_hex_values_are_valid_format(self):
-        """Test that all 24 color values are valid hex format."""
+        """Test that all 8 color values are valid hex format."""
         colors = load_colors()
 
         invalid_values = []
-        for token, data in colors.items():
-            for variant, hex_value in data["variants"].items():
-                if not HEX_PATTERN.match(hex_value):
-                    invalid_values.append(f"{token}.{variant}: {hex_value}")
+        for token, hex_value in colors.items():
+            if not HEX_PATTERN.match(hex_value):
+                invalid_values.append(f"{token}: {hex_value}")
 
         assert not invalid_values, f"Invalid hex values found: {invalid_values}"
 
     def test_expected_color_count(self):
-        """Test that we have the expected number of color values (23-24)."""
+        """Test that we have exactly 8 color values."""
         colors = load_colors()
-
-        total_values = sum(len(data["variants"]) for data in colors.values())
-
-        # BLACK may omit dark variant, so 23 or 24 total
-        assert 23 <= total_values <= 24, f"Expected 23-24 color values, got {total_values}"
-
-
-class TestColorTokenVariants:
-    """Test that all tokens have required variants."""
-
-    def test_non_black_tokens_have_all_variants(self):
-        """Test that non-BLACK tokens have dark, base, and bright variants."""
-        colors = load_colors()
-
-        for token in REQUIRED_TOKENS:
-            if token == "BLACK":
-                continue
-
-            variants = colors[token]["variants"]
-            for variant in REQUIRED_VARIANTS:
-                assert variant in variants, f"{token} missing '{variant}' variant"
-
-    def test_black_token_has_required_variants(self):
-        """Test that BLACK has at least base and bright variants."""
-        colors = load_colors()
-
-        black_variants = colors["BLACK"]["variants"]
-        for variant in BLACK_REQUIRED_VARIANTS:
-            assert variant in black_variants, f"BLACK missing required '{variant}' variant"
+        assert len(colors) == 8, f"Expected 8 color values, got {len(colors)}"
 
 
 class TestLuminanceSeparation:
     """Test that colors meet minimum luminance separation thresholds for accessibility."""
 
-    def test_base_colors_have_luminance_separation(self):
+    def test_colors_have_luminance_separation(self):
         """
-        Test that base colors have sufficient luminance spread across the spectrum.
+        Test that colors have sufficient luminance spread across the spectrum.
 
         This ensures colors are distinguishable based on brightness differences,
         which aids color-blind users who rely on luminance variations.
 
-        Per PRD: "Maximize luminance separation between colors"
+        The new accessible palette is ordered by luminance:
+        BLACK (10%) -> BROWN (28%) -> PURPLE (35%) -> BLUE (38%) ->
+        GRAY (50%) -> PINK (52%) -> ORANGE (62%) -> YELLOW (84%)
         """
         colors = load_colors()
 
         luminance_values = {}
         for token in REQUIRED_TOKENS:
-            base_hex = colors[token]["variants"]["base"]
-            rgb = hex_to_rgb(base_hex)
+            hex_value = colors[token]
+            rgb = hex_to_rgb(hex_value)
             luminance = calculate_relative_luminance(rgb)
             luminance_values[token] = luminance
 
         # Verify we have a good spread of luminance values
-        # From darkest (BLACK ~0.02) to lightest (AMBER ~0.48)
         min_lum = min(luminance_values.values())
         max_lum = max(luminance_values.values())
         spread = max_lum - min_lum
 
-        # We expect at least 0.3 spread (30% of luminance range)
-        # This ensures colors span dark to light
-        assert spread >= 0.3, f"Insufficient luminance spread: {spread:.3f} (expected >= 0.3)"
+        # We expect at least 0.5 spread (50% of luminance range)
+        # BLACK should be near 0.1, YELLOW near 0.8
+        assert spread >= 0.5, f"Insufficient luminance spread: {spread:.3f} (expected >= 0.5)"
 
     def test_no_identical_luminance_values(self):
         """
@@ -181,8 +172,8 @@ class TestLuminanceSeparation:
 
         luminance_values = {}
         for token in REQUIRED_TOKENS:
-            base_hex = colors[token]["variants"]["base"]
-            rgb = hex_to_rgb(base_hex)
+            hex_value = colors[token]
+            rgb = hex_to_rgb(hex_value)
             luminance = round(calculate_relative_luminance(rgb), 4)
 
             if luminance in luminance_values:
@@ -193,26 +184,23 @@ class TestLuminanceSeparation:
 
     def test_dark_colors_meet_contrast_threshold(self):
         """
-        Test that dark-oriented colors (BLACK, PURPLE, BLUE, CYAN, GRAY, MAGENTA)
-        have sufficient contrast against white for legibility.
+        Test that dark-oriented colors have sufficient contrast against white.
 
         Per WCAG AA: 4.5:1 contrast ratio for normal text.
 
-        Note: Light colors (ORANGE, AMBER) are intentionally excluded as they
-        are designed for visibility against dark text/backgrounds and use
-        text labels for accessibility per PRD Section 5.1.
+        The new accessible palette has BLACK, BROWN, PURPLE, BLUE as darker colors.
         """
         colors = load_colors()
         white_luminance = 1.0
 
-        # Colors that should have good contrast against white
-        dark_oriented_colors = ["BLACK", "PURPLE", "BLUE", "CYAN", "GRAY", "MAGENTA"]
+        # Colors that should have good contrast against white (lower luminance)
+        dark_oriented_colors = ["BLACK", "BROWN", "PURPLE", "BLUE"]
         min_contrast = 3.0  # Relaxed from 4.5 to accommodate color-blind-safe selections
 
         low_contrast = []
         for token in dark_oriented_colors:
-            base_hex = colors[token]["variants"]["base"]
-            rgb = hex_to_rgb(base_hex)
+            hex_value = colors[token]
+            rgb = hex_to_rgb(hex_value)
             luminance = calculate_relative_luminance(rgb)
             contrast = calculate_contrast_ratio(white_luminance, luminance)
 
@@ -220,3 +208,25 @@ class TestLuminanceSeparation:
                 low_contrast.append(f"{token}: {contrast:.2f}:1")
 
         assert not low_contrast, f"Dark colors with insufficient contrast: {low_contrast}"
+
+    def test_maximum_luminance_contrast_pair(self):
+        """
+        Test that BLACK and YELLOW have maximum luminance contrast.
+
+        These two colors form the 'Accessible' difficulty tier (2 colors)
+        for users with severe color vision deficiencies.
+        """
+        colors = load_colors()
+
+        black_rgb = hex_to_rgb(colors["BLACK"])
+        yellow_rgb = hex_to_rgb(colors["YELLOW"])
+
+        black_lum = calculate_relative_luminance(black_rgb)
+        yellow_lum = calculate_relative_luminance(yellow_rgb)
+
+        contrast = calculate_contrast_ratio(yellow_lum, black_lum)
+
+        # Expect very high contrast (>10:1) for the accessible pair
+        assert contrast >= 10.0, (
+            f"BLACK and YELLOW contrast should be >= 10:1, got {contrast:.2f}:1"
+        )

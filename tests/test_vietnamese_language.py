@@ -4,7 +4,10 @@ Vietnamese language support tests for ColorFocus.
 These tests verify that Vietnamese language support is correctly implemented
 in the shared JSON, backend color label module, and frontend puzzle.html.
 
-This test file covers all Task Groups for Vietnamese Language Support.
+Updated for accessible color palette (2025-12-27):
+- New 8-color palette: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Language key renamed from "chinese" to "zh-TW"
+- Vietnamese labels use ASCII-friendly versions (no diacritics) for font compatibility
 """
 
 import json
@@ -17,16 +20,17 @@ PROJECT_ROOT = Path(__file__).parent.parent
 COLOR_LABELS_JSON_PATH = PROJECT_ROOT / "shared" / "color_labels.json"
 PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
 
-# Expected Vietnamese translations with proper diacritical marks
+# Expected Vietnamese translations - ASCII-friendly versions (no diacritics)
+# Updated for accessible color palette
 EXPECTED_VIETNAMESE_LABELS = {
+    "BLACK": "Den",
+    "BROWN": "Nau",
+    "PURPLE": "Tim",
     "BLUE": "Xanh",
+    "GRAY": "Xam",
+    "PINK": "Hong",
     "ORANGE": "Cam",
-    "PURPLE": "Tím",
-    "BLACK": "Đen",
-    "CYAN": "Lơ",
-    "AMBER": "Vàng",
-    "MAGENTA": "Hồng",
-    "GRAY": "Xám",
+    "YELLOW": "Vang",
 }
 
 
@@ -55,10 +59,11 @@ class TestVietnameseLanguageData:
         Test that shared/color_labels.json contains vietnamese key for all 8 colors.
 
         This verifies the JSON data structure includes Vietnamese translations.
+        Updated for accessible palette colors.
         """
         color_labels = load_color_labels()
 
-        expected_tokens = {"BLUE", "ORANGE", "PURPLE", "BLACK", "CYAN", "AMBER", "MAGENTA", "GRAY"}
+        expected_tokens = {"BLACK", "BROWN", "PURPLE", "BLUE", "GRAY", "PINK", "ORANGE", "YELLOW"}
 
         for token in expected_tokens:
             assert token in color_labels, f"Missing color token: {token}"
@@ -68,32 +73,20 @@ class TestVietnameseLanguageData:
 
     def test_vietnamese_labels_use_proper_utf8_encoding(self):
         """
-        Test that Vietnamese labels use proper UTF-8 encoding with diacritical marks.
+        Test that Vietnamese labels use ASCII-friendly versions for font compatibility.
 
-        Vietnamese requires proper encoding for characters with diacritical marks
-        such as Tím, Đen, Lơ, Vàng, Hồng, Xám.
+        Updated for accessible palette: Vietnamese labels now use ASCII-friendly
+        versions without diacritical marks (Den, Nau, Tim, Xanh, Xam, Hong, Cam, Vang)
+        to ensure compatibility across all fonts.
         """
         color_labels = load_color_labels()
 
-        # Test specific characters with diacritical marks
-        assert color_labels["PURPLE"]["vietnamese"] == "Tím", (
-            f"PURPLE should be 'Tím' (with accent), got '{color_labels['PURPLE']['vietnamese']}'"
-        )
-        assert color_labels["BLACK"]["vietnamese"] == "Đen", (
-            f"BLACK should be 'Đen' (with đ), got '{color_labels['BLACK']['vietnamese']}'"
-        )
-        assert color_labels["CYAN"]["vietnamese"] == "Lơ", (
-            f"CYAN should be 'Lơ' (with hook), got '{color_labels['CYAN']['vietnamese']}'"
-        )
-        assert color_labels["AMBER"]["vietnamese"] == "Vàng", (
-            f"AMBER should be 'Vàng' (with accent), got '{color_labels['AMBER']['vietnamese']}'"
-        )
-        assert color_labels["MAGENTA"]["vietnamese"] == "Hồng", (
-            f"MAGENTA should be 'Hồng' (with accent), got '{color_labels['MAGENTA']['vietnamese']}'"
-        )
-        assert color_labels["GRAY"]["vietnamese"] == "Xám", (
-            f"GRAY should be 'Xám' (with accent), got '{color_labels['GRAY']['vietnamese']}'"
-        )
+        # Test ASCII-friendly Vietnamese labels
+        for token, expected_label in EXPECTED_VIETNAMESE_LABELS.items():
+            actual_label = color_labels[token]["vietnamese"]
+            assert actual_label == expected_label, (
+                f"{token} should be '{expected_label}', got '{actual_label}'"
+            )
 
     def test_backend_language_enum_includes_vietnamese(self):
         """
@@ -136,11 +129,12 @@ class TestLanguageSelectorUI:
     elements with correct options and accessibility attributes.
     """
 
-    def test_language_dropdown_has_three_options(self):
+    def test_language_dropdown_has_four_options(self):
         """
-        Test that language dropdown renders with 3 options: Chinese, English, Vietnamese.
+        Test that language dropdown renders with 4 options: zh-TW, English, Vietnamese, Spanish.
 
         This verifies the select element includes all supported languages.
+        Updated: Chinese option now uses value="zh-TW" instead of "chinese".
         """
         html_content = load_puzzle_html()
 
@@ -149,15 +143,18 @@ class TestLanguageSelectorUI:
             "puzzle.html should have a select element with id='language'"
         )
 
-        # Check for all three language options
-        assert 'value="chinese"' in html_content, (
-            "Language dropdown should have Chinese option"
+        # Check for all four language options (zh-TW replaces chinese)
+        assert 'value="zh-TW"' in html_content, (
+            "Language dropdown should have zh-TW option"
         )
         assert 'value="english"' in html_content, (
             "Language dropdown should have English option"
         )
         assert 'value="vietnamese"' in html_content, (
             "Language dropdown should have Vietnamese option"
+        )
+        assert 'value="spanish"' in html_content, (
+            "Language dropdown should have Spanish option"
         )
 
     def test_language_dropdown_has_accessibility_label(self):

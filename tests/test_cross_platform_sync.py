@@ -6,10 +6,13 @@ the source JSON, ensuring build will fail if constants drift from
 the single source of truth.
 
 This test is part of Task Group 4: Cross-Platform Validation.
+
+Updated for accessible color palette (2025-12-27):
+- New 8-color palette: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Flat JSON structure (no variants)
 """
 
 import json
-import re
 from pathlib import Path
 
 
@@ -40,32 +43,27 @@ class TestCrossPlatformSynchronization:
 
         This is a critical synchronization test - failure indicates the Python
         constants have drifted from the source of truth.
+
+        Updated for flat hex structure (no variants).
         """
-        from backend.app.constants.colors import COLORS, ColorToken, ColorVariant
+        from backend.app.constants.colors import COLORS, ColorToken
 
         source_colors = load_source_colors()
         mismatches = []
 
-        for token_name, token_data in source_colors.items():
+        for token_name, expected_hex in source_colors.items():
             token_enum = ColorToken(token_name)
 
             if token_enum not in COLORS:
                 mismatches.append(f"Python missing token: {token_name}")
                 continue
 
-            for variant_name, expected_hex in token_data["variants"].items():
-                variant_enum = ColorVariant(variant_name.upper())
-
-                if variant_enum not in COLORS[token_enum]:
-                    mismatches.append(f"Python missing variant: {token_name}.{variant_name}")
-                    continue
-
-                actual_hex = COLORS[token_enum][variant_enum]
-                if actual_hex != expected_hex:
-                    mismatches.append(
-                        f"Python hex mismatch {token_name}.{variant_name}: "
-                        f"expected {expected_hex}, got {actual_hex}"
-                    )
+            actual_hex = COLORS[token_enum]
+            if actual_hex != expected_hex:
+                mismatches.append(
+                    f"Python hex mismatch {token_name}: "
+                    f"expected {expected_hex}, got {actual_hex}"
+                )
 
         assert not mismatches, (
             f"Python constants have drifted from source JSON:\n"
@@ -142,10 +140,11 @@ class TestSourceOfTruthIntegrity:
     """
 
     def test_source_json_has_expected_token_count(self):
-        """Test that source JSON has exactly 8 color tokens."""
+        """Test that source JSON has exactly 8 color tokens (new accessible palette)."""
         source_colors = load_source_colors()
 
-        expected_tokens = {"BLUE", "ORANGE", "PURPLE", "BLACK", "CYAN", "AMBER", "MAGENTA", "GRAY"}
+        # Updated for accessible color palette (2025-12-27)
+        expected_tokens = {"BLACK", "BROWN", "PURPLE", "BLUE", "GRAY", "PINK", "ORANGE", "YELLOW"}
         actual_tokens = set(source_colors.keys())
 
         assert actual_tokens == expected_tokens, (
@@ -158,20 +157,15 @@ class TestSourceOfTruthIntegrity:
 
     def test_source_json_variant_structure_is_consistent(self):
         """
-        Test that all tokens follow the expected variant structure.
+        Test that all tokens use flat hex structure (no variants).
 
-        Most tokens: dark, base, bright
-        BLACK: base, bright (dark is optional)
+        Updated for accessible color palette - now uses flat hex values.
         """
         source_colors = load_source_colors()
 
-        for token_name, token_data in source_colors.items():
-            variants = set(token_data.get("variants", {}).keys())
-
-            # base and bright are required for all tokens
-            assert "base" in variants, f"{token_name} missing 'base' variant"
-            assert "bright" in variants, f"{token_name} missing 'bright' variant"
-
-            # dark is required for all tokens except BLACK
-            if token_name != "BLACK":
-                assert "dark" in variants, f"{token_name} missing 'dark' variant"
+        for token_name, hex_value in source_colors.items():
+            # Verify flat structure (hex string, not nested dict)
+            assert isinstance(hex_value, str), f"{token_name} should have flat hex value, got {type(hex_value)}"
+            # Verify valid hex format
+            assert hex_value.startswith("#"), f"{token_name} hex should start with #"
+            assert len(hex_value) == 7, f"{token_name} hex should be 7 chars (#RRGGBB)"

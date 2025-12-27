@@ -4,6 +4,12 @@ Puzzle generator service for ColorFocus word jungle grids.
 This module provides deterministic generation of 8x8 puzzle grids with
 Stroop interference patterns for cognitive training exercises.
 
+Updated for the accessible color palette replacement:
+- New color tokens: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Old tokens removed: CYAN, AMBER, MAGENTA
+- Default language is now ZH_TW (Traditional Chinese)
+- Color subsets follow accessible difficulty tiers
+
 Usage:
     from backend.app.services.puzzle_generator import PuzzleGenerator
 
@@ -127,14 +133,22 @@ class PuzzleGenerator:
     # Retry configuration
     MAX_RETRIES = 3
 
-    # Default color subsets for different color counts (ordered by distinctiveness)
+    # Default color subsets for different color counts
+    # Ordered by luminance for the accessible palette:
+    # BLACK (10%) -> BROWN (28%) -> PURPLE (35%) -> BLUE (38%) ->
+    # GRAY (50%) -> PINK (52%) -> ORANGE (62%) -> YELLOW (84%)
+    #
+    # Difficulty tier mappings:
+    # - 2 colors (Accessible): BLACK, YELLOW (maximum luminance contrast)
+    # - 4 colors (Standard): BLACK, BLUE, ORANGE, YELLOW
+    # - 8 colors (Advanced): All colors
     DEFAULT_COLOR_SUBSETS = {
-        2: [ColorToken.BLUE, ColorToken.ORANGE],
-        3: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE],
-        4: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK],
-        5: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK, ColorToken.CYAN],
-        6: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK, ColorToken.CYAN, ColorToken.AMBER],
-        7: [ColorToken.BLUE, ColorToken.ORANGE, ColorToken.PURPLE, ColorToken.BLACK, ColorToken.CYAN, ColorToken.AMBER, ColorToken.MAGENTA],
+        2: [ColorToken.BLACK, ColorToken.YELLOW],
+        3: [ColorToken.BLACK, ColorToken.BLUE, ColorToken.YELLOW],
+        4: [ColorToken.BLACK, ColorToken.BLUE, ColorToken.ORANGE, ColorToken.YELLOW],
+        5: [ColorToken.BLACK, ColorToken.PURPLE, ColorToken.BLUE, ColorToken.ORANGE, ColorToken.YELLOW],
+        6: [ColorToken.BLACK, ColorToken.PURPLE, ColorToken.BLUE, ColorToken.PINK, ColorToken.ORANGE, ColorToken.YELLOW],
+        7: [ColorToken.BLACK, ColorToken.BROWN, ColorToken.PURPLE, ColorToken.BLUE, ColorToken.PINK, ColorToken.ORANGE, ColorToken.YELLOW],
         8: list(ColorToken),
     }
 
@@ -142,7 +156,7 @@ class PuzzleGenerator:
         self,
         seed: Optional[int] = None,
         congruence_percentage: float = 0.125,
-        language: Language = Language.CHINESE,
+        language: Language = Language.ZH_TW,
         color_count: int = 4,
     ):
         """
@@ -152,7 +166,7 @@ class PuzzleGenerator:
             seed: Optional random seed for reproducibility. Auto-generated if None.
             congruence_percentage: Percentage of cells where word matches ink color.
                                    Default 0.125 (12.5%) for maximum Stroop interference.
-            language: Language for color labels (default: CHINESE).
+            language: Language for color labels (default: ZH_TW for Traditional Chinese).
             color_count: Number of colors to use (2-8, default 4 for accessibility).
         """
         self.seed = seed if seed is not None else self._generate_seed()

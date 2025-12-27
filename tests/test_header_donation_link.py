@@ -101,8 +101,8 @@ class TestHeaderDonationLink:
             "support_link_text key should exist in ui_text.json"
         )
 
-        # Verify all 4 languages have translations
-        expected_languages = ["chinese", "english", "spanish", "vietnamese"]
+        # Verify all 4 languages have translations (zh-TW replaces chinese)
+        expected_languages = ["zh-TW", "english", "spanish", "vietnamese"]
         for lang in expected_languages:
             assert lang in ui_text["support_link_text"], (
                 f"support_link_text should have '{lang}' translation"

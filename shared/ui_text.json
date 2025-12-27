@@ -1,270 +1,270 @@
 {
   "page_title": {
-    "chinese": "ColorFocus Stroop 拼图",
+    "zh-TW": "ColorFocus Stroop 拼圖",
     "english": "ColorFocus Stroop Puzzle",
     "spanish": "ColorFocus Rompecabezas Stroop",
-    "vietnamese": "ColorFocus - Trò chơi Stroop"
+    "vietnamese": "ColorFocus - Tro choi Stroop"
   },
   "subtitle": {
-    "chinese": "数一数墨水颜色，不要看文字含义！",
+    "zh-TW": "數一數墨水顏色，不要看文字含義！",
     "english": "Count the INK colors, not the word meanings!",
     "spanish": "Cuenta los colores de TINTA, no el significado de las palabras!",
-    "vietnamese": "Đếm màu MỰC, không phải nghĩa của từ!"
+    "vietnamese": "Dem mau MUC, khong phai nghia cua tu!"
   },
   "task_label": {
-    "chinese": "任务：",
+    "zh-TW": "任務：",
     "english": "Task:",
     "spanish": "Tarea:",
-    "vietnamese": "Nhiệm vụ:"
+    "vietnamese": "Nhiem vu:"
   },
   "task_instruction": {
-    "chinese": "数一数每种墨水颜色有多少个单元格。{language_descriptor}显示的是颜色名称，但你必须数的是显示它的实际墨水颜色。",
+    "zh-TW": "數一數每種墨水顏色有多少個單元格。{language_descriptor}顯示的是顏色名稱，但您必須數的是顯示它的實際墨水顏色。",
     "english": "Count how many cells are printed in each INK color. The {language_descriptor} shows a color name, but you must count the actual ink color used to display it.",
     "spanish": "Cuenta cuantas celdas estan impresas en cada color de TINTA. La {language_descriptor} muestra un nombre de color, pero debes contar el color de tinta real usado para mostrarlo.",
-    "vietnamese": "Đếm số ô được in bằng mỗi màu MỰC. {language_descriptor} hiển thị tên màu, nhưng bạn phải đếm màu mực thực tế được sử dụng để hiển thị nó."
+    "vietnamese": "Dem so o duoc in bang moi mau MUC. {language_descriptor} hien thi ten mau, nhung ban phai dem mau muc thuc te duoc su dung de hien thi no."
   },
   "language_label": {
-    "chinese": "语言：",
+    "zh-TW": "語言：",
     "english": "Language:",
     "spanish": "Idioma:",
-    "vietnamese": "Ngôn ngữ:"
+    "vietnamese": "Ngon ngu:"
   },
   "grid_label": {
-    "chinese": "网格：",
+    "zh-TW": "網格：",
     "english": "Grid:",
     "spanish": "Cuadricula:",
-    "vietnamese": "Lưới:"
+    "vietnamese": "Luoi:"
   },
   "colors_label": {
-    "chinese": "颜色：",
+    "zh-TW": "顏色：",
     "english": "Colors:",
     "spanish": "Colores:",
-    "vietnamese": "Màu sắc:"
+    "vietnamese": "Mau sac:"
   },
   "seed_label": {
-    "chinese": "种子：",
+    "zh-TW": "種子：",
     "english": "Seed:",
     "spanish": "Semilla:",
-    "vietnamese": "Hạt giống:"
+    "vietnamese": "Hat giong:"
   },
   "match_label": {
-    "chinese": "匹配率：",
+    "zh-TW": "匹配率：",
     "english": "Match %:",
     "spanish": "Coincidencia %:",
-    "vietnamese": "Tỷ lệ khớp:"
+    "vietnamese": "Ty le khop:"
   },
   "generate_btn": {
-    "chinese": "生成",
+    "zh-TW": "生成",
     "english": "Generate",
     "spanish": "Generar",
-    "vietnamese": "Tạo"
+    "vietnamese": "Tao"
   },
   "random_btn": {
-    "chinese": "随机",
+    "zh-TW": "隨機",
     "english": "Random",
     "spanish": "Aleatorio",
-    "vietnamese": "Ngẫu nhiên"
+    "vietnamese": "Ngau nhien"
   },
   "enter_answers_header": {
-    "chinese": "输入您的答案",
+    "zh-TW": "輸入您的答案",
     "english": "Enter Your Answers",
     "spanish": "Ingrese Sus Respuestas",
-    "vietnamese": "Nhập câu trả lời của bạn"
+    "vietnamese": "Nhap cau tra loi cua ban"
   },
   "check_btn": {
-    "chinese": "检查答案",
+    "zh-TW": "檢查答案",
     "english": "Check Answers",
     "spanish": "Verificar Respuestas",
-    "vietnamese": "Kiểm tra"
+    "vietnamese": "Kiem tra"
   },
   "clear_btn": {
-    "chinese": "清除",
+    "zh-TW": "清除",
     "english": "Clear",
     "spanish": "Borrar",
-    "vietnamese": "Xóa"
+    "vietnamese": "Xoa"
   },
   "results_header": {
-    "chinese": "结果",
+    "zh-TW": "結果",
     "english": "Results",
     "spanish": "Resultados",
-    "vietnamese": "Kết quả"
+    "vietnamese": "Ket qua"
   },
   "answer_key_header": {
-    "chinese": "答案",
+    "zh-TW": "答案",
     "english": "Answer Key",
     "spanish": "Clave de Respuestas",
-    "vietnamese": "Đáp án"
+    "vietnamese": "Dap an"
   },
   "reveal_btn": {
-    "chinese": "显示",
+    "zh-TW": "顯示",
     "english": "Reveal",
     "spanish": "Revelar",
-    "vietnamese": "Hiện"
+    "vietnamese": "Hien"
   },
   "hide_btn": {
-    "chinese": "隐藏",
+    "zh-TW": "隱藏",
     "english": "Hide",
     "spanish": "Ocultar",
-    "vietnamese": "Ẩn"
+    "vietnamese": "An"
   },
   "reveal_warning": {
-    "chinese": "显示答案将结束当前尝试。请先检查您的答案！",
+    "zh-TW": "顯示答案將結束當前嘗試。請先檢查您的答案！",
     "english": "Revealing the answer key will end your current attempt. Check your answers first!",
     "spanish": "Revelar la clave de respuestas terminara tu intento actual. Verifica tus respuestas primero!",
-    "vietnamese": "Hiện đáp án sẽ kết thúc lần thử hiện tại. Hãy kiểm tra câu trả lời của bạn trước!"
+    "vietnamese": "Hien dap an se ket thuc lan thu hien tai. Hay kiem tra cau tra loi cua ban truoc!"
   },
   "metadata_seed": {
-    "chinese": "种子：",
+    "zh-TW": "種子：",
     "english": "Seed:",
     "spanish": "Semilla:",
-    "vietnamese": "Hạt giống:"
+    "vietnamese": "Hat giong:"
   },
   "metadata_colors": {
-    "chinese": "颜色：",
+    "zh-TW": "顏色：",
     "english": "Colors:",
     "spanish": "Colores:",
-    "vietnamese": "Màu sắc:"
+    "vietnamese": "Mau sac:"
   },
   "metadata_grid": {
-    "chinese": "网格：",
+    "zh-TW": "網格：",
     "english": "Grid:",
     "spanish": "Cuadricula:",
-    "vietnamese": "Lưới:"
+    "vietnamese": "Luoi:"
   },
   "metadata_congruent": {
-    "chinese": "一致：",
+    "zh-TW": "一致：",
     "english": "Congruent:",
     "spanish": "Congruente:",
-    "vietnamese": "Trùng khớp:"
+    "vietnamese": "Trung khop:"
   },
   "result_perfect": {
-    "chinese": "满分！您正确地数出了所有墨水颜色，尽管有Stroop干扰。",
+    "zh-TW": "滿分！您正確地數出了所有墨水顏色，儘管有Stroop干擾。",
     "english": "Perfect score! You correctly counted all the ink colors despite the Stroop interference.",
     "spanish": "Puntuacion perfecta! Contaste correctamente todos los colores de tinta a pesar de la interferencia Stroop.",
-    "vietnamese": "Điểm tuyệt đối! Bạn đã đếm đúng tất cả màu mực bất chấp hiệu ứng Stroop."
+    "vietnamese": "Diem tuyet doi! Ban da dem dung tat ca mau muc bat chap hieu ung Stroop."
   },
   "result_good": {
-    "chinese": "做得好！您答对了{correct}种颜色，共{total}种。Stroop效应使它变得棘手！",
+    "zh-TW": "做得好！您答對了{correct}種顏色，共{total}種。Stroop效應使它變得棘手！",
     "english": "Great job! You got {correct} out of {total} colors correct. The Stroop effect made it tricky!",
     "spanish": "Buen trabajo! Acertaste {correct} de {total} colores. El efecto Stroop lo hizo dificil!",
-    "vietnamese": "Tuyệt vời! Bạn đã đúng {correct} trong {total} màu. Hiệu ứng Stroop làm nó khó khăn!"
+    "vietnamese": "Tuyet voi! Ban da dung {correct} trong {total} mau. Hieu ung Stroop lam no kho khan!"
   },
   "result_needs_work": {
-    "chinese": "您答对了{correct}种颜色，共{total}种。记住：数墨水颜色，不是文字含义！",
+    "zh-TW": "您答對了{correct}種顏色，共{total}種。記住：數墨水顏色，不是文字含義！",
     "english": "You got {correct} out of {total} colors correct. Remember: count the INK color, not the word meaning!",
     "spanish": "Acertaste {correct} de {total} colores. Recuerda: cuenta el color de TINTA, no el significado de la palabra!",
-    "vietnamese": "Bạn đã đúng {correct} trong {total} màu. Nhớ rằng: đếm màu MỰC, không phải nghĩa của từ!"
+    "vietnamese": "Ban da dung {correct} trong {total} mau. Nho rang: dem mau MUC, khong phai nghia cua tu!"
   },
   "result_colors_correct": {
-    "chinese": "正确颜色数",
+    "zh-TW": "正確顏色數",
     "english": "Colors Correct",
     "spanish": "Colores Correctos",
-    "vietnamese": "Màu đúng"
+    "vietnamese": "Mau dung"
   },
   "result_accuracy": {
-    "chinese": "准确率",
+    "zh-TW": "準確率",
     "english": "Accuracy",
     "spanish": "Precision",
-    "vietnamese": "Độ chính xác"
+    "vietnamese": "Do chinh xac"
   },
   "result_total_off": {
-    "chinese": "总偏差",
+    "zh-TW": "總偏差",
     "english": "Total Off By",
     "spanish": "Diferencia Total",
-    "vietnamese": "Tổng sai lệch"
+    "vietnamese": "Tong sai lech"
   },
-  "language_descriptor_chinese": {
-    "chinese": "中文字符",
+  "language_descriptor_zh-TW": {
+    "zh-TW": "中文字符",
     "english": "Chinese character",
     "spanish": "caracter chino",
-    "vietnamese": "ký tự Trung Quốc"
+    "vietnamese": "ky tu Trung Quoc"
   },
   "language_descriptor_english": {
-    "chinese": "英语单词",
+    "zh-TW": "英語單詞",
     "english": "English word",
     "spanish": "palabra en ingles",
-    "vietnamese": "từ tiếng Anh"
+    "vietnamese": "tu tieng Anh"
   },
   "language_descriptor_vietnamese": {
-    "chinese": "越南语单词",
+    "zh-TW": "越南語單詞",
     "english": "Vietnamese word",
     "spanish": "palabra en vietnamita",
-    "vietnamese": "từ tiếng Việt"
+    "vietnamese": "tu tieng Viet"
   },
   "language_descriptor_spanish": {
-    "chinese": "西班牙语单词",
+    "zh-TW": "西班牙語單詞",
     "english": "Spanish word",
-    "spanish": "palabra en español",
-    "vietnamese": "từ tiếng Tây Ban Nha"
+    "spanish": "palabra en espanol",
+    "vietnamese": "tu tieng Tay Ban Nha"
   },
   "difficulty_label": {
-    "chinese": "难度：",
+    "zh-TW": "難度：",
     "english": "Difficulty:",
     "spanish": "Dificultad:",
-    "vietnamese": "Độ khó:"
+    "vietnamese": "Do kho:"
   },
   "difficulty_accessible": {
-    "chinese": "简易",
+    "zh-TW": "簡易",
     "english": "Accessible",
     "spanish": "Accesible",
-    "vietnamese": "Dễ tiếp cận"
+    "vietnamese": "De tiep can"
   },
   "difficulty_standard": {
-    "chinese": "标准",
+    "zh-TW": "標準",
     "english": "Standard",
     "spanish": "Estandar",
-    "vietnamese": "Tiêu chuẩn"
+    "vietnamese": "Tieu chuan"
   },
   "difficulty_advanced": {
-    "chinese": "高级",
+    "zh-TW": "進階",
     "english": "Advanced",
     "spanish": "Avanzado",
-    "vietnamese": "Nâng cao"
+    "vietnamese": "Nang cao"
   },
   "difficulty_custom": {
-    "chinese": "自定义",
+    "zh-TW": "自訂",
     "english": "Custom",
     "spanish": "Personalizado",
-    "vietnamese": "Tùy chỉnh"
+    "vietnamese": "Tuy chinh"
   },
   "spacing_label": {
-    "chinese": "间距：",
+    "zh-TW": "間距：",
     "english": "Spacing:",
     "spanish": "Espaciado:",
-    "vietnamese": "Khoảng cách:"
+    "vietnamese": "Khoang cach:"
   },
   "spacing_compact": {
-    "chinese": "紧凑",
+    "zh-TW": "緊湊",
     "english": "Compact",
     "spanish": "Compacto",
-    "vietnamese": "Thu gọn"
+    "vietnamese": "Thu gon"
   },
   "spacing_normal": {
-    "chinese": "正常",
+    "zh-TW": "正常",
     "english": "Normal",
     "spanish": "Normal",
-    "vietnamese": "Bình thường"
+    "vietnamese": "Binh thuong"
   },
   "spacing_relaxed": {
-    "chinese": "宽松",
+    "zh-TW": "寬鬆",
     "english": "Relaxed",
     "spanish": "Relajado",
-    "vietnamese": "Thoải mái"
+    "vietnamese": "Thoai mai"
   },
   "spacing_spacious": {
-    "chinese": "宽敞",
+    "zh-TW": "寬敞",
     "english": "Spacious",
     "spanish": "Espacioso",
-    "vietnamese": "Rộng rãi"
+    "vietnamese": "Rong rai"
   },
   "support_link_text": {
-    "chinese": "☕ 支持这个项目",
-    "english": "☕ Support this project",
-    "spanish": "☕ Apoya este proyecto",
-    "vietnamese": "☕ Ủng hộ dự án này"
+    "zh-TW": "支持這個項目",
+    "english": "Support this project",
+    "spanish": "Apoya este proyecto",
+    "vietnamese": "Ung ho du an nay"
   },
   "qr_code_label": {
-    "chinese": "扫描二维码支持 ColorFocus",
+    "zh-TW": "掃描二維碼支持 ColorFocus",
     "english": "Scan to support ColorFocus",
     "spanish": "Escanea para apoyar ColorFocus",
     "vietnamese": "Quet de ung ho ColorFocus"

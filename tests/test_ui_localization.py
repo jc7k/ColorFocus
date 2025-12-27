@@ -5,7 +5,9 @@ These tests verify that UI text localization works correctly in the frontend
 when switching languages. Tests simulate browser behavior to validate the
 localization implementation.
 
-This test file covers Task Group 2: UI Localization Implementation.
+Updated for the accessible color palette replacement:
+- Language key "chinese" renamed to "zh-TW"
+- VALID_LANGUAGES now uses 'zh-TW' instead of 'chinese'
 """
 
 import json
@@ -163,3 +165,107 @@ class TestUILocalizationImplementation:
         assert "page_title" in html_content, (
             "Document title should use page_title translation key"
         )
+
+
+class TestZhTWLanguageKey:
+    """
+    Verify that 'zh-TW' is used instead of 'chinese' throughout.
+
+    The language key was renamed from 'chinese' to 'zh-TW' for
+    proper locale identification.
+    """
+
+    def test_valid_languages_uses_zh_tw(self):
+        """
+        Test that VALID_LANGUAGES array contains 'zh-TW', not 'chinese'.
+        """
+        html_content = load_puzzle_html()
+
+        # Check for zh-TW in VALID_LANGUAGES definition
+        # The array should include 'zh-TW'
+        assert "'zh-TW'" in html_content or '"zh-TW"' in html_content, (
+            "VALID_LANGUAGES should include 'zh-TW'"
+        )
+
+    def test_language_dropdown_has_zh_tw_option(self):
+        """
+        Test that the language dropdown uses 'zh-TW' as option value.
+        """
+        html_content = load_puzzle_html()
+
+        # Check for zh-TW option value in select element
+        assert 'value="zh-TW"' in html_content or "value='zh-TW'" in html_content, (
+            "Language dropdown should have 'zh-TW' option value"
+        )
+
+    def test_language_descriptor_key_uses_zh_tw(self):
+        """
+        Test that language_descriptor lookup uses 'zh-TW' suffix.
+        """
+        html_content = load_puzzle_html()
+
+        # Check for language_descriptor_zh-TW key reference
+        # Note: The code might use dynamic key construction
+        assert "language_descriptor_zh-TW" in html_content or (
+            "language_descriptor_" in html_content and "zh-TW" in html_content
+        ), (
+            "Language descriptor should use 'zh-TW' suffix"
+        )
+
+    def test_width_multipliers_uses_zh_tw_key(self):
+        """
+        Test that widthMultipliers object uses 'zh-TW' key.
+        """
+        html_content = load_puzzle_html()
+
+        # Check for zh-TW in widthMultipliers or similar font sizing logic
+        # The key should be 'zh-TW', not 'chinese'
+        if "widthMultipliers" in html_content:
+            # Find the widthMultipliers definition area
+            assert "'zh-TW'" in html_content or '"zh-TW"' in html_content, (
+                "widthMultipliers should use 'zh-TW' key"
+            )
+
+
+class TestMultiLanguageColorLabels:
+    """
+    Verify that color labels work correctly with the new accessible palette
+    across all supported languages.
+    """
+
+    def test_color_labels_json_has_all_languages(self):
+        """
+        Test that color_labels.json has labels for all 4 supported languages.
+        """
+        color_labels_path = PROJECT_ROOT / "shared" / "color_labels.json"
+        with open(color_labels_path, "r", encoding="utf-8") as f:
+            color_labels = json.load(f)
+
+        expected_languages = ["zh-TW", "english", "spanish", "vietnamese"]
+
+        for color, labels in color_labels.items():
+            for lang in expected_languages:
+                assert lang in labels, (
+                    f"Color '{color}' missing '{lang}' label"
+                )
+                assert isinstance(labels[lang], str), (
+                    f"Color '{color}' label for '{lang}' should be a string"
+                )
+                assert len(labels[lang]) > 0, (
+                    f"Color '{color}' label for '{lang}' should not be empty"
+                )
+
+    def test_all_new_palette_colors_have_labels(self):
+        """
+        Test that all 8 accessible palette colors have labels.
+        """
+        color_labels_path = PROJECT_ROOT / "shared" / "color_labels.json"
+        with open(color_labels_path, "r", encoding="utf-8") as f:
+            color_labels = json.load(f)
+
+        expected_colors = ["BLACK", "BROWN", "PURPLE", "BLUE", "GRAY", "PINK", "ORANGE", "YELLOW"]
+
+        for color in expected_colors:
+            assert color in color_labels, (
+                f"Missing color label entry for: {color}"
+            )

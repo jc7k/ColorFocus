@@ -2,10 +2,14 @@
 Tests for color labels and puzzle data structures.
 
 These tests verify that:
-1. All 8 ColorToken values have Chinese labels defined
+1. All 8 ColorToken values have zh-TW labels defined
 2. PuzzleCell dataclass contains word and inkColor fields
 3. PuzzleGrid dataclass contains grid, metadata (seed, dimensions, congruence_percentage)
 4. JSON serialization of puzzle structures works correctly
+
+Updated for accessible color palette (2025-12-27):
+- New 8-color palette: BLACK, BROWN, PURPLE, BLUE, GRAY, PINK, ORANGE, YELLOW
+- Language key renamed from "chinese" to "zh-TW"
 """
 
 import json
@@ -27,40 +31,40 @@ class TestColorLabels:
     """Test that color labels are properly defined for all ColorToken values."""
 
     def test_all_color_tokens_have_chinese_labels(self):
-        """Test that all 8 ColorToken values have Chinese labels defined."""
+        """Test that all 8 ColorToken values have zh-TW labels defined."""
         expected_tokens = [
-            ColorToken.BLUE,
-            ColorToken.ORANGE,
-            ColorToken.PURPLE,
             ColorToken.BLACK,
-            ColorToken.CYAN,
-            ColorToken.AMBER,
-            ColorToken.MAGENTA,
+            ColorToken.BROWN,
+            ColorToken.PURPLE,
+            ColorToken.BLUE,
             ColorToken.GRAY,
+            ColorToken.PINK,
+            ColorToken.ORANGE,
+            ColorToken.YELLOW,
         ]
 
         for token in expected_tokens:
-            label = get_color_label(token, Language.CHINESE)
-            assert label is not None, f"Missing Chinese label for {token}"
-            assert len(label) > 0, f"Empty Chinese label for {token}"
+            label = get_color_label(token, Language.ZH_TW)
+            assert label is not None, f"Missing zh-TW label for {token}"
+            assert len(label) > 0, f"Empty zh-TW label for {token}"
 
     def test_chinese_labels_match_prd_specification(self):
-        """Test that Chinese labels match PRD Section 5.2 specification."""
+        """Test that zh-TW labels match new accessible palette specification."""
         expected_labels = {
-            ColorToken.BLUE: "藍",
-            ColorToken.ORANGE: "橙",
-            ColorToken.PURPLE: "紫",
             ColorToken.BLACK: "黑",
-            ColorToken.CYAN: "青",
-            ColorToken.AMBER: "金",
-            ColorToken.MAGENTA: "品",
+            ColorToken.BROWN: "棕",
+            ColorToken.PURPLE: "紫",
+            ColorToken.BLUE: "藍",
             ColorToken.GRAY: "灰",
+            ColorToken.PINK: "粉",
+            ColorToken.ORANGE: "橙",
+            ColorToken.YELLOW: "黃",
         }
 
         for token, expected_label in expected_labels.items():
-            actual_label = get_color_label(token, Language.CHINESE)
+            actual_label = get_color_label(token, Language.ZH_TW)
             assert actual_label == expected_label, (
-                f"Chinese label mismatch for {token}: "
+                f"zh-TW label mismatch for {token}: "
                 f"expected '{expected_label}', got '{actual_label}'"
             )
 
@@ -142,11 +146,11 @@ class TestJsonSerialization:
         cells = [
             [
                 PuzzleCell(word=ColorToken.BLUE, ink_color=ColorToken.ORANGE),
-                PuzzleCell(word=ColorToken.PURPLE, ink_color=ColorToken.CYAN),
+                PuzzleCell(word=ColorToken.PURPLE, ink_color=ColorToken.PINK),
             ],
             [
-                PuzzleCell(word=ColorToken.BLACK, ink_color=ColorToken.AMBER),
-                PuzzleCell(word=ColorToken.MAGENTA, ink_color=ColorToken.GRAY),
+                PuzzleCell(word=ColorToken.BLACK, ink_color=ColorToken.YELLOW),
+                PuzzleCell(word=ColorToken.BROWN, ink_color=ColorToken.GRAY),
             ],
         ]
         metadata = PuzzleMetadata(seed=42, rows=2, cols=2, congruence_percentage=0.5)

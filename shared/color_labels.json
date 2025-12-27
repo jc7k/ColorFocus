@@ -1,50 +1,50 @@
 {
-  "BLUE": {
-    "chinese": "藍",
-    "english": "BLUE",
-    "spanish": "AZUL",
-    "vietnamese": "Xanh"
+  "BLACK": {
+    "zh-TW": "黑",
+    "english": "Black",
+    "spanish": "Negro",
+    "vietnamese": "Den"
   },
-  "ORANGE": {
-    "chinese": "橙",
-    "english": "ORANGE",
-    "spanish": "NARANJA",
-    "vietnamese": "Cam"
+  "BROWN": {
+    "zh-TW": "棕",
+    "english": "Brown",
+    "spanish": "Cafe",
+    "vietnamese": "Nau"
   },
   "PURPLE": {
-    "chinese": "紫",
-    "english": "PURPLE",
-    "spanish": "MORADO",
-    "vietnamese": "Tím"
+    "zh-TW": "紫",
+    "english": "Purple",
+    "spanish": "Morado",
+    "vietnamese": "Tim"
   },
-  "BLACK": {
-    "chinese": "黑",
-    "english": "BLACK",
-    "spanish": "NEGRO",
-    "vietnamese": "Đen"
-  },
-  "CYAN": {
-    "chinese": "青",
-    "english": "CYAN",
-    "spanish": "CIAN",
-    "vietnamese": "Lơ"
-  },
-  "AMBER": {
-    "chinese": "金",
-    "english": "AMBER",
-    "spanish": "AMBAR",
-    "vietnamese": "Vàng"
-  },
-  "MAGENTA": {
-    "chinese": "品",
-    "english": "MAGENTA",
-    "spanish": "MAGENTA",
-    "vietnamese": "Hồng"
+  "BLUE": {
+    "zh-TW": "藍",
+    "english": "Blue",
+    "spanish": "Azul",
+    "vietnamese": "Xanh"
   },
   "GRAY": {
-    "chinese": "灰",
-    "english": "GRAY",
-    "spanish": "GRIS",
-    "vietnamese": "Xám"
+    "zh-TW": "灰",
+    "english": "Gray",
+    "spanish": "Gris",
+    "vietnamese": "Xam"
+  },
+  "PINK": {
+    "zh-TW": "粉",
+    "english": "Pink",
+    "spanish": "Rosa",
+    "vietnamese": "Hong"
+  },
+  "ORANGE": {
+    "zh-TW": "橙",
+    "english": "Orange",
+    "spanish": "Naranja",
+    "vietnamese": "Cam"
+  },
+  "YELLOW": {
+    "zh-TW": "黃",
+    "english": "Yellow",
+    "spanish": "Amarillo",
+    "vietnamese": "Vang"
   }
 }

@@ -194,7 +194,7 @@ class TestDynamicFontSizeCalculation:
         html = load_puzzle_html()
 
         # Check that there's no hardcoded maxFontSizes object with fixed language values
-        # The old pattern was: maxFontSizes = { chinese: 45, vietnamese: 22, ... }
+        # The old pattern was: maxFontSizes = { "zh-TW": 45, vietnamese: 22, ... }
         has_fixed_max_sizes = bool(re.search(
             r'maxFontSizes\s*=\s*\{[^}]*chinese\s*:\s*\d+',
             html
@@ -221,22 +221,23 @@ class TestDynamicFontSizeCalculation:
         """
         Test that language width multipliers are maintained.
 
-        Chinese (1.15), Vietnamese (2.6), English (4.2), Spanish (4.2)
+        Updated for accessible color palette (2025-12-27):
+        zh-TW (1.15), Vietnamese (2.4), English (3.6), Spanish (4.8)
         """
         html = load_puzzle_html()
 
         # Check widthMultipliers object exists with correct values
-        assert 'chinese: 1.15' in html or 'chinese:1.15' in html, (
-            "Chinese width multiplier should be 1.15"
+        assert "'zh-TW': 1.15" in html or "'zh-TW':1.15" in html, (
+            "zh-TW width multiplier should be 1.15"
         )
-        assert 'vietnamese: 2.6' in html or 'vietnamese:2.6' in html, (
-            "Vietnamese width multiplier should be 2.6"
+        assert 'vietnamese: 2.4' in html or 'vietnamese:2.4' in html, (
+            "Vietnamese width multiplier should be 2.4"
         )
-        assert 'english: 4.2' in html or 'english:4.2' in html, (
-            "English width multiplier should be 4.2"
+        assert 'english: 3.6' in html or 'english:3.6' in html, (
+            "English width multiplier should be 3.6"
         )
-        assert 'spanish: 4.2' in html or 'spanish:4.2' in html, (
-            "Spanish width multiplier should be 4.2"
+        assert 'spanish: 4.8' in html or 'spanish:4.8' in html, (
+            "Spanish width multiplier should be 4.8"
         )
 
     def test_cell_width_calculation_accounts_for_spacing(self):
@@ -400,7 +401,7 @@ class TestAllLanguagesAtGridSizes:
 
         section_text = width_multipliers_section.group(0)
 
-        assert 'chinese' in section_text, "Chinese should be in widthMultipliers"
+        assert "zh-TW" in section_text, "zh-TW should be in widthMultipliers"
         assert 'vietnamese' in section_text, "Vietnamese should be in widthMultipliers"
         assert 'english' in section_text, "English should be in widthMultipliers"
         assert 'spanish' in section_text, "Spanish should be in widthMultipliers"
@@ -559,13 +560,13 @@ class TestFontSizeProportionalScaling:
 
     def test_chinese_multiplier_allows_larger_font(self):
         """
-        Test that Chinese has smallest multiplier (1.15) for largest font.
+        Test that zh-TW has smallest multiplier (1.15) for largest font.
 
-        Since Chinese uses single characters, font can be much larger.
+        Since zh-TW uses single characters, font can be much larger.
         """
         html = load_puzzle_html()
 
-        # Chinese should have the smallest multiplier
+        # zh-TW should have the smallest multiplier
         width_multipliers_section = re.search(
             r'widthMultipliers\s*=\s*\{[^}]+\}',
             html,
@@ -578,28 +579,29 @@ class TestFontSizeProportionalScaling:
 
         section_text = width_multipliers_section.group(0)
 
-        # Extract multiplier values
-        chinese_match = re.search(r'chinese:\s*([\d.]+)', section_text)
+        # Extract multiplier values (code uses single quotes for zh-TW key)
+        chinese_match = re.search(r"'zh-TW':\s*([\d.]+)", section_text)
         english_match = re.search(r'english:\s*([\d.]+)', section_text)
 
         assert chinese_match and english_match, (
-            "Both Chinese and English multipliers should be present"
+            "Both zh-TW and English multipliers should be present"
         )
 
         chinese_mult = float(chinese_match.group(1))
         english_mult = float(english_match.group(1))
 
-        # Chinese multiplier should be smaller (resulting in larger font)
+        # zh-TW multiplier should be smaller (resulting in larger font)
         assert chinese_mult < english_mult, (
-            f"Chinese multiplier ({chinese_mult}) should be smaller than "
+            f"zh-TW multiplier ({chinese_mult}) should be smaller than "
             f"English ({english_mult}) for larger font size"
         )
 
     def test_chinese_font_approximately_3_to_4x_larger_than_english(self):
         """
-        Test that Chinese font is approximately 3-4x larger than English.
+        Test that zh-TW font is approximately 3x larger than English.
 
-        Ratio should be English/Chinese multiplier = 4.2/1.15 = ~3.65x
+        Updated for accessible palette:
+        Ratio should be English/zh-TW multiplier = 3.6/1.15 = ~3.13x
         """
         html = load_puzzle_html()
 
@@ -612,7 +614,7 @@ class TestFontSizeProportionalScaling:
         assert width_multipliers_section is not None
         section_text = width_multipliers_section.group(0)
 
-        chinese_match = re.search(r'chinese:\s*([\d.]+)', section_text)
+        chinese_match = re.search(r"'zh-TW':\s*([\d.]+)", section_text)
         english_match = re.search(r'english:\s*([\d.]+)', section_text)
 
         assert chinese_match and english_match
@@ -622,10 +624,10 @@ class TestFontSizeProportionalScaling:
 
         ratio = english_mult / chinese_mult
 
-        # Ratio should be between 3 and 4
-        assert 3 <= ratio <= 4, (
-            f"English/Chinese multiplier ratio ({ratio:.2f}) should be 3-4x "
-            f"for Chinese to display 3-4x larger"
+        # Ratio should be between 2.5 and 4 (updated for new multipliers)
+        assert 2.5 <= ratio <= 4, (
+            f"English/zh-TW multiplier ratio ({ratio:.2f}) should be 2.5-4x "
+            f"for zh-TW to display larger"
         )
 
 
