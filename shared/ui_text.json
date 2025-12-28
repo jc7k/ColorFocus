@@ -258,15 +258,15 @@
     "vietnamese": "Rộng rãi"
   },
   "support_link_text": {
-    "chinese": "☕ 支持这个项目",
-    "english": "☕ Support this project",
-    "spanish": "☕ Apoya este proyecto",
-    "vietnamese": "☕ Ủng hộ dự án này"
+    "chinese": "☕ 请我喝杯咖啡",
+    "english": "☕ Buy me a coffee",
+    "spanish": "☕ Invítame un café",
+    "vietnamese": "☕ Mời tôi cà phê"
   },
   "qr_code_label": {
-    "chinese": "扫描二维码支持 ColorFocus",
-    "english": "Scan to support ColorFocus",
-    "spanish": "Escanea para apoyar ColorFocus",
-    "vietnamese": "Quet de ung ho ColorFocus"
+    "chinese": "如果觉得有用，您的支持帮助支付服务器费用",
+    "english": "If you find this useful, your support helps cover server costs",
+    "spanish": "Si te resulta útil, tu apoyo ayuda a cubrir los costos del servidor",
+    "vietnamese": "Nếu hữu ích, sự ủng hộ của bạn giúp trang trải chi phí máy chủ"
   }
 }
