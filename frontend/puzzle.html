@@ -683,9 +683,19 @@
   </div>
 
   <script type="module">
-    import colorsJson from '../shared/colors.json' with { type: 'json' };
-    import colorLabelsJson from '../shared/color_labels.json' with { type: 'json' };
-    import uiTextJson from '../shared/ui_text.json' with { type: 'json' };
+    // Load JSON files via fetch for better iOS Safari compatibility
+    // (ES module import attributes can fail to fully parse large JSON on some iOS versions)
+    async function loadJSON(path) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`Failed to load ${path}`);
+      return response.json();
+    }
+
+    const [colorsJson, colorLabelsJson, uiTextJson] = await Promise.all([
+      loadJSON('/shared/colors.json'),
+      loadJSON('/shared/color_labels.json'),
+      loadJSON('/shared/ui_text.json')
+    ]);
 
     // All color tokens in order
     const ALL_COLOR_TOKENS = ['BLUE', 'ORANGE', 'PURPLE', 'BLACK', 'CYAN', 'AMBER', 'MAGENTA', 'GRAY'];
