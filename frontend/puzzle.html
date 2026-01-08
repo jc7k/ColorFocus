@@ -110,6 +110,13 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       margin-bottom: 1rem;
     }
+    .puzzle-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
     .puzzle-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
@@ -127,11 +134,31 @@
       border-radius: 4px;
       background: #f8fafc;
       border: 2px solid #1A1A1A;
-      transition: transform 0.1s;
+      transition: transform 0.1s, box-shadow 0.1s;
+      cursor: pointer;
     }
     .puzzle-cell:hover {
       transform: scale(1.08);
       z-index: 1;
+    }
+    .puzzle-cell.selected {
+      box-shadow: inset 4px 4px 8px rgba(0,0,0,0.3);
+      transform: translate(2px, 2px);
+    }
+    .puzzle-cell.selected:hover {
+      transform: translate(2px, 2px);
+    }
+    .puzzle-cell:focus {
+      outline: 3px solid #2563eb;
+      outline-offset: 2px;
+      z-index: 2;
+    }
+    .puzzle-cell.selected:focus {
+      box-shadow: inset 4px 4px 8px rgba(0,0,0,0.3);
+      transform: translate(2px, 2px);
+      outline: 3px solid #2563eb;
+      outline-offset: 2px;
+      z-index: 2;
     }
     .metadata {
       display: flex;
@@ -163,6 +190,21 @@
     .task-instructions strong {
       display: block;
       margin-bottom: 0.15rem;
+    }
+
+    /* Sound toggle checkbox styling */
+    .sound-toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .sound-toggle-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    .sound-toggle-group label {
+      cursor: pointer;
     }
 
     /* Answer Submission Section */
@@ -215,6 +257,14 @@
       border-radius: 4px;
       border: 2px solid #1A1A1A;
       flex-shrink: 0;
+      cursor: pointer;
+    }
+    .color-swatch:hover {
+      opacity: 0.8;
+    }
+    .color-swatch:focus {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
     }
     .answer-label {
       font-size: 0.85rem;
@@ -444,6 +494,9 @@
         padding: 0.5rem;
         overflow-x: hidden;
       }
+      .puzzle-controls {
+        gap: 0.4rem;
+      }
       .puzzle-grid {
         gap: 1px;
         width: 100%;
@@ -456,6 +509,23 @@
       }
       .puzzle-cell:hover {
         transform: none;
+      }
+      .puzzle-cell.selected {
+        box-shadow: inset 3px 3px 6px rgba(0,0,0,0.3);
+        transform: translate(1px, 1px);
+      }
+      .puzzle-cell.selected:hover {
+        transform: translate(1px, 1px);
+      }
+      .puzzle-cell:focus {
+        outline: 2px solid #2563eb;
+        outline-offset: 1px;
+      }
+      .puzzle-cell.selected:focus {
+        box-shadow: inset 3px 3px 6px rgba(0,0,0,0.3);
+        transform: translate(1px, 1px);
+        outline: 2px solid #2563eb;
+        outline-offset: 1px;
       }
       .metadata {
         gap: 0.75rem;
@@ -532,6 +602,10 @@
       }
       .donation-label {
         font-size: 0.75rem;
+      }
+      .sound-toggle-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
       }
     }
 
@@ -641,7 +715,14 @@
   </div>
 
   <div class="puzzle-container">
-    <div class="puzzle-grid" id="puzzleGrid"></div>
+    <div class="puzzle-controls">
+      <button id="clearSelectionsBtn" class="secondary" data-i18n="clear_selections_btn">Clear Selections</button>
+      <div class="sound-toggle-group">
+        <input type="checkbox" id="soundToggle" aria-label="Toggle selection sound">
+        <label for="soundToggle" id="soundToggleLabel" data-i18n="sound_toggle_label">Selection Sound</label>
+      </div>
+    </div>
+    <div class="puzzle-grid" id="puzzleGrid" role="grid" aria-label="Color puzzle grid"></div>
     <div class="metadata" id="metadata"></div>
   </div>
 
@@ -779,6 +860,11 @@
       return VALID_SPACINGS.includes(spacing) ? spacing : 'normal';
     }
 
+    // Validate sound enabled setting from localStorage
+    function validateSoundEnabled(value) {
+      return value === 'true';
+    }
+
     // Get UI text for the current language
     function getUIText(key) {
       if (uiTextJson[key] && uiTextJson[key][currentLanguage]) {
@@ -811,6 +897,14 @@
     let currentDifficulty = validateDifficulty(localStorage.getItem('colorFocusDifficulty') || 'standard');
     // Validate spacing from localStorage (default: normal)
     let currentSpacing = validateSpacing(localStorage.getItem('colorFocusSpacing') || 'normal');
+    // Tile selection state for counting tiles feature
+    let selectedTiles = new Set();
+    // Sound enabled state for tile selection (default: off for accessibility)
+    let soundEnabled = validateSoundEnabled(localStorage.getItem('colorFocusSoundEnabled'));
+    // Track currently focused tile index for keyboard navigation (roving tabindex)
+    let focusedTileIndex = 0;
+    // Audio context for selection sound (lazy initialized)
+    let audioContext = null;
 
     // Initialize language selector with saved preference
     document.getElementById('language').value = currentLanguage;
@@ -823,6 +917,9 @@
 
     // Initialize spacing selector with saved preference
     document.getElementById('spacing').value = currentSpacing;
+
+    // Initialize sound toggle with saved preference
+    document.getElementById('soundToggle').checked = soundEnabled;
 
     // Show/hide custom controls based on difficulty
     function updateCustomControlsVisibility() {
@@ -947,6 +1044,12 @@
 
       // Update task instructions
       updateTaskInstructions();
+
+      // Update clear selections button text
+      document.getElementById('clearSelectionsBtn').textContent = getUIText('clear_selections_btn');
+
+      // Update sound toggle label text
+      document.getElementById('soundToggleLabel').textContent = getUIText('sound_toggle_label');
     }
 
     // Add difficulty change event listener
@@ -987,6 +1090,12 @@
       updateGridCSS();
       updateColorDropdownOptions();
       generatePuzzle();
+    });
+
+    // Add sound toggle event listener
+    document.getElementById('soundToggle').addEventListener('change', (e) => {
+      soundEnabled = e.target.checked;
+      localStorage.setItem('colorFocusSoundEnabled', String(soundEnabled));
     });
 
     // Seeded random number generator (mulberry32)
@@ -1088,6 +1197,130 @@
       cells.forEach(cell => cell.style.fontSize = `${fontSize}px`);
     }
 
+    // Play selection sound using Web Audio API
+    function playSelectionSound() {
+      if (!soundEnabled) return;
+
+      try {
+        // Lazy initialize AudioContext (must be triggered by user interaction)
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        // Resume AudioContext if suspended (browsers require user interaction)
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+
+        // Create a short, pleasant "pop" sound
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Use a pleasant frequency (C5 note = 523.25 Hz)
+        oscillator.frequency.value = 523.25;
+        oscillator.type = 'sine';
+
+        // Quick attack, short sustain, fast decay for a "pop" effect
+        const now = audioContext.currentTime;
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.02); // Quick attack
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1); // Fast decay
+
+        oscillator.start(now);
+        oscillator.stop(now + 0.1);
+      } catch (e) {
+        // Silently fail if audio is not supported
+        console.warn('Audio playback failed:', e);
+      }
+    }
+
+    // Toggle tile selection state
+    function toggleTileSelection(index) {
+      const cell = document.querySelector(`.puzzle-cell[data-index="${index}"]`);
+      if (!cell) return;
+
+      if (selectedTiles.has(index)) {
+        selectedTiles.delete(index);
+        cell.classList.remove('selected');
+        cell.setAttribute('aria-pressed', 'false');
+      } else {
+        selectedTiles.add(index);
+        cell.classList.add('selected');
+        cell.setAttribute('aria-pressed', 'true');
+        // Play sound only on selection, not deselection
+        playSelectionSound();
+      }
+    }
+
+    // Clear all tile selections
+    function clearAllSelections() {
+      selectedTiles.clear();
+      document.querySelectorAll('.puzzle-cell.selected').forEach(cell => {
+        cell.classList.remove('selected');
+        cell.setAttribute('aria-pressed', 'false');
+      });
+    }
+
+    // Calculate new tile index based on arrow key direction
+    function calculateNewTileIndex(currentIndex, key, gridSize) {
+      const row = Math.floor(currentIndex / gridSize);
+      const col = currentIndex % gridSize;
+
+      switch (key) {
+        case 'ArrowUp':
+          return row > 0 ? currentIndex - gridSize : currentIndex;
+        case 'ArrowDown':
+          return row < gridSize - 1 ? currentIndex + gridSize : currentIndex;
+        case 'ArrowLeft':
+          return col > 0 ? currentIndex - 1 : currentIndex;
+        case 'ArrowRight':
+          return col < gridSize - 1 ? currentIndex + 1 : currentIndex;
+        default:
+          return currentIndex;
+      }
+    }
+
+    // Handle keyboard navigation within the puzzle grid
+    function handleGridKeydown(event) {
+      const key = event.key;
+
+      // Handle arrow key navigation
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+        event.preventDefault();
+        const newIndex = calculateNewTileIndex(focusedTileIndex, key, currentGridSize);
+
+        if (newIndex !== focusedTileIndex) {
+          // Update roving tabindex
+          const currentCell = document.querySelector(`.puzzle-cell[data-index="${focusedTileIndex}"]`);
+          const newCell = document.querySelector(`.puzzle-cell[data-index="${newIndex}"]`);
+
+          if (currentCell && newCell) {
+            currentCell.setAttribute('tabindex', '-1');
+            newCell.setAttribute('tabindex', '0');
+            newCell.focus();
+            focusedTileIndex = newIndex;
+          }
+        }
+      }
+
+      // Handle spacebar to toggle selection
+      if (key === ' ' || key === 'Spacebar') {
+        event.preventDefault();
+        toggleTileSelection(focusedTileIndex);
+      }
+    }
+
+    // Handle auto-fill when color swatch is clicked
+    function handleSwatchClick(token) {
+      const input = document.getElementById(`answer-${token}`);
+      if (input) {
+        input.value = String(selectedTiles.size);
+      }
+    }
+
     // Render the puzzle grid display (without regenerating data)
     function renderPuzzleDisplay() {
       if (!currentPuzzle) return;
@@ -1095,11 +1328,43 @@
       const grid = document.getElementById('puzzleGrid');
       grid.innerHTML = '';
 
-      currentPuzzle.forEach(cell => {
+      // Reset focused tile index when re-rendering
+      focusedTileIndex = 0;
+
+      currentPuzzle.forEach((cell, index) => {
         const div = document.createElement('div');
         div.className = 'puzzle-cell';
+        div.setAttribute('data-index', index);
+        div.setAttribute('role', 'gridcell');
         div.textContent = colorLabelsJson[cell.word][currentLanguage];
         div.style.color = colorsJson[cell.inkColor];
+
+        // Apply selected class and aria-pressed if tile is in selectedTiles set
+        if (selectedTiles.has(index)) {
+          div.classList.add('selected');
+          div.setAttribute('aria-pressed', 'true');
+        } else {
+          div.setAttribute('aria-pressed', 'false');
+        }
+
+        // Roving tabindex: first tile gets tabindex 0, others get -1
+        div.setAttribute('tabindex', index === 0 ? '0' : '-1');
+
+        // Add click handler for tile selection
+        div.addEventListener('click', () => {
+          toggleTileSelection(index);
+          // Update focus to clicked tile
+          const previousCell = document.querySelector(`.puzzle-cell[data-index="${focusedTileIndex}"]`);
+          if (previousCell) {
+            previousCell.setAttribute('tabindex', '-1');
+          }
+          div.setAttribute('tabindex', '0');
+          focusedTileIndex = index;
+        });
+
+        // Add keyboard event handler
+        div.addEventListener('keydown', handleGridKeydown);
+
         grid.appendChild(div);
       });
 
@@ -1168,6 +1433,8 @@
       // Reset state
       hasChecked = false;
       answerKeyRevealed = false;
+      selectedTiles.clear();
+      focusedTileIndex = 0;
       document.getElementById('answerKeyContent').classList.remove('revealed');
       document.getElementById('revealBtn').textContent = getUIText('reveal_btn');
       document.getElementById('revealWarning').style.display = 'block';
@@ -1277,10 +1544,20 @@
         item.className = 'answer-item';
         item.id = `answer-item-${token}`;
 
-        // Create swatch
+        // Create swatch with auto-fill click handler
         const swatch = document.createElement('div');
         swatch.className = 'color-swatch';
         swatch.style.backgroundColor = colorsJson[token];
+        swatch.setAttribute('role', 'button');
+        swatch.setAttribute('tabindex', '0');
+        swatch.setAttribute('aria-label', 'Auto-fill with selected tile count');
+        swatch.addEventListener('click', () => handleSwatchClick(token));
+        swatch.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleSwatchClick(token);
+          }
+        });
         item.appendChild(swatch);
 
         // Create label
@@ -1498,6 +1775,7 @@
     document.getElementById('checkBtn').addEventListener('click', checkAnswers);
     document.getElementById('clearBtn').addEventListener('click', clearAnswers);
     document.getElementById('revealBtn').addEventListener('click', toggleAnswerKey);
+    document.getElementById('clearSelectionsBtn').addEventListener('click', clearAllSelections);
 
     // Initialize custom controls visibility based on difficulty
     updateCustomControlsVisibility();

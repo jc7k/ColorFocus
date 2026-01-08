@@ -268,5 +268,17 @@
     "english": "Scan to support ColorFocus",
     "spanish": "Escanea para apoyar ColorFocus",
     "vietnamese": "Quet de ung ho ColorFocus"
+  },
+  "clear_selections_btn": {
+    "zh-TW": "清除選擇",
+    "english": "Clear Selections",
+    "spanish": "Borrar Selecciones",
+    "vietnamese": "Xoa lua chon"
+  },
+  "sound_toggle_label": {
+    "zh-TW": "選擇音效",
+    "english": "Selection Sound",
+    "spanish": "Sonido de Seleccion",
+    "vietnamese": "Am thanh chon"
   }
 }
