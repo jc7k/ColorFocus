@@ -280,5 +280,29 @@
     "english": "Selection Sound",
     "spanish": "Sonido de Seleccion",
     "vietnamese": "Am thanh chon"
+  },
+  "signin_btn": {
+    "zh-TW": "使用 Google 登入",
+    "english": "Sign in with Google",
+    "spanish": "Iniciar sesion con Google",
+    "vietnamese": "Dang nhap bang Google"
+  },
+  "signout_btn": {
+    "zh-TW": "登出",
+    "english": "Sign out",
+    "spanish": "Cerrar sesion",
+    "vietnamese": "Dang xuat"
+  },
+  "auth_error_signin": {
+    "zh-TW": "登入失敗，請稍後再試",
+    "english": "Sign in failed. Please try again.",
+    "spanish": "Error al iniciar sesion. Intentelo de nuevo.",
+    "vietnamese": "Dang nhap that bai. Vui long thu lai."
+  },
+  "auth_error_signout": {
+    "zh-TW": "登出失敗，請稍後再試",
+    "english": "Sign out failed. Please try again.",
+    "spanish": "Error al cerrar sesion. Intentelo de nuevo.",
+    "vietnamese": "Dang xuat that bai. Vui long thu lai."
   }
 }

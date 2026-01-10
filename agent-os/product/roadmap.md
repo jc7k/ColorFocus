@@ -18,7 +18,7 @@
 
 8. [x] Chinese Character Labels — Add single-character Chinese labels as an alternative identifier for each color token, supporting users who may benefit from dual-coding. `XS`
 
-9. [ ] Basic User Authentication — Implement simple user accounts to enable puzzle history and progress tracking across sessions. `M`
+9. [x] Basic User Authentication — Implement simple user accounts to enable puzzle history and progress tracking across sessions. `M`
 
 10. [ ] Puzzle History Storage — Store completed puzzles with timestamps, user answers, and accuracy for each authenticated user. `S`
 

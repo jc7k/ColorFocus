@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://lh3.googleusercontent.com; connect-src 'self' https://*.supabase.co;">
   <title>ColorFocus - Stroop Puzzle</title>
   <style>
     * {
@@ -47,6 +47,55 @@
     .donation-link:focus {
       outline: 2px solid #2563eb;
       outline-offset: 2px;
+    }
+    /* Auth Section Styles */
+    .auth-section {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .auth-btn {
+      padding: 0.4rem 0.75rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-height: 36px;
+    }
+    .auth-btn:hover {
+      background: #1d4ed8;
+    }
+    .auth-btn.secondary {
+      background: #64748b;
+    }
+    .auth-btn.secondary:hover {
+      background: #475569;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #e2e8f0;
+    }
+    .user-name {
+      font-size: 0.85rem;
+      color: #334155;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .controls {
       display: flex;
@@ -468,6 +517,23 @@
         display: flex;
         align-items: center;
       }
+      .auth-section {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .auth-btn {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.5rem;
+        min-height: 44px;
+      }
+      .user-avatar {
+        width: 24px;
+        height: 24px;
+      }
+      .user-name {
+        font-size: 0.75rem;
+        max-width: 100px;
+      }
       .task-instructions {
         font-size: 0.75rem;
         padding: 0.6rem;
@@ -632,6 +698,9 @@
       .donation-label {
         font-size: 0.7rem;
       }
+      .user-name {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -644,6 +713,16 @@
      class="donation-link"
      id="donationLink"
      data-i18n="support_link_text">Support this project</a>
+
+  <!-- Auth Section -->
+  <div class="auth-section" id="authSection">
+    <button id="loginBtn" class="auth-btn" data-i18n="signin_btn">Sign in with Google</button>
+    <div id="userInfo" class="user-info" style="display: none;">
+      <img id="userAvatar" class="user-avatar" alt="User avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 6v1h16v-1c0-3-2-6-8-6z'/%3E%3C/svg%3E">
+      <span id="userName" class="user-name"></span>
+      <button id="logoutBtn" class="auth-btn secondary" data-i18n="signout_btn">Sign out</button>
+    </div>
+  </div>
 
   <div class="task-instructions" id="taskInstructions">
     <strong>Task:</strong> Count how many cells are printed in each INK color. The Chinese character shows a color name, but you must count the actual ink color used to display it.
@@ -766,6 +845,32 @@
   </div>
 
   <script type="module">
+    // ===========================================
+    // SUPABASE AUTH CONFIGURATION
+    // ===========================================
+    // Import Supabase client from CDN (ESM)
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+    // Supabase configuration
+    // TODO: Replace with your Supabase project URL and anon key
+    const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'
+
+    // Initialize Supabase client (only if configured)
+    const supabaseConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL'
+    const supabase = supabaseConfigured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        storage: window.sessionStorage,
+        flowType: 'pkce'
+      }
+    }) : null
+
+    // ===========================================
+    // JSON DATA LOADING
+    // ===========================================
     // Load JSON files via fetch for better iOS Safari compatibility
     // (ES module import attributes can fail to fully parse large JSON on some iOS versions)
     async function loadJSON(path) {
@@ -905,6 +1010,119 @@
     let focusedTileIndex = 0;
     // Audio context for selection sound (lazy initialized)
     let audioContext = null;
+
+    // ===========================================
+    // AUTH STATE AND FUNCTIONS
+    // ===========================================
+    let currentUser = null;
+
+    // Sign in with Google OAuth
+    async function signInWithGoogle() {
+      if (!supabase) {
+        console.warn('Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.');
+        alert('Authentication not configured. Please contact the administrator.');
+        return;
+      }
+      try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + window.location.pathname
+          }
+        });
+        if (error) {
+          console.error('Sign in error:', error.message);
+          alert(getUIText('auth_error_signin') || 'Sign in failed. Please try again.');
+        }
+      } catch (err) {
+        console.error('Sign in failed:', err);
+        alert(getUIText('auth_error_signin') || 'Sign in failed. Please try again.');
+      }
+    }
+
+    // Sign out
+    async function signOut() {
+      if (!supabase) return;
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error('Sign out error:', error.message);
+          alert(getUIText('auth_error_signout') || 'Sign out failed. Please try again.');
+        }
+      } catch (err) {
+        console.error('Sign out failed:', err);
+        alert(getUIText('auth_error_signout') || 'Sign out failed. Please try again.');
+      }
+    }
+
+    // Update UI based on auth state
+    function updateAuthUI(user) {
+      const loginBtn = document.getElementById('loginBtn');
+      const userInfo = document.getElementById('userInfo');
+      const userName = document.getElementById('userName');
+      const userAvatar = document.getElementById('userAvatar');
+
+      if (user) {
+        loginBtn.style.display = 'none';
+        userInfo.style.display = 'flex';
+
+        // Use display name or email
+        const displayName = user.user_metadata?.full_name ||
+                            user.user_metadata?.name ||
+                            user.email?.split('@')[0] ||
+                            'User';
+        userName.textContent = displayName;
+
+        // Use avatar URL or keep placeholder
+        const avatarUrl = user.user_metadata?.avatar_url ||
+                          user.user_metadata?.picture;
+        if (avatarUrl) {
+          userAvatar.src = avatarUrl;
+        }
+        userAvatar.alt = `${displayName}'s avatar`;
+      } else {
+        loginBtn.style.display = 'flex';
+        userInfo.style.display = 'none';
+      }
+    }
+
+    // Initialize auth state listener
+    function initAuthListener() {
+      if (!supabase) {
+        // Hide auth section if not configured
+        document.getElementById('authSection').style.display = 'none';
+        return;
+      }
+
+      supabase.auth.onAuthStateChange((event, session) => {
+        console.log('Auth event:', event);
+        if (session?.user) {
+          currentUser = session.user;
+          updateAuthUI(session.user);
+        } else {
+          currentUser = null;
+          updateAuthUI(null);
+        }
+      });
+    }
+
+    // Check for existing session on page load
+    async function checkExistingSession() {
+      if (!supabase) return;
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Session check error:', error.message);
+          return;
+        }
+        if (session?.user) {
+          currentUser = session.user;
+          updateAuthUI(session.user);
+        }
+      } catch (err) {
+        console.error('Failed to check session:', err);
+      }
+    }
 
     // Initialize language selector with saved preference
     document.getElementById('language').value = currentLanguage;
@@ -1777,6 +1995,10 @@
     document.getElementById('revealBtn').addEventListener('click', toggleAnswerKey);
     document.getElementById('clearSelectionsBtn').addEventListener('click', clearAllSelections);
 
+    // Auth event listeners
+    document.getElementById('loginBtn').addEventListener('click', signInWithGoogle);
+    document.getElementById('logoutBtn').addEventListener('click', signOut);
+
     // Initialize custom controls visibility based on difficulty
     updateCustomControlsVisibility();
 
@@ -1790,6 +2012,10 @@
 
     // Initialize UI text with current language
     updateAllUIText();
+
+    // Initialize auth
+    initAuthListener();
+    checkExistingSession();
 
     // Initial generation
     generatePuzzle();
