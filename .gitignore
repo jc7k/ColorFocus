@@ -4,5 +4,7 @@ __pycache__/
 .venv/
 node_modules/
 .playwright-mcp/
-.claude/
+# .claude - ignore local settings but track shared config
+.claude/settings.local.json
+.claude/statusline.sh
 .serena/
