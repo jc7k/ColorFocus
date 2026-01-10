@@ -304,5 +304,11 @@
     "english": "Sign out failed. Please try again.",
     "spanish": "Error al cerrar sesion. Intentelo de nuevo.",
     "vietnamese": "Dang xuat that bai. Vui long thu lai."
+  },
+  "attempt_saved": {
+    "zh-TW": "進度已保存",
+    "english": "Progress saved",
+    "spanish": "Progreso guardado",
+    "vietnamese": "Da luu tien trinh"
   }
 }

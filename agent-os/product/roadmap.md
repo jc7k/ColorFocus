@@ -20,7 +20,7 @@
 
 9. [x] Basic User Authentication — Implement simple user accounts to enable puzzle history and progress tracking across sessions. `M`
 
-10. [ ] Puzzle History Storage — Store completed puzzles with timestamps, user answers, and accuracy for each authenticated user. `S`
+10. [x] Puzzle History Storage — Store completed puzzles with timestamps, user answers, and accuracy for each authenticated user. `S`
 
 ## Phase 2: Scoring and Caregiver Features
 

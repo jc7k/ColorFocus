@@ -418,6 +418,20 @@
       background: #fee2e2;
       color: #991b1b;
     }
+    .saved-indicator {
+      font-size: 0.75rem;
+      color: #16a34a;
+      background: #dcfce7;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .saved-indicator::before {
+      content: '\2713';
+      font-weight: bold;
+    }
 
     /* Answer Key Section (Hidden by Default) */
     .answer-key-section {
@@ -1121,6 +1135,65 @@
         }
       } catch (err) {
         console.error('Failed to check session:', err);
+      }
+    }
+
+    // ===========================================
+    // PUZZLE HISTORY STORAGE
+    // ===========================================
+
+    // Save puzzle attempt to Supabase (only for authenticated users)
+    async function savePuzzleAttempt(userAnswers, correctCount, totalColors, accuracyPercent, totalOff) {
+      // Only save if user is authenticated and Supabase is configured
+      if (!currentUser || !supabase) {
+        return { saved: false, reason: 'not_authenticated' };
+      }
+
+      try {
+        // Build user answers object from inputs
+        const userAnswersObj = {};
+        activeColors.forEach(token => {
+          const input = document.getElementById(`answer-${token}`);
+          const maxValue = currentGridSize * currentGridSize;
+          userAnswersObj[token] = sanitizeNumber(input?.value, 0, maxValue, 0);
+        });
+
+        // Get congruence percent from input
+        const congruencePercent = sanitizeNumber(
+          document.getElementById('congruence').value, 0, 100, 12.5
+        );
+
+        const attemptData = {
+          user_id: currentUser.id,
+          seed: currentSeed,
+          grid_size: currentGridSize,
+          color_count: currentColorCount,
+          difficulty: currentDifficulty,
+          language: currentLanguage,
+          congruence_percent: congruencePercent,
+          user_answers: userAnswersObj,
+          correct_answers: correctAnswers,
+          correct_count: correctCount,
+          total_colors: totalColors,
+          accuracy_percent: accuracyPercent,
+          total_off: totalOff
+        };
+
+        const { data, error } = await supabase
+          .from('puzzle_attempts')
+          .insert([attemptData])
+          .select();
+
+        if (error) {
+          console.error('Failed to save puzzle attempt:', error.message);
+          return { saved: false, reason: 'db_error', error: error.message };
+        }
+
+        console.log('Puzzle attempt saved:', data[0]?.id);
+        return { saved: true, id: data[0]?.id };
+      } catch (err) {
+        console.error('Error saving puzzle attempt:', err);
+        return { saved: false, reason: 'exception', error: err.message };
       }
     }
 
@@ -1884,8 +1957,8 @@
       showResults(correctCount, activeColors.length, totalOff);
     }
 
-    // Show results with translated messages
-    function showResults(correct, total, totalOff) {
+    // Show results with translated messages and save attempt
+    async function showResults(correct, total, totalOff) {
       const resultsSection = document.getElementById('resultsSection');
       const resultsSummary = document.getElementById('resultsSummary');
       const resultMessage = document.getElementById('resultMessage');
@@ -1938,6 +2011,18 @@
       resultMessage.textContent = message;
 
       resultsSection.classList.add('visible');
+
+      // Save attempt for authenticated users (async, non-blocking)
+      if (currentUser) {
+        const saveResult = await savePuzzleAttempt(null, correct, total, percentage, totalOff);
+        if (saveResult.saved) {
+          // Show subtle saved indicator
+          const savedIndicator = document.createElement('div');
+          savedIndicator.className = 'saved-indicator';
+          savedIndicator.textContent = getUIText('attempt_saved') || 'Progress saved';
+          resultsSummary.appendChild(savedIndicator);
+        }
+      }
     }
 
     // Clear answers
