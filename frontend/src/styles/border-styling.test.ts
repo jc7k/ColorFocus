@@ -1,12 +1,13 @@
 /**
- * Tests for CSS Border Styling - Accessible Color Palette
+ * Tests for CSS Styling - Apple-esque Design
  *
- * These tests verify that the frontend puzzle.html CSS:
- * 1. .puzzle-cell has 2px solid #1A1A1A border
- * 2. .color-swatch (answer input) has 2px solid #1A1A1A border
- * 3. .answer-key-item .color-swatch has 2px solid #1A1A1A border
+ * These tests verify that the frontend puzzle.html CSS follows the
+ * Apple-esque design with subtle shadows and soft styling:
+ * 1. .puzzle-cell uses subtle shadows instead of bold borders
+ * 2. .color-swatch has soft border styling
+ * 3. Design system uses CSS custom properties
  *
- * Note: These tests parse the CSS from puzzle.html to verify border rules.
+ * Note: These tests parse the CSS from puzzle.html to verify styling rules.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -38,60 +39,82 @@ function getCSSRuleContent(css: string, selector: string): string | null {
   return match ? match[1].trim() : null;
 }
 
-// Check if a CSS rule block contains a specific border declaration
-function hasBorderDeclaration(ruleContent: string | null, expectedBorder: string): boolean {
+// Check if CSS contains a declaration with a specific property
+function hasDeclaration(ruleContent: string | null, property: string, value?: string): boolean {
   if (!ruleContent) return false;
-  // Normalize whitespace and check for border declaration
   const normalizedContent = ruleContent.replace(/\s+/g, ' ').toLowerCase();
-  const normalizedExpected = expectedBorder.toLowerCase().replace(/\s+/g, ' ');
-  return normalizedContent.includes(`border: ${normalizedExpected}`);
+  if (value) {
+    return normalizedContent.includes(`${property.toLowerCase()}: ${value.toLowerCase()}`);
+  }
+  return normalizedContent.includes(`${property.toLowerCase()}:`);
+}
+
+// Check if CSS uses CSS custom properties (var())
+function usesCustomProperty(ruleContent: string | null, varName?: string): boolean {
+  if (!ruleContent) return false;
+  if (varName) {
+    return ruleContent.includes(`var(--${varName})`);
+  }
+  return ruleContent.includes('var(--');
 }
 
 const css = extractCSSFromHTML(puzzleHtml);
-const EXPECTED_BORDER = '2px solid #1A1A1A';
 
-describe('CSS Border Styling - Accessible Color Palette', () => {
-  describe('.puzzle-cell has 2px solid #1A1A1A border', () => {
+describe('CSS Styling - Apple-esque Design', () => {
+  describe('.puzzle-cell uses subtle shadow styling', () => {
     it('should have a .puzzle-cell CSS rule', () => {
       const ruleContent = getCSSRuleContent(css, '.puzzle-cell');
       expect(ruleContent).not.toBeNull();
     });
 
-    it('should have border: 2px solid #1A1A1A in .puzzle-cell rule', () => {
+    it('should use border: none for soft appearance', () => {
       const ruleContent = getCSSRuleContent(css, '.puzzle-cell');
-      expect(hasBorderDeclaration(ruleContent, EXPECTED_BORDER)).toBe(true);
+      expect(hasDeclaration(ruleContent, 'border', 'none')).toBe(true);
+    });
+
+    it('should use box-shadow for subtle depth', () => {
+      const ruleContent = getCSSRuleContent(css, '.puzzle-cell');
+      expect(hasDeclaration(ruleContent, 'box-shadow')).toBe(true);
     });
   });
 
-  describe('.color-swatch (answer input) has 2px solid #1A1A1A border', () => {
+  describe('.color-swatch has styled appearance', () => {
     it('should have a .color-swatch CSS rule', () => {
       const ruleContent = getCSSRuleContent(css, '.color-swatch');
       expect(ruleContent).not.toBeNull();
     });
 
-    it('should have border: 2px solid #1A1A1A in .color-swatch rule', () => {
+    it('should have border styling', () => {
       const ruleContent = getCSSRuleContent(css, '.color-swatch');
-      expect(hasBorderDeclaration(ruleContent, EXPECTED_BORDER)).toBe(true);
+      // Should have some form of border (can be 1px or use CSS variable)
+      expect(hasDeclaration(ruleContent, 'border')).toBe(true);
     });
   });
 
-  describe('.answer-key-item .color-swatch has 2px solid #1A1A1A border', () => {
-    it('should have border applied to answer key swatches', () => {
-      // The border can be applied either via:
-      // 1. A specific .answer-key-item .color-swatch rule
-      // 2. The general .color-swatch rule (which covers all swatches)
-      // Since .color-swatch already has the border, answer-key swatches inherit it
-      const generalSwatchRule = getCSSRuleContent(css, '.color-swatch');
-      const specificSwatchRule = getCSSRuleContent(css, '.answer-key-item .color-swatch');
+  describe('Design system uses CSS custom properties', () => {
+    it('should define design tokens in :root', () => {
+      const rootContent = getCSSRuleContent(css, ':root');
+      expect(rootContent).not.toBeNull();
+    });
 
-      // Either the general rule has border (which applies to all swatches)
-      // OR there's a specific rule for answer-key-item swatches
-      const hasBorderInGeneral = hasBorderDeclaration(generalSwatchRule, EXPECTED_BORDER);
-      const hasBorderInSpecific = specificSwatchRule
-        ? hasBorderDeclaration(specificSwatchRule, EXPECTED_BORDER)
-        : false;
+    it('should define color tokens', () => {
+      const rootContent = getCSSRuleContent(css, ':root');
+      expect(rootContent).toContain('--color-');
+    });
 
-      expect(hasBorderInGeneral || hasBorderInSpecific).toBe(true);
+    it('should define spacing tokens', () => {
+      const rootContent = getCSSRuleContent(css, ':root');
+      expect(rootContent).toContain('--space-');
+    });
+
+    it('should define radius tokens', () => {
+      const rootContent = getCSSRuleContent(css, ':root');
+      expect(rootContent).toContain('--radius-');
+    });
+
+    it('should define shadow tokens', () => {
+      const rootContent = getCSSRuleContent(css, ':root');
+      expect(rootContent).toContain('--shadow-');
     });
   });
 });

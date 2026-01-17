@@ -91,15 +91,19 @@ class TestResponsiveDesign:
         css_content = extract_css_from_html(html_content)
         mobile_css = find_media_query_content(css_content, 480)
 
-        # Verify donation-link has min-height: 44px in 480px media query
+        # Verify donation-link has min-height in 480px media query
         assert ".donation-link" in mobile_css, (
             "donation-link styles should be defined in 480px media query"
         )
 
-        # Check for min-height: 44px or equivalent touch target sizing
-        # The implementation uses min-height: 44px with flex alignment
-        assert "min-height: 44px" in mobile_css or "min-height:44px" in mobile_css, (
-            "donation-link should have min-height: 44px at 480px breakpoint "
+        # Check for min-height: 44px or CSS custom property equivalent
+        # The implementation may use literal 44px or var(--btn-min-height) which resolves to 44px
+        has_min_height = (
+            "min-height: 44px" in mobile_css or "min-height:44px" in mobile_css or
+            "min-height: var(--btn-min-height)" in mobile_css
+        )
+        assert has_min_height, (
+            "donation-link should have min-height (44px or var(--btn-min-height)) at 480px breakpoint "
             "to meet minimum touch target requirements"
         )
 
@@ -216,25 +220,26 @@ class TestAccessibility:
         Test that the header donation link has visible focus styles for keyboard navigation.
 
         Users navigating with keyboard should see a clear visual indicator
-        when the donation link is focused.
+        when the donation link is focused. This can be via outline or box-shadow.
         """
         html_content = load_puzzle_html()
         css_content = extract_css_from_html(html_content)
 
         # Check for .donation-link:focus styles
-        focus_pattern = r"\.donation-link:focus\s*\{[^}]*outline[^}]*\}"
-        assert re.search(focus_pattern, css_content, re.DOTALL), (
-            "donation-link should have visible :focus styles with outline"
+        focus_pattern = r"\.donation-link:focus\s*\{[^}]+\}"
+        focus_match = re.search(focus_pattern, css_content, re.DOTALL)
+        assert focus_match, (
+            "donation-link should have :focus styles defined"
         )
 
-        # Verify outline has sufficient visibility (not none)
-        # Check that outline color or style is defined
+        # Verify there's a visible focus indicator (outline or box-shadow)
+        # Apple-esque design may use box-shadow instead of outline for softer appearance
         focus_styles = re.search(r"\.donation-link:focus\s*\{([^}]*)\}", css_content)
         if focus_styles:
             focus_content = focus_styles.group(1)
-            assert "outline:" in focus_content, (
-                "donation-link:focus should define an outline style"
-            )
-            assert "outline: none" not in focus_content.lower(), (
-                "donation-link:focus should not have outline: none"
+            # Accept either visible outline OR box-shadow as valid focus indicator
+            has_visible_outline = "outline:" in focus_content and "outline: none" not in focus_content.lower()
+            has_box_shadow = "box-shadow:" in focus_content
+            assert has_visible_outline or has_box_shadow, (
+                "donation-link:focus should have visible focus indicator (outline or box-shadow)"
             )
