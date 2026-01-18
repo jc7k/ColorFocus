@@ -127,17 +127,17 @@
     .donation-link {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       color: var(--color-warning-text);
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       font-weight: var(--font-weight-medium);
       text-decoration: none;
-      margin-bottom: var(--space-lg);
-      padding: var(--space-md) var(--space-lg);
+      padding: var(--space-sm) var(--space-md);
       background: var(--color-warning-bg);
-      border-radius: var(--radius-pill);
+      border-radius: var(--radius-md);
+      min-height: var(--btn-min-height);
       border: 1px solid var(--color-warning-border);
       transition: all var(--transition-normal);
-      min-height: var(--btn-min-height);
     }
     .donation-link:hover {
       background: #FFF3D6;
@@ -425,6 +425,8 @@
       background: var(--color-bg-surface);
       transition: all var(--transition-normal);
       border: 1px solid transparent;
+      min-width: 0;
+      overflow: hidden;
     }
     .answer-item.correct {
       background: var(--color-success-bg);
@@ -456,6 +458,9 @@
       font-weight: var(--font-weight-medium);
       flex: 1;
       min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       color: var(--color-text-primary);
     }
     .answer-input {
@@ -939,10 +944,8 @@
         font-size: 0.85rem;
       }
       .donation-link {
-        font-size: 0.85rem;
-        min-height: var(--btn-min-height);
-        display: flex;
-        align-items: center;
+        font-size: 0.75rem;
+        padding: var(--space-xs) var(--space-sm);
       }
       .auth-section {
         flex-wrap: wrap;
@@ -1206,12 +1209,6 @@
   <a href="#puzzleGrid" class="skip-link">Skip to puzzle</a>
   <h1 id="pageTitle">ColorFocus Stroop Puzzle</h1>
   <p class="subtitle" id="subtitle">Count the INK colors, not the word meanings!</p>
-  <a href="https://buymeacoffee.com/xwje4mbv3l"
-     target="_blank"
-     rel="noopener noreferrer"
-     class="donation-link"
-     id="donationLink"
-     data-i18n="support_link_text">Support this project</a>
 
   <!-- Auth Section -->
   <div class="auth-section" id="authSection">
@@ -1229,6 +1226,12 @@
       <button id="randomBtn" class="secondary">Random</button>
     </div>
     <div class="controls-actions">
+      <a href="https://buymeacoffee.com/xwje4mbv3l"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="donation-link"
+         id="donationLink"
+         data-i18n="support_link_text">Support</a>
       <button class="icon-btn" id="settingsBtn" aria-label="Open settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
