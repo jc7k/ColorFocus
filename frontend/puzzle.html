@@ -1754,6 +1754,82 @@
       }
     }
 
+    // ===========================================
+    // PUZZLE HISTORY STORAGE
+    // ===========================================
+
+    // Save completed puzzle to history
+    async function savePuzzleHistory(userAnswers, accuracy) {
+      if (!supabase || !currentUser) {
+        console.log('Not saving history: user not authenticated');
+        return null;
+      }
+
+      // Map frontend language values to database enum
+      const languageMap = {
+        'zh-TW': 'zh-TW',
+        'english': 'en',
+        'spanish': 'es',
+        'vietnamese': 'vi'
+      };
+
+      const puzzleData = {
+        user_id: currentUser.id,
+        seed: document.getElementById('seed').value,
+        grid_size: currentGridSize,
+        color_count: parseInt(document.getElementById('colorCount').value),
+        congruence_percent: parseInt(document.getElementById('matchPercent').value),
+        difficulty: currentDifficulty,
+        language: languageMap[currentLanguage] || 'en',
+        user_answers: userAnswers,
+        correct_answers: correctAnswers,
+        accuracy_percent: accuracy
+      };
+
+      try {
+        const { data, error } = await supabase
+          .from('puzzle_history')
+          .insert(puzzleData)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error saving puzzle history:', error.message);
+          return null;
+        }
+
+        console.log('Puzzle saved to history:', data.id);
+        return data;
+      } catch (err) {
+        console.error('Failed to save puzzle history:', err);
+        return null;
+      }
+    }
+
+    // Fetch user's puzzle history
+    async function getPuzzleHistory(limit = 10) {
+      if (!supabase || !currentUser) return [];
+
+      try {
+        const { data, error } = await supabase
+          .from('puzzle_history')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('completed_at', { ascending: false })
+          .limit(limit);
+
+        if (error) {
+          console.error('Error fetching history:', error.message);
+          return [];
+        }
+
+        return data;
+      } catch (err) {
+        console.error('Failed to fetch history:', err);
+        return [];
+      }
+    }
+
     // Initialize language selector with saved preference
     document.getElementById('language').value = currentLanguage;
 
@@ -2480,6 +2556,9 @@
       // Calculate max value based on current grid size
       const maxValue = currentGridSize * currentGridSize;
 
+      // Collect user answers for history
+      const userAnswersObj = {};
+
       activeColors.forEach(token => {
         const input = document.getElementById(`answer-${token}`);
         const item = document.getElementById(`answer-item-${token}`);
@@ -2487,6 +2566,9 @@
         // Sanitize user input
         const userAnswer = sanitizeNumber(input.value, 0, maxValue, 0);
         const correct = correctAnswers[token];
+
+        // Store user answer
+        userAnswersObj[token] = userAnswer;
 
         input.classList.remove('correct', 'incorrect');
         item.classList.remove('correct', 'incorrect');
@@ -2506,6 +2588,12 @@
 
       // Show results
       showResults(correctCount, activeColors.length, totalOff);
+
+      // Save to history if user is authenticated
+      if (currentUser) {
+        const accuracy = Math.round((correctCount / activeColors.length) * 100);
+        savePuzzleHistory(userAnswersObj, accuracy);
+      }
     }
 
     // Show results with translated messages
