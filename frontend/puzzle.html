@@ -641,6 +641,278 @@
       display: flex;
     }
 
+    /* ========================================
+       MODAL SYSTEM
+       ======================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--transition-normal), visibility var(--transition-normal);
+      z-index: 1000;
+    }
+    .modal-backdrop.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background: var(--color-bg-card);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      width: 90%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-normal);
+      z-index: 1001;
+    }
+    .modal.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg) var(--space-xl);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .modal-title {
+      font-size: 1.125rem;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-bg-surface);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      min-height: auto;
+      color: var(--color-text-secondary);
+      transition: all var(--transition-fast);
+    }
+    .modal-close:hover {
+      background: var(--color-bg-hover);
+      color: var(--color-text-primary);
+      transform: none;
+    }
+    .modal-close svg {
+      width: 16px;
+      height: 16px;
+    }
+    .modal-body {
+      padding: var(--space-xl);
+      overflow-y: auto;
+      max-height: calc(85vh - 65px);
+    }
+    .modal-section {
+      margin-bottom: var(--space-xl);
+    }
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+    .modal-section-title {
+      font-size: 0.75rem;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-md);
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--color-border);
+      gap: var(--space-md);
+    }
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+    .settings-label {
+      font-size: 0.9375rem;
+      color: var(--color-text-primary);
+      flex: 1;
+    }
+    .settings-row select,
+    .settings-row input[type="number"] {
+      min-width: 120px;
+    }
+
+    /* iOS-style Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 51px;
+      height: 31px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--color-border);
+      border-radius: 31px;
+      transition: background var(--transition-fast);
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 27px;
+      width: 27px;
+      left: 2px;
+      bottom: 2px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: transform var(--transition-fast);
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--color-success);
+    }
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(20px);
+    }
+    .toggle-switch input:focus + .toggle-slider {
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+    }
+
+    /* Icon Buttons for Settings/About */
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-secondary);
+      font-size: 0.8125rem;
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      min-height: var(--btn-min-height);
+    }
+    .icon-btn:hover {
+      background: var(--color-bg-hover);
+      color: var(--color-text-primary);
+      border-color: var(--color-text-tertiary);
+      transform: none;
+    }
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .icon-btn-text {
+      display: inline;
+    }
+
+    /* About Modal Specific Styles */
+    .about-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+    .about-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--color-accent), #5856D6);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-md);
+      color: white;
+      font-size: 1.75rem;
+      font-weight: var(--font-weight-semibold);
+    }
+    .about-tagline {
+      color: var(--color-text-secondary);
+      font-size: 0.9375rem;
+      margin: 0;
+    }
+    .about-section {
+      margin-bottom: var(--space-xl);
+    }
+    .about-section-title {
+      font-size: 1rem;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-sm);
+    }
+    .about-text {
+      font-size: 0.9375rem;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .about-story {
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      border-left: 3px solid var(--color-accent);
+    }
+    .about-story p {
+      margin: 0 0 0.75em 0;
+    }
+    .about-story p:last-child {
+      margin-bottom: 0;
+    }
+    .about-footer {
+      text-align: center;
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--color-border);
+    }
+    .about-link {
+      color: var(--color-accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-medium);
+    }
+    .about-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Controls layout with icon buttons */
+    .controls-main {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controls-actions {
+      display: flex;
+      gap: var(--space-sm);
+      margin-left: auto;
+    }
+
     /* Mobile Responsive Styles */
     @media (max-width: 480px) {
       body {
@@ -775,6 +1047,13 @@
         font-size: 0.7rem;
         min-width: 22px;
       }
+      .answer-buttons {
+        width: 100%;
+      }
+      .answer-buttons button {
+        flex: 1;
+        min-width: 0;
+      }
       .results-section {
         padding: var(--space-md);
       }
@@ -819,6 +1098,49 @@
       .sound-toggle-group input[type="checkbox"] {
         width: 20px;
         height: 20px;
+      }
+      /* Modal mobile styles */
+      .modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: 90vh;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        transform: translateY(100%);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+      .modal.visible {
+        transform: translateY(0);
+      }
+      .modal-body {
+        max-height: calc(90vh - 65px);
+        padding: var(--space-lg);
+      }
+      .icon-btn-text {
+        display: none;
+      }
+      .icon-btn {
+        padding: var(--space-sm);
+      }
+      .controls-actions {
+        margin-left: 0;
+        gap: var(--space-xs);
+      }
+      .about-story {
+        padding: var(--space-md);
+        font-size: 0.8125rem;
+      }
+      .toggle-switch {
+        width: 44px;
+        height: 26px;
+      }
+      .toggle-slider::before {
+        height: 22px;
+        width: 22px;
+      }
+      .toggle-switch input:checked + .toggle-slider::before {
+        transform: translateX(18px);
       }
     }
 
@@ -876,77 +1198,76 @@
   </div>
 
   <div class="controls">
-    <div class="control-group">
-      <label for="difficulty" id="difficultyLabel">Difficulty:</label>
-      <select id="difficulty" aria-label="Select difficulty tier">
-        <option value="accessible">Accessible</option>
-        <option value="standard" selected>Standard</option>
-        <option value="advanced">Advanced</option>
-        <option value="custom">Custom</option>
-      </select>
+    <div class="controls-main">
+      <button id="generateBtn">Generate</button>
+      <button id="randomBtn" class="secondary">Random</button>
     </div>
-    <div class="control-group">
-      <label for="language" id="languageLabel">Language:</label>
-      <select id="language" aria-label="Select display language">
-        <option value="zh-TW" selected>Chinese</option>
-        <option value="english">English</option>
-        <option value="spanish">Spanish</option>
-        <option value="vietnamese">Vietnamese</option>
-      </select>
+    <div class="controls-actions">
+      <button class="icon-btn" id="settingsBtn" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="icon-btn-text" id="settingsBtnText">Settings</span>
+      </button>
+      <button class="icon-btn" id="aboutBtn" aria-label="About ColorFocus">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span class="icon-btn-text" id="aboutBtnText">About</span>
+      </button>
     </div>
-    <div class="control-group">
-      <label for="spacing" id="spacingLabel">Spacing:</label>
-      <select id="spacing" aria-label="Select grid spacing">
-        <option value="compact">Compact</option>
-        <option value="normal" selected>Normal</option>
-        <option value="relaxed">Relaxed</option>
-        <option value="spacious">Spacious</option>
-      </select>
-    </div>
-    <div class="control-group custom-control" id="gridSizeGroup">
-      <label for="gridSize" id="gridLabel">Grid:</label>
-      <select id="gridSize" aria-label="Select grid size">
-        <option value="1">1x1</option>
-        <option value="2">2x2</option>
-        <option value="3">3x3</option>
-        <option value="4" selected>4x4</option>
-        <option value="5">5x5</option>
-        <option value="6">6x6</option>
-        <option value="7">7x7</option>
-        <option value="8">8x8</option>
-      </select>
-    </div>
-    <div class="control-group custom-control" id="colorCountGroup">
-      <label for="colorCount" id="colorsLabel">Colors:</label>
-      <select id="colorCount">
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4" selected>4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-      </select>
-    </div>
-    <div class="control-group custom-control" id="congruenceGroup">
-      <label for="congruence" id="matchLabel">Match %:</label>
-      <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
-    </div>
-    <div class="control-group">
-      <label for="seed" id="seedLabel">Seed:</label>
-      <input type="number" id="seed" value="42" min="0">
-    </div>
-    <button id="generateBtn">Generate</button>
-    <button id="randomBtn" class="secondary">Random</button>
+  </div>
+
+  <!-- Hidden original controls for state management -->
+  <div style="display: none;">
+    <select id="difficulty">
+      <option value="accessible">Accessible</option>
+      <option value="standard" selected>Standard</option>
+      <option value="advanced">Advanced</option>
+      <option value="custom">Custom</option>
+    </select>
+    <select id="language">
+      <option value="zh-TW" selected>Chinese</option>
+      <option value="english">English</option>
+      <option value="spanish">Spanish</option>
+      <option value="vietnamese">Vietnamese</option>
+    </select>
+    <select id="spacing">
+      <option value="compact">Compact</option>
+      <option value="normal" selected>Normal</option>
+      <option value="relaxed">Relaxed</option>
+      <option value="spacious">Spacious</option>
+    </select>
+    <select id="gridSize">
+      <option value="1">1x1</option>
+      <option value="2">2x2</option>
+      <option value="3">3x3</option>
+      <option value="4" selected>4x4</option>
+      <option value="5">5x5</option>
+      <option value="6">6x6</option>
+      <option value="7">7x7</option>
+      <option value="8">8x8</option>
+    </select>
+    <select id="colorCount">
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4" selected>4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+    </select>
+    <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
+    <input type="number" id="seed" value="42" min="0">
+    <input type="checkbox" id="soundToggle">
   </div>
 
   <div class="puzzle-container">
     <div class="puzzle-controls">
       <button id="clearSelectionsBtn" class="secondary" data-i18n="clear_selections_btn">Clear Selections</button>
-      <div class="sound-toggle-group">
-        <input type="checkbox" id="soundToggle" aria-label="Toggle selection sound">
-        <label for="soundToggle" id="soundToggleLabel" data-i18n="sound_toggle_label">Selection Sound</label>
-      </div>
     </div>
     <div class="puzzle-grid" id="puzzleGrid" role="grid" aria-label="Color puzzle grid"></div>
     <div class="metadata" id="metadata"></div>
@@ -989,6 +1310,139 @@
       <img src="/frontend/bmc_qr.png" alt="QR code to support ColorFocus via Buy Me A Coffee" class="donation-qr">
     </a>
     <p class="donation-label" id="donationLabel" data-i18n="qr_code_label">Scan to support ColorFocus</p>
+  </div>
+
+  <!-- Modal Backdrop -->
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal" role="dialog" aria-labelledby="settingsModalTitle" aria-modal="true">
+    <div class="modal-header">
+      <h2 class="modal-title" id="settingsModalTitle">Settings</h2>
+      <button class="modal-close" id="settingsModalClose" aria-label="Close settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Display Section -->
+      <div class="modal-section">
+        <div class="modal-section-title" id="settingsDisplayTitle">Display</div>
+        <div class="settings-row">
+          <label class="settings-label" for="modalLanguage" id="modalLanguageLabel">Language</label>
+          <select id="modalLanguage" aria-label="Select display language">
+            <option value="zh-TW">Chinese</option>
+            <option value="english">English</option>
+            <option value="spanish">Spanish</option>
+            <option value="vietnamese">Vietnamese</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <label class="settings-label" for="modalSpacing" id="modalSpacingLabel">Spacing</label>
+          <select id="modalSpacing" aria-label="Select grid spacing">
+            <option value="compact">Compact</option>
+            <option value="normal">Normal</option>
+            <option value="relaxed">Relaxed</option>
+            <option value="spacious">Spacious</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label" id="modalSoundLabel">Selection Sound</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="modalSoundToggle" aria-label="Toggle selection sound">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="modal-section">
+        <div class="modal-section-title" id="settingsPuzzleTitle">Puzzle</div>
+        <div class="settings-row">
+          <label class="settings-label" for="modalDifficulty" id="modalDifficultyLabel">Difficulty</label>
+          <select id="modalDifficulty" aria-label="Select difficulty tier">
+            <option value="accessible">Accessible</option>
+            <option value="standard">Standard</option>
+            <option value="advanced">Advanced</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="settings-row custom-control" id="modalGridSizeGroup">
+          <label class="settings-label" for="modalGridSize" id="modalGridLabel">Grid Size</label>
+          <select id="modalGridSize" aria-label="Select grid size">
+            <option value="1">1x1</option>
+            <option value="2">2x2</option>
+            <option value="3">3x3</option>
+            <option value="4">4x4</option>
+            <option value="5">5x5</option>
+            <option value="6">6x6</option>
+            <option value="7">7x7</option>
+            <option value="8">8x8</option>
+          </select>
+        </div>
+        <div class="settings-row custom-control" id="modalColorCountGroup">
+          <label class="settings-label" for="modalColorCount" id="modalColorsLabel">Colors</label>
+          <select id="modalColorCount">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+          </select>
+        </div>
+        <div class="settings-row custom-control" id="modalCongruenceGroup">
+          <label class="settings-label" for="modalCongruence" id="modalMatchLabel">Match %</label>
+          <input type="number" id="modalCongruence" value="12.5" min="0" max="100" step="0.1">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label" for="modalSeed" id="modalSeedLabel">Seed</label>
+          <input type="number" id="modalSeed" value="42" min="0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div class="modal" id="aboutModal" role="dialog" aria-labelledby="aboutModalTitle" aria-modal="true">
+    <div class="modal-header">
+      <h2 class="modal-title" id="aboutModalTitle">About</h2>
+      <button class="modal-close" id="aboutModalClose" aria-label="Close about">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="about-header">
+        <div class="about-icon">CF</div>
+        <p class="about-tagline" id="aboutTagline">Cognitive training through Stroop interference puzzles</p>
+      </div>
+
+      <div class="about-section">
+        <h3 class="about-section-title" id="aboutWhatTitle">What is ColorFocus?</h3>
+        <p class="about-text" id="aboutWhatText">ColorFocus uses the Stroop effect to exercise your brain. When you see a color word printed in a different ink color, your brain must resolve the conflict between reading the word and identifying the ink color. This cognitive challenge helps strengthen attention and processing speed.</p>
+      </div>
+
+      <div class="about-section">
+        <h3 class="about-section-title" id="aboutStoryTitle">Our Story</h3>
+        <div class="about-story" id="aboutStoryText">
+          This app was inspired by my mother, who suffered a minor stroke days before Thanksgiving 2025. After initial recovery, she passed all hospital tests, but we wanted to check for subtle cognitive changes. Remembering the Stroop Test from my college Perception and Cognition course, I created a 9x9 puzzle with colored Chinese words (her native language) to test if her language and perception centers were affected.
+          <br><br>
+          She immediately had difficulty with two adjacent tiles showing incongruent red/green characters. After explaining the Stroop effect and how it detects task interference, she used the puzzles for mental exercise. The next day, the effect was reduced—and soon disappeared entirely.
+          <br><br>
+          I built this app hoping other stroke survivors can identify similar challenges and rehabilitate the way my mom did. Even if you're not recovering from a stroke, this can be a fun cognitive exercise. I'd love to hear your story—please reach out!
+        </div>
+      </div>
+
+      <div class="about-footer">
+        <a href="https://buymeacoffee.com/xwje4mbv3l" target="_blank" rel="noopener noreferrer" class="about-link" id="aboutSupportLink">Support ColorFocus</a>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -1366,32 +1820,11 @@
       // Update donation QR code label
       document.getElementById('donationLabel').textContent = getUIText('qr_code_label');
 
-      // Update control labels
-      document.getElementById('difficultyLabel').textContent = getUIText('difficulty_label');
-      document.getElementById('languageLabel').textContent = getUIText('language_label');
-      document.getElementById('spacingLabel').textContent = getUIText('spacing_label');
-      document.getElementById('gridLabel').textContent = getUIText('grid_label');
-      document.getElementById('colorsLabel').textContent = getUIText('colors_label');
-      document.getElementById('seedLabel').textContent = getUIText('seed_label');
-      document.getElementById('matchLabel').textContent = getUIText('match_label');
-
-      // Update difficulty dropdown options
-      const difficultySelect = document.getElementById('difficulty');
-      difficultySelect.options[0].textContent = getUIText('difficulty_accessible');
-      difficultySelect.options[1].textContent = getUIText('difficulty_standard');
-      difficultySelect.options[2].textContent = getUIText('difficulty_advanced');
-      difficultySelect.options[3].textContent = getUIText('difficulty_custom');
-
-      // Update spacing dropdown options
-      const spacingSelect = document.getElementById('spacing');
-      spacingSelect.options[0].textContent = getUIText('spacing_compact');
-      spacingSelect.options[1].textContent = getUIText('spacing_normal');
-      spacingSelect.options[2].textContent = getUIText('spacing_relaxed');
-      spacingSelect.options[3].textContent = getUIText('spacing_spacious');
-
       // Update button text
       document.getElementById('generateBtn').textContent = getUIText('generate_btn');
       document.getElementById('randomBtn').textContent = getUIText('random_btn');
+      document.getElementById('settingsBtnText').textContent = getUIText('settings_btn');
+      document.getElementById('aboutBtnText').textContent = getUIText('about_btn');
       document.getElementById('checkBtn').textContent = getUIText('check_btn');
       document.getElementById('clearBtn').textContent = getUIText('clear_btn');
 
@@ -1413,8 +1846,43 @@
       // Update clear selections button text
       document.getElementById('clearSelectionsBtn').textContent = getUIText('clear_selections_btn');
 
-      // Update sound toggle label text
-      document.getElementById('soundToggleLabel').textContent = getUIText('sound_toggle_label');
+      // Update Settings Modal
+      document.getElementById('settingsModalTitle').textContent = getUIText('settings_title');
+      document.getElementById('settingsDisplayTitle').textContent = getUIText('settings_display_section');
+      document.getElementById('settingsPuzzleTitle').textContent = getUIText('settings_puzzle_section');
+      document.getElementById('modalLanguageLabel').textContent = getUIText('settings_language');
+      document.getElementById('modalSpacingLabel').textContent = getUIText('settings_spacing');
+      document.getElementById('modalSoundLabel').textContent = getUIText('settings_sound');
+      document.getElementById('modalDifficultyLabel').textContent = getUIText('settings_difficulty');
+      document.getElementById('modalGridLabel').textContent = getUIText('settings_grid_size');
+      document.getElementById('modalColorsLabel').textContent = getUIText('settings_colors');
+      document.getElementById('modalMatchLabel').textContent = getUIText('settings_match');
+      document.getElementById('modalSeedLabel').textContent = getUIText('settings_seed');
+
+      // Update difficulty dropdown options in modal
+      const modalDifficultySelect = document.getElementById('modalDifficulty');
+      modalDifficultySelect.options[0].textContent = getUIText('difficulty_accessible');
+      modalDifficultySelect.options[1].textContent = getUIText('difficulty_standard');
+      modalDifficultySelect.options[2].textContent = getUIText('difficulty_advanced');
+      modalDifficultySelect.options[3].textContent = getUIText('difficulty_custom');
+
+      // Update spacing dropdown options in modal
+      const modalSpacingSelect = document.getElementById('modalSpacing');
+      modalSpacingSelect.options[0].textContent = getUIText('spacing_compact');
+      modalSpacingSelect.options[1].textContent = getUIText('spacing_normal');
+      modalSpacingSelect.options[2].textContent = getUIText('spacing_relaxed');
+      modalSpacingSelect.options[3].textContent = getUIText('spacing_spacious');
+
+      // Update About Modal
+      document.getElementById('aboutModalTitle').textContent = getUIText('about_title');
+      document.getElementById('aboutTagline').textContent = getUIText('about_tagline');
+      document.getElementById('aboutWhatTitle').textContent = getUIText('about_what_title');
+      document.getElementById('aboutWhatText').textContent = getUIText('about_what_text');
+      document.getElementById('aboutStoryTitle').textContent = getUIText('about_story_title');
+      // For story text, use innerHTML to preserve line breaks
+      const storyText = getUIText('about_story_text').replace(/\n\n/g, '</p><p>').replace(/\n/g, ' ');
+      document.getElementById('aboutStoryText').innerHTML = '<p>' + storyText + '</p>';
+      document.getElementById('aboutSupportLink').textContent = getUIText('about_support_link');
     }
 
     // Add difficulty change event listener
@@ -2131,7 +2599,225 @@
 
     function randomSeed() {
       document.getElementById('seed').value = Math.floor(Math.random() * 1000000);
+      document.getElementById('modalSeed').value = document.getElementById('seed').value;
       generatePuzzle();
+    }
+
+    // ===========================================
+    // MODAL SYSTEM
+    // ===========================================
+    let currentModal = null;
+    let previouslyFocusedElement = null;
+
+    // Open a modal by ID
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      const backdrop = document.getElementById('modalBackdrop');
+      if (!modal || !backdrop) return;
+
+      // Store previously focused element for restoration
+      previouslyFocusedElement = document.activeElement;
+
+      // Sync modal controls with current state before opening
+      if (modalId === 'settingsModal') {
+        syncModalControlsFromState();
+      }
+
+      // Show modal and backdrop
+      backdrop.classList.add('visible');
+      modal.classList.add('visible');
+      currentModal = modal;
+
+      // Focus first focusable element in modal
+      const focusableElements = modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements.length > 0) {
+        focusableElements[0].focus();
+      }
+
+      // Add escape key listener
+      document.addEventListener('keydown', handleModalEscape);
+
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close current modal
+    function closeModal() {
+      if (!currentModal) return;
+
+      const backdrop = document.getElementById('modalBackdrop');
+
+      // If settings modal, apply changes
+      if (currentModal.id === 'settingsModal') {
+        applyModalSettings();
+      }
+
+      // Hide modal and backdrop
+      backdrop.classList.remove('visible');
+      currentModal.classList.remove('visible');
+
+      // Restore focus
+      if (previouslyFocusedElement) {
+        previouslyFocusedElement.focus();
+      }
+
+      // Remove escape key listener
+      document.removeEventListener('keydown', handleModalEscape);
+
+      // Restore body scroll
+      document.body.style.overflow = '';
+
+      currentModal = null;
+    }
+
+    // Handle escape key
+    function handleModalEscape(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    }
+
+    // Handle backdrop click
+    function handleBackdropClick(e) {
+      if (e.target.id === 'modalBackdrop') {
+        closeModal();
+      }
+    }
+
+    // Sync modal controls to current app state
+    function syncModalControlsFromState() {
+      document.getElementById('modalLanguage').value = currentLanguage;
+      document.getElementById('modalSpacing').value = currentSpacing;
+      document.getElementById('modalSoundToggle').checked = soundEnabled;
+      document.getElementById('modalDifficulty').value = currentDifficulty;
+      document.getElementById('modalGridSize').value = currentGridSize;
+      document.getElementById('modalColorCount').value = document.getElementById('colorCount').value;
+      document.getElementById('modalCongruence').value = document.getElementById('congruence').value;
+      document.getElementById('modalSeed').value = document.getElementById('seed').value;
+
+      // Update custom controls visibility in modal
+      updateModalCustomControlsVisibility();
+    }
+
+    // Apply modal settings to the app
+    function applyModalSettings() {
+      const newLanguage = document.getElementById('modalLanguage').value;
+      const newSpacing = document.getElementById('modalSpacing').value;
+      const newSound = document.getElementById('modalSoundToggle').checked;
+      const newDifficulty = document.getElementById('modalDifficulty').value;
+      const newGridSize = parseInt(document.getElementById('modalGridSize').value, 10);
+      const newColorCount = document.getElementById('modalColorCount').value;
+      const newCongruence = document.getElementById('modalCongruence').value;
+      const newSeed = document.getElementById('modalSeed').value;
+
+      let needsRegenerate = false;
+
+      // Update language
+      if (newLanguage !== currentLanguage) {
+        currentLanguage = newLanguage;
+        document.getElementById('language').value = newLanguage;
+        localStorage.setItem('colorFocusLanguage', currentLanguage);
+        updateAllUIText();
+        renderPuzzleDisplay();
+        renderAnswerInputs();
+        renderAnswerKey();
+        updateMetadata();
+        applyPuzzleFontSize();
+      }
+
+      // Update spacing
+      if (newSpacing !== currentSpacing) {
+        currentSpacing = newSpacing;
+        document.getElementById('spacing').value = newSpacing;
+        localStorage.setItem('colorFocusSpacing', currentSpacing);
+        updateGridCSS();
+        applyPuzzleFontSize();
+      }
+
+      // Update sound
+      if (newSound !== soundEnabled) {
+        soundEnabled = newSound;
+        document.getElementById('soundToggle').checked = newSound;
+        localStorage.setItem('colorFocusSoundEnabled', String(soundEnabled));
+      }
+
+      // Update difficulty
+      if (newDifficulty !== currentDifficulty) {
+        currentDifficulty = newDifficulty;
+        document.getElementById('difficulty').value = newDifficulty;
+        localStorage.setItem('colorFocusDifficulty', currentDifficulty);
+        updateCustomControlsVisibility();
+
+        if (newDifficulty !== 'custom') {
+          applyDifficultyPreset(currentDifficulty);
+          needsRegenerate = true;
+        }
+      }
+
+      // Update custom settings (only in custom mode)
+      if (currentDifficulty === 'custom') {
+        if (newGridSize !== currentGridSize) {
+          currentGridSize = newGridSize;
+          document.getElementById('gridSize').value = newGridSize;
+          localStorage.setItem('colorFocusGridSize', currentGridSize);
+          updateGridCSS();
+          updateColorDropdownOptions();
+          needsRegenerate = true;
+        }
+
+        document.getElementById('colorCount').value = newColorCount;
+        document.getElementById('congruence').value = newCongruence;
+        needsRegenerate = true;
+      }
+
+      // Update seed (always triggers regenerate if changed)
+      if (newSeed !== document.getElementById('seed').value) {
+        document.getElementById('seed').value = newSeed;
+        needsRegenerate = true;
+      }
+
+      // Regenerate puzzle if settings changed
+      if (needsRegenerate) {
+        generatePuzzle();
+      }
+    }
+
+    // Update custom controls visibility in modal
+    function updateModalCustomControlsVisibility() {
+      const isCustom = document.getElementById('modalDifficulty').value === 'custom';
+      document.querySelectorAll('#settingsModal .custom-control').forEach(el => {
+        el.classList.toggle('visible', isCustom);
+      });
+    }
+
+    // Update modal color dropdown options based on grid size
+    function updateModalColorDropdownOptions() {
+      const colorSelect = document.getElementById('modalColorCount');
+      const gridSize = parseInt(document.getElementById('modalGridSize').value, 10);
+      const maxColors = Math.min(8, gridSize);
+      const currentColorValue = parseInt(colorSelect.value, 10);
+
+      // Clear existing options
+      colorSelect.innerHTML = '';
+
+      // Add options from 1 to maxColors
+      const minColors = Math.min(2, maxColors);
+      for (let i = minColors; i <= maxColors; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        if (i === Math.min(currentColorValue, maxColors)) {
+          option.selected = true;
+        }
+        colorSelect.appendChild(option);
+      }
+
+      // If current selection exceeds new max, clamp it
+      if (currentColorValue > maxColors) {
+        colorSelect.value = maxColors;
+      }
     }
 
     // Wire up event listeners (security: avoid global function exposure)
@@ -2141,6 +2827,17 @@
     document.getElementById('clearBtn').addEventListener('click', clearAnswers);
     document.getElementById('revealBtn').addEventListener('click', toggleAnswerKey);
     document.getElementById('clearSelectionsBtn').addEventListener('click', clearAllSelections);
+
+    // Modal event listeners
+    document.getElementById('settingsBtn').addEventListener('click', () => openModal('settingsModal'));
+    document.getElementById('aboutBtn').addEventListener('click', () => openModal('aboutModal'));
+    document.getElementById('settingsModalClose').addEventListener('click', closeModal);
+    document.getElementById('aboutModalClose').addEventListener('click', closeModal);
+    document.getElementById('modalBackdrop').addEventListener('click', handleBackdropClick);
+
+    // Modal settings controls - update UI as user changes settings
+    document.getElementById('modalDifficulty').addEventListener('change', updateModalCustomControlsVisibility);
+    document.getElementById('modalGridSize').addEventListener('change', updateModalColorDropdownOptions);
 
     // Auth event listeners
     document.getElementById('loginBtn').addEventListener('click', signInWithGoogle);

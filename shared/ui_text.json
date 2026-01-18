@@ -304,5 +304,125 @@
     "english": "Sign out failed. Please try again.",
     "spanish": "Error al cerrar sesion. Intentelo de nuevo.",
     "vietnamese": "Dang xuat that bai. Vui long thu lai."
+  },
+  "settings_title": {
+    "zh-TW": "設定",
+    "english": "Settings",
+    "spanish": "Configuracion",
+    "vietnamese": "Cai dat"
+  },
+  "settings_btn": {
+    "zh-TW": "設定",
+    "english": "Settings",
+    "spanish": "Configuracion",
+    "vietnamese": "Cai dat"
+  },
+  "about_btn": {
+    "zh-TW": "關於",
+    "english": "About",
+    "spanish": "Acerca de",
+    "vietnamese": "Gioi thieu"
+  },
+  "about_title": {
+    "zh-TW": "關於",
+    "english": "About",
+    "spanish": "Acerca de",
+    "vietnamese": "Gioi thieu"
+  },
+  "settings_display_section": {
+    "zh-TW": "顯示",
+    "english": "Display",
+    "spanish": "Pantalla",
+    "vietnamese": "Hien thi"
+  },
+  "settings_puzzle_section": {
+    "zh-TW": "謎題",
+    "english": "Puzzle",
+    "spanish": "Rompecabezas",
+    "vietnamese": "Cau do"
+  },
+  "settings_language": {
+    "zh-TW": "語言",
+    "english": "Language",
+    "spanish": "Idioma",
+    "vietnamese": "Ngon ngu"
+  },
+  "settings_spacing": {
+    "zh-TW": "間距",
+    "english": "Spacing",
+    "spanish": "Espaciado",
+    "vietnamese": "Khoang cach"
+  },
+  "settings_sound": {
+    "zh-TW": "選擇音效",
+    "english": "Selection Sound",
+    "spanish": "Sonido de seleccion",
+    "vietnamese": "Am thanh chon"
+  },
+  "settings_difficulty": {
+    "zh-TW": "難度",
+    "english": "Difficulty",
+    "spanish": "Dificultad",
+    "vietnamese": "Do kho"
+  },
+  "settings_grid_size": {
+    "zh-TW": "網格大小",
+    "english": "Grid Size",
+    "spanish": "Tamano de cuadricula",
+    "vietnamese": "Kich thuoc luoi"
+  },
+  "settings_colors": {
+    "zh-TW": "顏色數量",
+    "english": "Colors",
+    "spanish": "Colores",
+    "vietnamese": "Mau sac"
+  },
+  "settings_match": {
+    "zh-TW": "匹配率",
+    "english": "Match %",
+    "spanish": "Coincidencia %",
+    "vietnamese": "Ty le khop"
+  },
+  "settings_seed": {
+    "zh-TW": "種子",
+    "english": "Seed",
+    "spanish": "Semilla",
+    "vietnamese": "Hat giong"
+  },
+  "about_tagline": {
+    "zh-TW": "通過Stroop干擾謎題進行認知訓練",
+    "english": "Cognitive training through Stroop interference puzzles",
+    "spanish": "Entrenamiento cognitivo a traves de rompecabezas de interferencia Stroop",
+    "vietnamese": "Luyen tap nhan thuc qua cau do nhieu Stroop"
+  },
+  "about_what_title": {
+    "zh-TW": "什麼是ColorFocus？",
+    "english": "What is ColorFocus?",
+    "spanish": "Que es ColorFocus?",
+    "vietnamese": "ColorFocus la gi?"
+  },
+  "about_what_text": {
+    "zh-TW": "ColorFocus利用Stroop效應鍛煉大腦。當您看到一個顏色詞用不同顏色的墨水印刷時，您的大腦必須解決閱讀文字和識別墨水顏色之間的衝突。這種認知挑戰有助於加強注意力和處理速度。",
+    "english": "ColorFocus uses the Stroop effect to exercise your brain. When you see a color word printed in a different ink color, your brain must resolve the conflict between reading the word and identifying the ink color. This cognitive challenge helps strengthen attention and processing speed.",
+    "spanish": "ColorFocus utiliza el efecto Stroop para ejercitar tu cerebro. Cuando ves una palabra de color impresa en un color de tinta diferente, tu cerebro debe resolver el conflicto entre leer la palabra e identificar el color de la tinta. Este desafio cognitivo ayuda a fortalecer la atencion y la velocidad de procesamiento.",
+    "vietnamese": "ColorFocus su dung hieu ung Stroop de tap luyen nao bo. Khi ban nhin thay mot tu chi mau duoc in bang mau muc khac, nao bo cua ban phai giai quyet xung dot giua viec doc tu va nhan dang mau muc. Thach thuc nhan thuc nay giup tang cuong su chu y va toc do xu ly."
+  },
+  "about_story_title": {
+    "zh-TW": "我們的故事",
+    "english": "Our Story",
+    "spanish": "Nuestra Historia",
+    "vietnamese": "Cau chuyen cua chung toi"
+  },
+  "about_story_text": {
+    "zh-TW": "這個應用程式的靈感來自我的母親，她在2025年感恩節前幾天遭受了輕微中風。初步康復後，她通過了所有醫院檢查，但我們想檢查是否有細微的認知變化。想起我大學「知覺與認知」課程中的Stroop測試，我創建了一個9x9的謎題，用彩色中文字（她的母語）來測試她的語言和知覺中心是否受到影響。\n\n她立即對兩個相鄰的顯示不一致紅色/綠色字符的方塊感到困難。在解釋了Stroop效應以及它如何檢測任務干擾後，她用這些謎題進行心理鍛煉。第二天，這種效應減弱了——很快就完全消失了。\n\n我創建這個應用程式，希望其他中風倖存者能夠識別類似的挑戰並像我媽媽一樣進行康復。即使您不是中風康復者，這也可以是一個有趣的認知練習。我很想聽聽您的故事——請聯繫我！",
+    "english": "This app was inspired by my mother, who suffered a minor stroke days before Thanksgiving 2025. After initial recovery, she passed all hospital tests, but we wanted to check for subtle cognitive changes. Remembering the Stroop Test from my college Perception and Cognition course, I created a 9x9 puzzle with colored Chinese words (her native language) to test if her language and perception centers were affected.\n\nShe immediately had difficulty with two adjacent tiles showing incongruent red/green characters. After explaining the Stroop effect and how it detects task interference, she used the puzzles for mental exercise. The next day, the effect was reduced—and soon disappeared entirely.\n\nI built this app hoping other stroke survivors can identify similar challenges and rehabilitate the way my mom did. Even if you're not recovering from a stroke, this can be a fun cognitive exercise. I'd love to hear your story—please reach out!",
+    "spanish": "Esta aplicacion fue inspirada por mi madre, quien sufrio un derrame cerebral menor dias antes del Dia de Accion de Gracias de 2025. Despues de la recuperacion inicial, paso todas las pruebas del hospital, pero queriamos verificar cambios cognitivos sutiles. Recordando la Prueba Stroop de mi curso universitario de Percepcion y Cognicion, cree un rompecabezas de 9x9 con palabras chinas de colores (su idioma nativo) para probar si sus centros de lenguaje y percepcion estaban afectados.\n\nInmediatamente tuvo dificultad con dos fichas adyacentes que mostraban caracteres rojos/verdes incongruentes. Despues de explicar el efecto Stroop y como detecta la interferencia de tareas, uso los rompecabezas para ejercicio mental. Al dia siguiente, el efecto se redujo—y pronto desaparecio por completo.\n\nConstrui esta aplicacion esperando que otros sobrevivientes de derrames cerebrales puedan identificar desafios similares y rehabilitarse como lo hizo mi mama. Incluso si no te estas recuperando de un derrame, este puede ser un divertido ejercicio cognitivo. Me encantaria escuchar tu historia—por favor contactame!",
+    "vietnamese": "Ung dung nay duoc lay cam hung tu me toi, nguoi da bi dot quy nhe vai ngay truoc Le Ta On 2025. Sau khi phuc hoi ban dau, ba da vuot qua tat ca cac bai kiem tra cua benh vien, nhung chung toi muon kiem tra nhung thay doi nhan thuc tinh te. Nho lai Bai kiem tra Stroop tu khoa hoc Nhan thuc va Tri giac o dai hoc, toi da tao mot cau do 9x9 voi cac tu Trung Quoc mau (ngon ngu me de cua ba) de kiem tra xem cac trung tam ngon ngu va nhan thuc cua ba co bi anh huong khong.\n\nBa ngay lap tuc gap kho khan voi hai o ke nhau hien thi cac ky tu do/xanh khong tuong thich. Sau khi giai thich hieu ung Stroop va cach no phat hien nhieu nhiem vu, ba da su dung cac cau do de tap luyen tri nao. Ngay hom sau, hieu ung da giam—va som bien mat hoan toan.\n\nToi xay dung ung dung nay voi hy vong nhung nguoi song sot sau dot quy khac co the xac dinh nhung thach thuc tuong tu va phuc hoi nhu me toi da lam. Ngay ca khi ban khong phuc hoi sau dot quy, day co the la mot bai tap nhan thuc vui ve. Toi rat muon nghe cau chuyen cua ban—hay lien he voi toi!"
+  },
+  "about_support_link": {
+    "zh-TW": "支持ColorFocus",
+    "english": "Support ColorFocus",
+    "spanish": "Apoya ColorFocus",
+    "vietnamese": "Ung ho ColorFocus"
   }
 }
