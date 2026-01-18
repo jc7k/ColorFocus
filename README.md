@@ -1,6 +1,6 @@
 # ColorFocus
 
-A color-based cognitive training application featuring Stroop test puzzles with accessibility-first design.
+A color-based cognitive training application featuring Stroop test puzzles with accessibility-first design for stroke survivors and elderly users.
 
 **Live Demo:** [colorfocus.vercel.app](https://colorfocus.vercel.app)
 
@@ -16,25 +16,54 @@ I built this app so she can use it to practice and rehab during her recovery fro
 
 ## Features
 
+### Core Puzzle Features
 - **Configurable Grid Size** - Choose from 1x1 to 8x8 grids for progressive difficulty
-- **Configurable Difficulty** - 2-8 colors, 0-100% congruence levels
-- **Full Multi-language UI** - Complete interface localization in Chinese, English, Spanish, and Vietnamese
-- **Mobile Responsive** - Dynamic font sizing adapts to viewport, language, and grid size
-- **Answer Submission** - Enter counts and check accuracy with scoring feedback
-- **Hidden Answer Key** - Reveal after attempting the puzzle
+- **Difficulty Presets** - Accessible, Standard, Advanced, and Custom modes
+- **Configurable Colors** - 2-8 colors with 0-100% congruence levels
 - **Seed-based Generation** - Reproducible puzzles for consistent testing
-- **Preference Persistence** - Language and grid size saved across sessions via localStorage
+
+### User Interface
+- **Settings Modal** - Consolidated settings panel with all configuration options
+- **About/Help Modal** - Instructions, app information, and personal story
+- **Tile Selection** - Click tiles to select them, then click color swatches to auto-fill counts
+- **Apple-esque Design** - Clean, modern interface optimized for clarity
+
+### Multi-language Support
+- **Full UI Localization** - Complete interface in Chinese, English, Spanish, and Vietnamese
+- **73 Translatable Strings** - All UI text, instructions, and feedback messages
+
+### Accessibility
+- **44px Touch Targets** - All interactive elements meet WCAG minimum size
+- **Skip Navigation** - Keyboard shortcut to jump directly to puzzle
+- **High Contrast Mode** - Respects `prefers-contrast: high` system setting
+- **Reduced Motion** - Respects `prefers-reduced-motion` for vestibular disorders
+- **Color-blind Friendly** - Palette validated for deuteranopia, protanopia, tritanopia
+- **Visible Focus States** - Clear 3px outline rings on all focusable elements
+- **Keyboard Navigation** - Full arrow key support on puzzle grid
+
+### Persistence
+- **Preference Storage** - Language, difficulty, grid size, spacing, and sound settings saved via localStorage
+- **Google OAuth** - Optional sign-in via Supabase for future cross-device sync
 
 ## Supported Languages
 
-| Language | Labels |
-|----------|--------|
-| Chinese | 藍, 橙, 紫, 黑, 青, 金, 品, 灰 |
-| English | Blue, Orange, Purple, Black, Cyan, Amber, Magenta, Gray |
-| Spanish | Azul, Naranja, Morado, Negro, Cian, Ambar, Magenta, Gris |
-| Vietnamese | Xanh, Cam, Tím, Đen, Lơ, Vàng, Hồng, Xám |
+| Language | Color Labels |
+|----------|--------------|
+| Chinese | 藍, 橙, 紫, 黑, 棕, 粉, 灰, 黃 |
+| English | Blue, Orange, Purple, Black, Brown, Pink, Gray, Yellow |
+| Spanish | Azul, Naranja, Morado, Negro, Cafe, Rosa, Gris, Amarillo |
+| Vietnamese | Xanh, Cam, Tim, Den, Nau, Hong, Xam, Vang |
 
 ## Difficulty Levels
+
+### Presets
+
+| Preset | Grid | Colors | Match % | Best For |
+|--------|------|--------|---------|----------|
+| Accessible | 3x3 | 3 | 12.5% | Initial recovery, getting started |
+| Standard | 4x4 | 4 | 12.5% | Default, moderate challenge |
+| Advanced | 8x8 | 8 | 12.5% | Full difficulty, experienced users |
+| Custom | Any | Any | Any | Personalized settings |
 
 ### Grid Size (Progressive Difficulty)
 
@@ -48,16 +77,15 @@ I built this app so she can use it to practice and rehab during her recovery fro
 
 Smaller grids automatically limit the number of available colors (e.g., a 3x3 grid allows max 3 colors).
 
-### Color & Congruence Settings
-
-| Colors | Congruence | Difficulty | Description |
-|--------|------------|------------|-------------|
-| 2 | 12.5% | Easy | Only Blue/Orange, minimal choices |
-| 4 | 12.5% | Medium | Default setting |
-| 8 | 75% | Medium | Many colors but word often matches ink |
-| 8 | 0% | Hardest | Maximum Stroop interference |
+### Congruence (Match %)
 
 **Congruence** controls how often the word meaning matches the ink color. Lower congruence = stronger Stroop effect = harder puzzle.
+
+| Match % | Difficulty | Description |
+|---------|------------|-------------|
+| 75-100% | Easy | Word often matches ink color |
+| 25-50% | Medium | Moderate interference |
+| 0-12.5% | Hard | Maximum Stroop interference |
 
 ## Quick Start
 
@@ -81,41 +109,42 @@ python3 -m http.server 8080
 
 ## Tech Stack
 
-- **Frontend:** HTML, CSS, JavaScript (vanilla)
+- **Frontend:** HTML, CSS, JavaScript (vanilla) - Single-file architecture
 - **Backend:** Python 3.11+, pytest
 - **Shared:** JSON source of truth for cross-platform color constants
+- **Auth:** Supabase (Google OAuth)
 - **Hosting:** Vercel (static frontend)
-- **Accessibility:** Color-blind friendly palette (deuteranopia, protanopia, tritanopia validated)
+- **Design:** Apple-esque design system with CSS custom properties
 
 ## Color Token System
 
 The foundation of the application is a color token system optimized for color-blind accessibility.
 
-### 8 Canonical Colors
+### 8 Accessible Colors
 
-| Token   | Dark | Base | Bright |
-|---------|------|------|--------|
-| BLUE    | Yes  | Yes  | Yes    |
-| ORANGE  | Yes  | Yes  | Yes    |
-| PURPLE  | Yes  | Yes  | Yes    |
-| BLACK   | No   | Yes  | Yes    |
-| CYAN    | Yes  | Yes  | Yes    |
-| AMBER   | Yes  | Yes  | Yes    |
-| MAGENTA | Yes  | Yes  | Yes    |
-| GRAY    | Yes  | Yes  | Yes    |
+| Token | Hex | Description |
+|-------|-----|-------------|
+| BLACK | #1A1A1A | Near-black |
+| BROWN | #8B4513 | Saddle brown |
+| PURPLE | #7B4BAF | Medium purple |
+| BLUE | #0066CC | Strong blue |
+| GRAY | #808080 | Medium gray |
+| PINK | #E75480 | Dark pink |
+| ORANGE | #FF8C00 | Dark orange |
+| YELLOW | #FFD700 | Gold yellow |
 
-**23 total color values** - All colors validated for deuteranopia, protanopia, and tritanopia accessibility.
+All colors validated for deuteranopia, protanopia, and tritanopia accessibility.
 
 ### Architecture
 
 ```
 /shared/
   colors.json              # Single source of truth for colors
-  color_labels.json        # Multi-language color labels
-  ui_text.json             # Full UI localization (32 translatable strings)
+  color_labels.json        # Multi-language color labels (8 colors × 4 languages)
+  ui_text.json             # Full UI localization (73 translatable strings)
 
 /frontend/
-  puzzle.html              # Interactive Stroop puzzle
+  puzzle.html              # Interactive Stroop puzzle (single-file app)
   src/constants/colors.ts  # TypeScript constants
 
 /backend/
@@ -176,6 +205,22 @@ vercel --prod
 
 Your app will be live at `https://your-project.vercel.app`
 
+## Future Work (Accessibility Enhancements)
+
+The following accessibility improvements are planned for future releases:
+
+### Pattern Indicators for Color Swatches
+Add subtle visual patterns (stripes, dots, crosshatch) inside color swatches to help users with severe color blindness distinguish between colors without relying solely on hue.
+
+### Font Size Toggle
+Add a font size control in the Settings modal allowing users to increase or decrease text size beyond the default, accommodating users with low vision.
+
+### Dyslexia-Friendly Font Option
+Offer OpenDyslexic or similar dyslexia-friendly fonts as an alternative, making the app more accessible for users with reading difficulties.
+
+### Audio Announcements
+Add optional screen reader announcements for puzzle completion, correct/incorrect answers, and other key events to improve the experience for visually impaired users.
+
 ## Support This Project
 
 If ColorFocus has been helpful for you or someone you care about, consider supporting its continued development:
@@ -191,7 +236,7 @@ Contributions are welcome! This project was built to help stroke recovery patien
 ### Ways to Contribute
 
 - **Add new languages** - Help translate color labels to more languages
-- **Improve accessibility** - Enhance screen reader support, keyboard navigation
+- **Improve accessibility** - Enhance screen reader support, add pattern indicators
 - **Add features** - Progress tracking, difficulty progression, statistics
 - **Fix bugs** - Report or fix issues you encounter
 - **Documentation** - Improve README, add tutorials, translate docs

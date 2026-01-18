@@ -18,10 +18,10 @@
     "vietnamese": "Nhiem vu:"
   },
   "task_instruction": {
-    "zh-TW": "數一數每種墨水顏色有多少個單元格。{language_descriptor}顯示的是顏色名稱，但您必須數的是顯示它的實際墨水顏色。",
-    "english": "Count how many cells are printed in each INK color. The {language_descriptor} shows a color name, but you must count the actual ink color used to display it.",
-    "spanish": "Cuenta cuantas celdas estan impresas en cada color de TINTA. La {language_descriptor} muestra un nombre de color, pero debes contar el color de tinta real usado para mostrarlo.",
-    "vietnamese": "Dem so o duoc in bang moi mau MUC. {language_descriptor} hien thi ten mau, nhung ban phai dem mau muc thuc te duoc su dung de hien thi no."
+    "zh-TW": "數一數每種墨水顏色有多少個單元格。{language_descriptor}顯示的是顏色名稱，但您必須數的是顯示它的實際墨水顏色。提示：點擊方塊來選擇它們，然後在「輸入答案」區域點擊顏色方塊來自動填入已選擇的數量。使用「清除選擇」按鈕來取消所有選擇。",
+    "english": "Count how many cells are printed in each INK color. The {language_descriptor} shows a color name, but you must count the actual ink color used to display it. Tip: Click tiles to select them, then click the color swatch in Enter Your Answers to auto-fill the count. Use Clear Selections to deselect all.",
+    "spanish": "Cuenta cuantas celdas estan impresas en cada color de TINTA. La {language_descriptor} muestra un nombre de color, pero debes contar el color de tinta real usado para mostrarlo. Consejo: Haz clic en las celdas para seleccionarlas, luego haz clic en el cuadro de color en Ingrese Sus Respuestas para autocompletar el conteo. Usa Borrar Selecciones para deseleccionar todo.",
+    "vietnamese": "Dem so o duoc in bang moi mau MUC. {language_descriptor} hien thi ten mau, nhung ban phai dem mau muc thuc te duoc su dung de hien thi no. Meo: Nhan vao cac o de chon chung, sau do nhan vao o mau trong Nhap cau tra loi de tu dong dien so luong. Su dung Xoa lua chon de bo chon tat ca."
   },
   "language_label": {
     "zh-TW": "語言：",
@@ -394,6 +394,18 @@
     "english": "Cognitive training through Stroop interference puzzles",
     "spanish": "Entrenamiento cognitivo a traves de rompecabezas de interferencia Stroop",
     "vietnamese": "Luyen tap nhan thuc qua cau do nhieu Stroop"
+  },
+  "about_how_to_play_title": {
+    "zh-TW": "如何遊玩",
+    "english": "How to Play",
+    "spanish": "Como Jugar",
+    "vietnamese": "Cach choi"
+  },
+  "about_how_to_play_text": {
+    "zh-TW": "數一數每種墨水顏色有多少個單元格。文字顯示的是顏色名稱，但您必須數的是顯示它的實際墨水顏色。提示：點擊方塊來選擇它們，然後在「輸入答案」區域點擊顏色方塊來自動填入已選擇的數量。使用「清除選擇」按鈕來取消所有選擇。",
+    "english": "Count how many cells are printed in each INK color. The word shows a color name, but you must count the actual ink color used to display it. Tip: Click tiles to select them, then click the color swatch in Enter Your Answers to auto-fill the count. Use Clear Selections to deselect all.",
+    "spanish": "Cuenta cuantas celdas estan impresas en cada color de TINTA. La palabra muestra un nombre de color, pero debes contar el color de tinta real usado para mostrarlo. Consejo: Haz clic en las celdas para seleccionarlas, luego haz clic en el cuadro de color en Ingrese Sus Respuestas para autocompletar el conteo. Usa Borrar Selecciones para deseleccionar todo.",
+    "vietnamese": "Dem so o duoc in bang moi mau MUC. Tu hien thi ten mau, nhung ban phai dem mau muc thuc te duoc su dung de hien thi no. Meo: Nhan vao cac o de chon chung, sau do nhan vao o mau trong Nhap cau tra loi de tu dong dien so luong. Su dung Xoa lua chon de bo chon tat ca."
   },
   "about_what_title": {
     "zh-TW": "什麼是ColorFocus？",

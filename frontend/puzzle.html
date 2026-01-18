@@ -89,6 +89,26 @@
       color: var(--color-text-primary);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      /* Larger base font for elderly users */
+      font-size: 1.0625rem;
+    }
+
+    /* Skip link for keyboard navigation */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-accent);
+      color: white;
+      padding: var(--space-md) var(--space-xl);
+      border-radius: var(--radius-pill);
+      font-weight: var(--font-weight-medium);
+      z-index: 9999;
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      top: var(--space-md);
     }
 
     h1 {
@@ -350,21 +370,6 @@
     .metadata-value {
       font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
-    }
-    .task-instructions {
-      background: var(--color-warning-bg);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg) var(--space-xl);
-      margin-bottom: var(--space-xl);
-      color: var(--color-warning-text);
-      font-size: 0.9375rem;
-      border: 1px solid var(--color-warning-border);
-      line-height: 1.6;
-    }
-    .task-instructions strong {
-      display: block;
-      margin-bottom: var(--space-xs);
-      font-weight: var(--font-weight-semibold);
     }
 
     /* Sound toggle checkbox styling */
@@ -714,6 +719,14 @@
       color: var(--color-text-primary);
       transform: none;
     }
+    .modal-close:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+    }
+    .modal-close:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
     .modal-close svg {
       width: 16px;
       height: 16px;
@@ -948,10 +961,6 @@
         font-size: 0.8rem;
         max-width: 100px;
       }
-      .task-instructions {
-        font-size: 0.8rem;
-        padding: var(--space-sm);
-      }
       .controls {
         gap: var(--space-sm);
       }
@@ -1171,9 +1180,30 @@
         display: none;
       }
     }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      :root {
+        --color-border: #1D1D1F;
+        --color-text-secondary: #1D1D1F;
+      }
+      .puzzle-cell {
+        border: 2px solid var(--color-text-primary);
+      }
+    }
+
+    /* Reduced motion for vestibular disorders */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
+  <a href="#puzzleGrid" class="skip-link">Skip to puzzle</a>
   <h1 id="pageTitle">ColorFocus Stroop Puzzle</h1>
   <p class="subtitle" id="subtitle">Count the INK colors, not the word meanings!</p>
   <a href="https://buymeacoffee.com/xwje4mbv3l"
@@ -1193,10 +1223,6 @@
     </div>
   </div>
 
-  <div class="task-instructions" id="taskInstructions">
-    <strong>Task:</strong> Count how many cells are printed in each INK color. The Chinese character shows a color name, but you must count the actual ink color used to display it.
-  </div>
-
   <div class="controls">
     <div class="controls-main">
       <button id="generateBtn">Generate</button>
@@ -1210,13 +1236,8 @@
         </svg>
         <span class="icon-btn-text" id="settingsBtnText">Settings</span>
       </button>
-      <button class="icon-btn" id="aboutBtn" aria-label="About ColorFocus">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="16" x2="12" y2="12"></line>
-          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-        </svg>
-        <span class="icon-btn-text" id="aboutBtnText">About</span>
+      <button class="icon-btn" id="aboutBtn" aria-label="Help and About">
+        <span style="font-size: 1.125rem; font-weight: 600;">?</span>
       </button>
     </div>
   </div>
@@ -1421,6 +1442,11 @@
       <div class="about-header">
         <div class="about-icon">CF</div>
         <p class="about-tagline" id="aboutTagline">Cognitive training through Stroop interference puzzles</p>
+      </div>
+
+      <div class="about-section">
+        <h3 class="about-section-title" id="aboutHowToPlayTitle">How to Play</h3>
+        <p class="about-text" id="aboutHowToPlayText">Count how many cells are printed in each INK color. The word shows a color name, but you must count the actual ink color used to display it. Tip: Click tiles to select them, then click the color swatch in Enter Your Answers to auto-fill the count. Use Clear Selections to deselect all.</p>
       </div>
 
       <div class="about-section">
@@ -1824,7 +1850,6 @@
       document.getElementById('generateBtn').textContent = getUIText('generate_btn');
       document.getElementById('randomBtn').textContent = getUIText('random_btn');
       document.getElementById('settingsBtnText').textContent = getUIText('settings_btn');
-      document.getElementById('aboutBtnText').textContent = getUIText('about_btn');
       document.getElementById('checkBtn').textContent = getUIText('check_btn');
       document.getElementById('clearBtn').textContent = getUIText('clear_btn');
 
@@ -1839,9 +1864,6 @@
 
       // Update reveal warning
       document.getElementById('revealWarning').textContent = getUIText('reveal_warning');
-
-      // Update task instructions
-      updateTaskInstructions();
 
       // Update clear selections button text
       document.getElementById('clearSelectionsBtn').textContent = getUIText('clear_selections_btn');
@@ -1876,6 +1898,8 @@
       // Update About Modal
       document.getElementById('aboutModalTitle').textContent = getUIText('about_title');
       document.getElementById('aboutTagline').textContent = getUIText('about_tagline');
+      document.getElementById('aboutHowToPlayTitle').textContent = getUIText('about_how_to_play_title');
+      document.getElementById('aboutHowToPlayText').textContent = getUIText('about_how_to_play_text');
       document.getElementById('aboutWhatTitle').textContent = getUIText('about_what_title');
       document.getElementById('aboutWhatText').textContent = getUIText('about_what_text');
       document.getElementById('aboutStoryTitle').textContent = getUIText('about_story_title');
@@ -1949,21 +1973,6 @@
         [result[i], result[j]] = [result[j], result[i]];
       }
       return result;
-    }
-
-    // Update task instructions text based on language
-    function updateTaskInstructions() {
-      const languageDescriptor = getLanguageDescriptor();
-      const taskInstruction = getUIText('task_instruction').replace('{language_descriptor}', languageDescriptor);
-
-      const container = document.getElementById('taskInstructions');
-      container.textContent = ''; // Clear safely
-
-      const strong = document.createElement('strong');
-      strong.textContent = getUIText('task_label');
-      container.appendChild(strong);
-
-      container.appendChild(document.createTextNode(' ' + taskInstruction));
     }
 
     // Calculate optimal font size based on viewport, language, and grid size
@@ -2355,9 +2364,6 @@
 
       // Render answer key (hidden)
       renderAnswerKey();
-
-      // Update task instructions
-      updateTaskInstructions();
 
       // Render metadata with translated labels
       updateMetadata();
