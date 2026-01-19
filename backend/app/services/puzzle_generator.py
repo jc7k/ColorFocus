@@ -148,6 +148,11 @@ class PuzzleGenerator:
             # Step 3: Shuffle for spatial randomness
             self._rng.shuffle(cells_flat)
 
+            # Step 3b: Optimize for Stroop interference
+            cells_flat = self._optimize_stroop_interference(
+                cells_flat, grid_size=self.COLS
+            )
+
             # Step 4: Reshape to 8x8 grid
             cells_2d = self._reshape_to_grid(cells_flat)
 
@@ -271,6 +276,125 @@ class PuzzleGenerator:
                 word = self._rng.choice(other_colors)
 
             cells.append(PuzzleCell(word=word, ink_color=ink_color))
+
+        return cells
+
+    def _get_adjacent_indices(self, flat_index: int, grid_size: int) -> List[int]:
+        """
+        Get orthogonally adjacent indices for a flat array position.
+
+        Args:
+            flat_index: Index in the flattened grid array.
+            grid_size: The dimension of the square grid.
+
+        Returns:
+            List of valid adjacent indices (up to 4: up, down, left, right).
+        """
+        row = flat_index // grid_size
+        col = flat_index % grid_size
+        adjacent = []
+
+        if row > 0:
+            adjacent.append(flat_index - grid_size)
+        if row < grid_size - 1:
+            adjacent.append(flat_index + grid_size)
+        if col > 0:
+            adjacent.append(flat_index - 1)
+        if col < grid_size - 1:
+            adjacent.append(flat_index + 1)
+
+        return adjacent
+
+    def _interference_at(
+        self, cells: List[PuzzleCell], idx: int, grid_size: int
+    ) -> int:
+        """
+        Count interference pairs involving the cell at idx.
+
+        Interference occurs when:
+        - This cell's ink color matches a neighbor's word, OR
+        - A neighbor's ink color matches this cell's word
+
+        Args:
+            cells: Flat list of puzzle cells.
+            idx: Index of the cell to check.
+            grid_size: The dimension of the square grid.
+
+        Returns:
+            Count of interference relationships for this cell.
+        """
+        count = 0
+        cell = cells[idx]
+        for adj_idx in self._get_adjacent_indices(idx, grid_size):
+            if adj_idx < len(cells):
+                adj_cell = cells[adj_idx]
+                # My ink matches neighbor's word
+                if cell.ink_color == adj_cell.word:
+                    count += 1
+                # Neighbor's ink matches my word
+                if adj_cell.ink_color == cell.word:
+                    count += 1
+        return count
+
+    def _optimize_stroop_interference(
+        self,
+        cells: List[PuzzleCell],
+        grid_size: int,
+        max_swaps: int = 50,
+    ) -> List[PuzzleCell]:
+        """
+        Optimize cell placement to increase adjacent Stroop interference.
+
+        Uses a greedy approach: repeatedly find and execute the best swap
+        that increases interference pairs until no improvement is found.
+
+        Args:
+            cells: Flat list of puzzle cells to optimize.
+            grid_size: The dimension of the square grid.
+            max_swaps: Maximum number of swap iterations.
+
+        Returns:
+            Optimized list of cells (new list, original unchanged).
+        """
+        cells = list(cells)  # Copy to avoid mutating original
+
+        for _ in range(max_swaps):
+            best_swap = None
+            best_gain = 0
+
+            # Sample random pairs to check (not exhaustive for performance)
+            pairs_to_check = min(100, len(cells) * 2)
+
+            for _ in range(pairs_to_check):
+                i = self._rng.randint(0, len(cells) - 1)
+                j = self._rng.randint(0, len(cells) - 1)
+                if i == j:
+                    continue
+
+                # Calculate current interference contribution
+                current = (
+                    self._interference_at(cells, i, grid_size)
+                    + self._interference_at(cells, j, grid_size)
+                )
+
+                # Swap and calculate new interference
+                cells[i], cells[j] = cells[j], cells[i]
+                swapped = (
+                    self._interference_at(cells, i, grid_size)
+                    + self._interference_at(cells, j, grid_size)
+                )
+                cells[i], cells[j] = cells[j], cells[i]  # Swap back
+
+                gain = swapped - current
+                if gain > best_gain:
+                    best_gain = gain
+                    best_swap = (i, j)
+
+            if best_swap and best_gain > 0:
+                i, j = best_swap
+                cells[i], cells[j] = cells[j], cells[i]
+            else:
+                break  # No improving swaps found
 
         return cells
 

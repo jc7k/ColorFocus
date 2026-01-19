@@ -2544,6 +2544,74 @@
       return result;
     }
 
+    // Get orthogonally adjacent indices for a flat array position
+    function getAdjacentIndices(flatIndex, gridSize) {
+      const row = Math.floor(flatIndex / gridSize);
+      const col = flatIndex % gridSize;
+      const adjacent = [];
+
+      if (row > 0) adjacent.push(flatIndex - gridSize);
+      if (row < gridSize - 1) adjacent.push(flatIndex + gridSize);
+      if (col > 0) adjacent.push(flatIndex - 1);
+      if (col < gridSize - 1) adjacent.push(flatIndex + 1);
+
+      return adjacent;
+    }
+
+    // Count interference pairs involving cell at idx
+    function interferenceAt(cells, idx, gridSize) {
+      let count = 0;
+      const cell = cells[idx];
+      for (const adjIdx of getAdjacentIndices(idx, gridSize)) {
+        if (adjIdx < cells.length) {
+          const adjCell = cells[adjIdx];
+          // My ink matches neighbor's word
+          if (cell.inkColor === adjCell.word) count++;
+          // Neighbor's ink matches my word
+          if (adjCell.inkColor === cell.word) count++;
+        }
+      }
+      return count;
+    }
+
+    // Optimize cell placement to increase adjacent Stroop interference
+    function optimizeStroopInterference(cells, gridSize, random, maxSwaps = 50) {
+      cells = [...cells];
+
+      for (let swap = 0; swap < maxSwaps; swap++) {
+        let bestSwap = null;
+        let bestGain = 0;
+
+        const pairsToCheck = Math.min(100, cells.length * 2);
+
+        for (let p = 0; p < pairsToCheck; p++) {
+          const i = Math.floor(random() * cells.length);
+          const j = Math.floor(random() * cells.length);
+          if (i === j) continue;
+
+          const current = interferenceAt(cells, i, gridSize) + interferenceAt(cells, j, gridSize);
+
+          [cells[i], cells[j]] = [cells[j], cells[i]];
+          const swapped = interferenceAt(cells, i, gridSize) + interferenceAt(cells, j, gridSize);
+          [cells[i], cells[j]] = [cells[j], cells[i]];
+
+          const gain = swapped - current;
+          if (gain > bestGain) {
+            bestGain = gain;
+            bestSwap = [i, j];
+          }
+        }
+
+        if (bestSwap && bestGain > 0) {
+          [cells[bestSwap[0]], cells[bestSwap[1]]] = [cells[bestSwap[1]], cells[bestSwap[0]]];
+        } else {
+          break;
+        }
+      }
+
+      return cells;
+    }
+
     // Calculate optimal font size based on viewport, language, and grid size
     // Uses dynamic calculation: baseFontSize = (cellWidth * 0.8) / languageWidthMultiplier
     // The 0.8 factor achieves 80% text width with 10% margins on each side
@@ -3095,7 +3163,9 @@
         return { word, inkColor };
       });
 
-      currentPuzzle = cells;
+      // Optimize for Stroop interference (swap cells to maximize adjacent interference)
+      const optimizedCells = optimizeStroopInterference(cells, currentGridSize, random);
+      currentPuzzle = optimizedCells;
 
       // Update grid CSS for current grid size
       updateGridCSS();
