@@ -203,29 +203,29 @@
     "spanish": "Dificultad:",
     "vietnamese": "Do kho:"
   },
-  "difficulty_accessible": {
-    "zh-TW": "簡易",
-    "english": "Accessible",
-    "spanish": "Accesible",
-    "vietnamese": "De tiep can"
+  "difficulty_easy": {
+    "zh-TW": "簡單",
+    "english": "Easy",
+    "spanish": "Facil",
+    "vietnamese": "De"
   },
-  "difficulty_standard": {
-    "zh-TW": "標準",
-    "english": "Standard",
-    "spanish": "Estandar",
-    "vietnamese": "Tieu chuan"
+  "difficulty_medium": {
+    "zh-TW": "中等",
+    "english": "Medium",
+    "spanish": "Medio",
+    "vietnamese": "Trung binh"
   },
-  "difficulty_advanced": {
-    "zh-TW": "進階",
-    "english": "Advanced",
-    "spanish": "Avanzado",
-    "vietnamese": "Nang cao"
+  "difficulty_hard": {
+    "zh-TW": "困難",
+    "english": "Hard",
+    "spanish": "Dificil",
+    "vietnamese": "Kho"
   },
-  "difficulty_custom": {
-    "zh-TW": "自訂",
-    "english": "Custom",
-    "spanish": "Personalizado",
-    "vietnamese": "Tuy chinh"
+  "difficulty_expert": {
+    "zh-TW": "專家",
+    "english": "Expert",
+    "spanish": "Experto",
+    "vietnamese": "Chuyen gia"
   },
   "spacing_label": {
     "zh-TW": "間距：",

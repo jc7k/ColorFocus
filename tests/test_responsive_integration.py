@@ -64,55 +64,78 @@ class TestSpacingOptionsIntegration:
         )
 
 
-class TestDifficultyPresetsBackwardCompatibility:
+class TestDifficultyPresetsCongruenceOnly:
     """
-    Verify difficulty presets continue to work correctly.
+    Verify difficulty presets work correctly.
+    Difficulty now controls Stroop interference (congruence %) only.
+    Grid size and color count are independent settings.
     """
 
     def test_difficulty_presets_constant_exists(self):
-        """Test that DIFFICULTY_PRESETS constant exists with all tiers."""
+        """Test that DIFFICULTY_PRESETS constant exists with all levels."""
         html = load_puzzle_html()
         assert 'DIFFICULTY_PRESETS' in html, (
             "DIFFICULTY_PRESETS constant should exist"
         )
-        assert 'accessible:' in html or 'accessible :' in html, (
-            "Accessible preset should exist"
+        assert 'easy:' in html or 'easy :' in html, (
+            "Easy preset should exist"
         )
-        assert 'standard:' in html or 'standard :' in html, (
-            "Standard preset should exist"
+        assert 'medium:' in html or 'medium :' in html, (
+            "Medium preset should exist"
         )
-        assert 'advanced:' in html or 'advanced :' in html, (
-            "Advanced preset should exist"
+        assert 'hard:' in html or 'hard :' in html, (
+            "Hard preset should exist"
+        )
+        assert 'expert:' in html or 'expert :' in html, (
+            "Expert preset should exist"
         )
 
-    def test_accessible_preset_has_3x3_grid(self):
-        """Test that accessible preset uses 3x3 grid."""
+    def test_easy_preset_has_75_percent_congruence(self):
+        """Test that easy preset uses 75% congruence (low Stroop interference)."""
         html = load_puzzle_html()
-        accessible_section = re.search(
-            r'accessible:\s*\{[^}]+\}',
+        easy_section = re.search(
+            r'easy:\s*\{[^}]+\}',
             html,
             re.DOTALL
         )
-        assert accessible_section is not None, (
-            "Accessible preset should be defined"
+        assert easy_section is not None, (
+            "Easy preset should be defined"
         )
-        section_text = accessible_section.group(0)
-        assert 'gridSize: 3' in section_text or 'gridSize:3' in section_text, (
-            "Accessible preset should have gridSize: 3"
+        section_text = easy_section.group(0)
+        assert 'congruencePercent: 75' in section_text or 'congruencePercent:75' in section_text, (
+            "Easy preset should have congruencePercent: 75"
         )
 
-    def test_advanced_preset_has_8x8_grid(self):
-        """Test that advanced preset uses 8x8 grid."""
+    def test_expert_preset_has_0_percent_congruence(self):
+        """Test that expert preset uses 0% congruence (max Stroop interference)."""
         html = load_puzzle_html()
-        advanced_section = re.search(
-            r'advanced:\s*\{[^}]+\}',
+        expert_section = re.search(
+            r'expert:\s*\{[^}]+\}',
             html,
             re.DOTALL
         )
-        assert advanced_section is not None, (
-            "Advanced preset should be defined"
+        assert expert_section is not None, (
+            "Expert preset should be defined"
         )
-        section_text = advanced_section.group(0)
-        assert 'gridSize: 8' in section_text or 'gridSize:8' in section_text, (
-            "Advanced preset should have gridSize: 8"
+        section_text = expert_section.group(0)
+        assert 'congruencePercent: 0' in section_text or 'congruencePercent:0' in section_text, (
+            "Expert preset should have congruencePercent: 0"
+        )
+
+    def test_presets_do_not_include_grid_size(self):
+        """Test that presets only control congruence, not grid size."""
+        html = load_puzzle_html()
+        # Find the DIFFICULTY_PRESETS block
+        presets_match = re.search(
+            r'const DIFFICULTY_PRESETS\s*=\s*\{[^;]+\};',
+            html,
+            re.DOTALL
+        )
+        assert presets_match is not None, (
+            "DIFFICULTY_PRESETS should be defined"
+        )
+        presets_text = presets_match.group(0)
+        # Grid size should NOT be in presets (it's now independent)
+        assert 'gridSize' not in presets_text, (
+            "DIFFICULTY_PRESETS should not include gridSize (now independent setting)"
         )

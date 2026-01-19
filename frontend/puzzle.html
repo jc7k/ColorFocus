@@ -965,13 +965,8 @@
       margin: 0;
     }
 
-    /* Custom controls visibility (shown only in Custom difficulty) */
-    .custom-control {
-      display: none;
-    }
-    .custom-control.visible {
-      display: flex;
-    }
+    /* Grid size and color count controls - always visible */
+    /* (Difficulty now only controls Stroop interference, not grid/color settings) */
 
     /* ========================================
        MODAL SYSTEM
@@ -1642,10 +1637,10 @@
   <!-- Hidden original controls for state management -->
   <div style="display: none;">
     <select id="difficulty">
-      <option value="accessible">Accessible</option>
-      <option value="standard" selected>Standard</option>
-      <option value="advanced">Advanced</option>
-      <option value="custom">Custom</option>
+      <option value="easy" selected>Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+      <option value="expert">Expert</option>
     </select>
     <select id="language">
       <option value="zh-TW" selected>Chinese</option>
@@ -1678,7 +1673,7 @@
       <option value="7">7</option>
       <option value="8">8</option>
     </select>
-    <input type="number" id="congruence" value="12.5" min="0" max="100" step="0.1">
+    <input type="number" id="congruence" value="75" min="0" max="100" step="0.1">
     <input type="number" id="seed" value="42" min="0">
     <input type="checkbox" id="soundToggle">
   </div>
@@ -1857,14 +1852,14 @@
         <div class="modal-section-title" id="settingsPuzzleTitle">Puzzle</div>
         <div class="settings-row">
           <label class="settings-label" for="modalDifficulty" id="modalDifficultyLabel">Difficulty</label>
-          <select id="modalDifficulty" aria-label="Select difficulty tier">
-            <option value="accessible">Accessible</option>
-            <option value="standard">Standard</option>
-            <option value="advanced">Advanced</option>
-            <option value="custom">Custom</option>
+          <select id="modalDifficulty" aria-label="Select difficulty level">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+            <option value="expert">Expert</option>
           </select>
         </div>
-        <div class="settings-row custom-control" id="modalGridSizeGroup">
+        <div class="settings-row" id="modalGridSizeGroup">
           <label class="settings-label" for="modalGridSize" id="modalGridLabel">Grid Size</label>
           <select id="modalGridSize" aria-label="Select grid size">
             <option value="1">1x1</option>
@@ -1877,7 +1872,7 @@
             <option value="8">8x8</option>
           </select>
         </div>
-        <div class="settings-row custom-control" id="modalColorCountGroup">
+        <div class="settings-row" id="modalColorCountGroup">
           <label class="settings-label" for="modalColorCount" id="modalColorsLabel">Colors</label>
           <select id="modalColorCount">
             <option value="2">2</option>
@@ -1889,10 +1884,8 @@
             <option value="8">8</option>
           </select>
         </div>
-        <div class="settings-row custom-control" id="modalCongruenceGroup">
-          <label class="settings-label" for="modalCongruence" id="modalMatchLabel">Match %</label>
-          <input type="number" id="modalCongruence" value="12.5" min="0" max="100" step="0.1">
-        </div>
+        <!-- Match % is now controlled by difficulty and hidden from UI -->
+        <input type="hidden" id="modalCongruence" value="75">
         <div class="settings-row">
           <label class="settings-label" for="modalSeed" id="modalSeedLabel">Seed</label>
           <input type="number" id="modalSeed" value="42" min="0">
@@ -2010,17 +2003,26 @@
     // Valid grid sizes (1-8)
     const VALID_GRID_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 
-    // Valid difficulty tiers
-    const VALID_DIFFICULTIES = ['accessible', 'standard', 'advanced', 'custom'];
+    // Valid difficulty tiers (controls Stroop interference only)
+    const VALID_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'];
 
     // Valid spacing options
     const VALID_SPACINGS = ['compact', 'normal', 'relaxed', 'spacious'];
 
-    // Difficulty tier presets: { gridSize, colorCount, congruencePercent }
+    // Difficulty presets: congruence % only (higher = easier, less Stroop interference)
     const DIFFICULTY_PRESETS = {
-      accessible: { gridSize: 3, colorCount: 2, congruencePercent: 50 },
-      standard: { gridSize: 4, colorCount: 4, congruencePercent: 12.5 },
-      advanced: { gridSize: 8, colorCount: 8, congruencePercent: 0 }
+      easy: { congruencePercent: 75 },
+      medium: { congruencePercent: 50 },
+      hard: { congruencePercent: 25 },
+      expert: { congruencePercent: 0 }
+    };
+
+    // Map old difficulty values to new ones for localStorage migration
+    const DIFFICULTY_MIGRATION = {
+      accessible: 'easy',
+      standard: 'medium',
+      advanced: 'expert',
+      custom: 'medium'
     };
 
     // Spacing presets: gap in pixels
@@ -2056,9 +2058,12 @@
       return VALID_GRID_SIZES.includes(num) ? num : 4;
     }
 
-    // Validate difficulty selection
+    // Validate difficulty selection (with migration from old values)
     function validateDifficulty(difficulty) {
-      return VALID_DIFFICULTIES.includes(difficulty) ? difficulty : 'standard';
+      if (VALID_DIFFICULTIES.includes(difficulty)) return difficulty;
+      // Migrate old difficulty values to new ones
+      if (DIFFICULTY_MIGRATION[difficulty]) return DIFFICULTY_MIGRATION[difficulty];
+      return 'easy'; // New default
     }
 
     // Validate spacing selection
@@ -2099,8 +2104,8 @@
     let currentLanguage = validateLanguage(localStorage.getItem('colorFocusLanguage') || 'zh-TW');
     // Validate grid size from localStorage (default: 4)
     let currentGridSize = validateGridSize(localStorage.getItem('colorFocusGridSize') || 4);
-    // Validate difficulty from localStorage (default: standard)
-    let currentDifficulty = validateDifficulty(localStorage.getItem('colorFocusDifficulty') || 'standard');
+    // Validate difficulty from localStorage (default: easy)
+    let currentDifficulty = validateDifficulty(localStorage.getItem('colorFocusDifficulty') || 'easy');
     // Validate spacing from localStorage (default: normal)
     let currentSpacing = validateSpacing(localStorage.getItem('colorFocusSpacing') || 'normal');
     // Tile selection state for counting tiles feature
@@ -2332,34 +2337,14 @@
     // Initialize sound toggle with saved preference
     document.getElementById('soundToggle').checked = soundEnabled;
 
-    // Show/hide custom controls based on difficulty
-    function updateCustomControlsVisibility() {
-      const isCustom = currentDifficulty === 'custom';
-      document.querySelectorAll('.custom-control').forEach(el => {
-        el.classList.toggle('visible', isCustom);
-      });
-    }
-
-    // Apply difficulty preset to controls
+    // Apply difficulty preset - only sets congruence % (Stroop interference level)
+    // Grid size and color count are now independent settings
     function applyDifficultyPreset(difficulty) {
-      if (difficulty === 'custom') return; // Don't modify values in custom mode
-
       const preset = DIFFICULTY_PRESETS[difficulty];
       if (!preset) return;
 
-      // Update state
-      currentGridSize = preset.gridSize;
-
-      // Update UI - grid size and congruence first
-      document.getElementById('gridSize').value = preset.gridSize;
+      // Only update congruence - difficulty now controls Stroop interference only
       document.getElementById('congruence').value = preset.congruencePercent;
-
-      // Save grid size preference
-      localStorage.setItem('colorFocusGridSize', currentGridSize);
-
-      // Update color dropdown options for new grid size, then set color count
-      updateColorDropdownOptions();
-      document.getElementById('colorCount').value = preset.colorCount;
     }
 
     // Update grid CSS for current grid size and spacing
@@ -2447,15 +2432,14 @@
       document.getElementById('modalDifficultyLabel').textContent = getUIText('settings_difficulty');
       document.getElementById('modalGridLabel').textContent = getUIText('settings_grid_size');
       document.getElementById('modalColorsLabel').textContent = getUIText('settings_colors');
-      document.getElementById('modalMatchLabel').textContent = getUIText('settings_match');
       document.getElementById('modalSeedLabel').textContent = getUIText('settings_seed');
 
       // Update difficulty dropdown options in modal
       const modalDifficultySelect = document.getElementById('modalDifficulty');
-      modalDifficultySelect.options[0].textContent = getUIText('difficulty_accessible');
-      modalDifficultySelect.options[1].textContent = getUIText('difficulty_standard');
-      modalDifficultySelect.options[2].textContent = getUIText('difficulty_advanced');
-      modalDifficultySelect.options[3].textContent = getUIText('difficulty_custom');
+      modalDifficultySelect.options[0].textContent = getUIText('difficulty_easy');
+      modalDifficultySelect.options[1].textContent = getUIText('difficulty_medium');
+      modalDifficultySelect.options[2].textContent = getUIText('difficulty_hard');
+      modalDifficultySelect.options[3].textContent = getUIText('difficulty_expert');
 
       // Update spacing dropdown options in modal
       const modalSpacingSelect = document.getElementById('modalSpacing');
@@ -2482,7 +2466,6 @@
     document.getElementById('difficulty').addEventListener('change', (e) => {
       currentDifficulty = validateDifficulty(e.target.value);
       localStorage.setItem('colorFocusDifficulty', currentDifficulty);
-      updateCustomControlsVisibility();
       applyDifficultyPreset(currentDifficulty);
       generatePuzzle();
     });
@@ -3547,9 +3530,6 @@
       document.getElementById('modalColorCount').value = document.getElementById('colorCount').value;
       document.getElementById('modalCongruence').value = document.getElementById('congruence').value;
       document.getElementById('modalSeed').value = document.getElementById('seed').value;
-
-      // Update custom controls visibility in modal
-      updateModalCustomControlsVisibility();
     }
 
     // Apply modal settings to the app
@@ -3594,32 +3574,28 @@
         localStorage.setItem('colorFocusSoundEnabled', String(soundEnabled));
       }
 
-      // Update difficulty
+      // Update difficulty (controls Stroop interference via congruence %)
       if (newDifficulty !== currentDifficulty) {
         currentDifficulty = newDifficulty;
         document.getElementById('difficulty').value = newDifficulty;
         localStorage.setItem('colorFocusDifficulty', currentDifficulty);
-        updateCustomControlsVisibility();
-
-        if (newDifficulty !== 'custom') {
-          applyDifficultyPreset(currentDifficulty);
-          needsRegenerate = true;
-        }
+        applyDifficultyPreset(currentDifficulty);
+        needsRegenerate = true;
       }
 
-      // Update custom settings (only in custom mode)
-      if (currentDifficulty === 'custom') {
-        if (newGridSize !== currentGridSize) {
-          currentGridSize = newGridSize;
-          document.getElementById('gridSize').value = newGridSize;
-          localStorage.setItem('colorFocusGridSize', currentGridSize);
-          updateGridCSS();
-          updateColorDropdownOptions();
-          needsRegenerate = true;
-        }
+      // Update grid size (independent of difficulty)
+      if (newGridSize !== currentGridSize) {
+        currentGridSize = newGridSize;
+        document.getElementById('gridSize').value = newGridSize;
+        localStorage.setItem('colorFocusGridSize', currentGridSize);
+        updateGridCSS();
+        updateColorDropdownOptions();
+        needsRegenerate = true;
+      }
 
+      // Update color count (independent of difficulty)
+      if (newColorCount !== document.getElementById('colorCount').value) {
         document.getElementById('colorCount').value = newColorCount;
-        document.getElementById('congruence').value = newCongruence;
         needsRegenerate = true;
       }
 
@@ -3633,14 +3609,6 @@
       if (needsRegenerate) {
         generatePuzzle();
       }
-    }
-
-    // Update custom controls visibility in modal
-    function updateModalCustomControlsVisibility() {
-      const isCustom = document.getElementById('modalDifficulty').value === 'custom';
-      document.querySelectorAll('#settingsModal .custom-control').forEach(el => {
-        el.classList.toggle('visible', isCustom);
-      });
     }
 
     // Update modal color dropdown options based on grid size
@@ -4030,21 +3998,15 @@
     document.getElementById('aboutModalClose').addEventListener('click', closeModal);
     document.getElementById('modalBackdrop').addEventListener('click', handleBackdropClick);
 
-    // Modal settings controls - update UI as user changes settings
-    document.getElementById('modalDifficulty').addEventListener('change', updateModalCustomControlsVisibility);
+    // Modal settings controls - update color dropdown when grid size changes
     document.getElementById('modalGridSize').addEventListener('change', updateModalColorDropdownOptions);
 
     // Auth event listeners
     document.getElementById('loginBtn').addEventListener('click', signInWithGoogle);
     document.getElementById('logoutBtn').addEventListener('click', signOut);
 
-    // Initialize custom controls visibility based on difficulty
-    updateCustomControlsVisibility();
-
-    // Apply difficulty preset if not custom (restores settings on page load)
-    if (currentDifficulty !== 'custom') {
-      applyDifficultyPreset(currentDifficulty);
-    }
+    // Apply difficulty preset (sets congruence based on difficulty level)
+    applyDifficultyPreset(currentDifficulty);
 
     // Initialize color dropdown options based on initial grid size
     updateColorDropdownOptions();
