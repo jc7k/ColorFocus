@@ -411,6 +411,82 @@
       justify-content: center;
       line-height: 1;
     }
+    /* ========================================
+       ASSIGNMENT VISUAL STATES (Stroop Detection)
+       ======================================== */
+    /* Tile assigned to a color (subtle dimming) */
+    .puzzle-cell.assigned {
+      opacity: 0.7;
+    }
+    .puzzle-cell.assigned.selected {
+      opacity: 0.85;
+    }
+    /* Tile assigned to wrong color (Stroop error warning) */
+    .puzzle-cell.stroop-warning {
+      position: relative;
+      box-shadow: inset 0 0 0 3px #FF9500;
+    }
+    .puzzle-cell.stroop-warning::after {
+      content: '!';
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      width: 14px;
+      height: 14px;
+      background: #FF9500;
+      border-radius: 50%;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    /* Stroop warning panel */
+    .stroop-warning-panel {
+      display: none;
+      background: #FFF8E6;
+      border: 1px solid #FF9500;
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      margin-top: var(--space-md);
+      gap: var(--space-sm);
+      align-items: flex-start;
+    }
+    .stroop-warning-panel.visible {
+      display: flex;
+    }
+    .stroop-warning-panel .warning-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .stroop-warning-panel .warning-content {
+      flex: 1;
+    }
+    .stroop-warning-panel .warning-title {
+      font-weight: 600;
+      color: #B86E00;
+      margin-bottom: var(--space-xs);
+    }
+    .stroop-warning-panel .warning-message {
+      font-size: 0.875rem;
+      color: #8B5500;
+    }
+    .stroop-warning-panel .dismiss-btn {
+      background: transparent;
+      border: 1px solid #FF9500;
+      color: #B86E00;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.8125rem;
+      transition: all var(--transition-fast);
+    }
+    .stroop-warning-panel .dismiss-btn:hover {
+      background: #FF9500;
+      color: white;
+    }
     .metadata {
       display: flex;
       gap: var(--space-2xl);
@@ -1345,6 +1421,17 @@
         font-size: 0.75rem;
         justify-content: center;
       }
+      .stroop-warning-panel {
+        padding: var(--space-sm);
+        flex-direction: column;
+        gap: var(--space-xs);
+      }
+      .stroop-warning-panel .warning-title {
+        font-size: 0.85rem;
+      }
+      .stroop-warning-panel .warning-message {
+        font-size: 0.8rem;
+      }
       .answer-section {
         padding: var(--space-md);
       }
@@ -1684,6 +1771,16 @@
     </div>
     <div class="puzzle-grid" id="puzzleGrid" role="grid" aria-label="Color puzzle grid"></div>
     <div class="metadata" id="metadata"></div>
+  </div>
+
+  <!-- Stroop Warning Panel (shown when tiles are assigned to wrong color) -->
+  <div class="stroop-warning-panel" id="stroopWarningPanel">
+    <div class="warning-icon">&#9888;</div>
+    <div class="warning-content">
+      <div class="warning-title" id="stroopWarningTitle">Stroop Interference Detected</div>
+      <div class="warning-message" id="stroopWarningMessage"></div>
+    </div>
+    <button class="dismiss-btn" id="dismissWarningBtn">Got it</button>
   </div>
 
   <!-- Answer Submission Section -->
@@ -2112,6 +2209,14 @@
     let selectedTiles = new Set();
     // Sound enabled state for tile selection (default: off for accessibility)
     let soundEnabled = validateSoundEnabled(localStorage.getItem('colorFocusSoundEnabled'));
+
+    // ===========================================
+    // STROOP INTERFERENCE DETECTION STATE
+    // ===========================================
+    // Track which tiles are assigned to which color (colorToken -> Set<tileIndex>)
+    let assignedTiles = new Map();
+    // Track tiles that were incorrectly assigned (tileIndex -> {assignedColor, actualColor, wordShown})
+    let stroopErrors = new Map();
     // Track currently focused tile index for keyboard navigation (roving tabindex)
     let focusedTileIndex = 0;
     // Audio context for selection sound (lazy initialized)
@@ -2958,12 +3063,221 @@
       }
     }
 
+    // ===========================================
+    // STROOP INTERFERENCE DETECTION FUNCTIONS
+    // ===========================================
+
+    /**
+     * Validate tile assignment and detect Stroop interference
+     * @param tileIndices - Set of tile indices being assigned
+     * @param assignedColor - Color token the tiles are being assigned to
+     * @returns Array of error objects for tiles assigned to wrong color
+     */
+    function validateTileAssignment(tileIndices, assignedColor) {
+      const errors = [];
+      tileIndices.forEach(index => {
+        const tile = currentPuzzle[index];
+        if (tile.inkColor !== assignedColor) {
+          const error = {
+            tileIndex: index,
+            assignedColor: assignedColor,
+            actualColor: tile.inkColor,
+            wordShown: tile.word,
+            isStroopInfluenced: tile.word === assignedColor // Word matches what user thought
+          };
+          errors.push(error);
+          stroopErrors.set(index, error);
+        }
+      });
+      return errors;
+    }
+
+    /**
+     * Check for tiles already assigned to other colors
+     * @param tileIndices - Set of tile indices to check
+     * @param newColor - The new color being assigned
+     * @returns Array of {tileIndex, previousColor} for conflicts
+     */
+    function checkForConflicts(tileIndices, newColor) {
+      const conflicts = [];
+      assignedTiles.forEach((tiles, colorToken) => {
+        if (colorToken !== newColor) {
+          tileIndices.forEach(index => {
+            if (tiles.has(index)) {
+              conflicts.push({ tileIndex: index, previousColor: colorToken });
+            }
+          });
+        }
+      });
+      return conflicts;
+    }
+
+    /**
+     * Handle tile reassignment conflicts (move tiles from one color to another)
+     * @param conflicts - Array of {tileIndex, previousColor}
+     * @param newColor - The new color to assign to
+     */
+    function handleConflicts(conflicts, newColor) {
+      conflicts.forEach(({ tileIndex, previousColor }) => {
+        // Remove from previous color
+        const prevSet = assignedTiles.get(previousColor);
+        if (prevSet) {
+          prevSet.delete(tileIndex);
+          // Update the previous color's count input
+          const prevInput = document.getElementById(`answer-${previousColor}`);
+          if (prevInput) {
+            prevInput.value = String(prevSet.size);
+          }
+        }
+        // Remove any previous Stroop error for this tile
+        stroopErrors.delete(tileIndex);
+        // Remove visual classes from the tile
+        const cell = document.querySelector(`.puzzle-cell[data-index="${tileIndex}"]`);
+        if (cell) {
+          cell.classList.remove('stroop-warning');
+        }
+      });
+    }
+
+    /**
+     * Mark tiles as assigned visually
+     * @param tileIndices - Set of tile indices to mark
+     * @param token - Color token assigned to
+     */
+    function markTilesAsAssigned(tileIndices, token) {
+      tileIndices.forEach(index => {
+        const cell = document.querySelector(`.puzzle-cell[data-index="${index}"]`);
+        if (cell) {
+          cell.classList.add('assigned');
+          cell.classList.remove('selected');
+          cell.setAttribute('aria-pressed', 'false');
+        }
+      });
+    }
+
+    /**
+     * Mark tiles with Stroop warning
+     * @param errors - Array of error objects from validateTileAssignment
+     */
+    function markStroopWarnings(errors) {
+      errors.forEach(error => {
+        const cell = document.querySelector(`.puzzle-cell[data-index="${error.tileIndex}"]`);
+        if (cell) {
+          cell.classList.add('stroop-warning');
+        }
+      });
+    }
+
+    /**
+     * Show the Stroop warning panel with detected errors
+     * @param errors - Array of error objects
+     * @param assignedColor - The color user tried to assign to
+     */
+    function showStroopWarnings(errors, assignedColor) {
+      const panel = document.getElementById('stroopWarningPanel');
+      const titleEl = document.getElementById('stroopWarningTitle');
+      const messageEl = document.getElementById('stroopWarningMessage');
+
+      // Get localized color names
+      const assignedColorLabel = colorLabelsJson[assignedColor][currentLanguage];
+
+      // Build message with details about first error (most common case is 1-2 errors)
+      const firstError = errors[0];
+      const actualColorLabel = colorLabelsJson[firstError.actualColor][currentLanguage];
+      const wordLabel = colorLabelsJson[firstError.wordShown][currentLanguage];
+
+      // Get localized text
+      titleEl.textContent = getUIText('stroop_warning_title') || 'Stroop Interference Detected';
+      let message = getUIText('stroop_warning_message') || "{count} tile(s) may be incorrectly assigned. The tile showing '{word}' is actually printed in {actual} ink. This is the Stroop effect!";
+      message = message
+        .replace('{count}', String(errors.length))
+        .replace('{word}', wordLabel)
+        .replace('{actual}', actualColorLabel);
+      messageEl.textContent = message;
+
+      panel.classList.add('visible');
+    }
+
+    /**
+     * Hide the Stroop warning panel
+     */
+    function hideStroopWarningPanel() {
+      const panel = document.getElementById('stroopWarningPanel');
+      panel.classList.remove('visible');
+    }
+
+    /**
+     * Get total count of assigned tiles across all colors
+     * @returns Number of tiles currently assigned
+     */
+    function getTotalAssignedCount() {
+      let count = 0;
+      assignedTiles.forEach(tileSet => {
+        count += tileSet.size;
+      });
+      return count;
+    }
+
+    /**
+     * Reset assignment state (called on new puzzle or clear)
+     */
+    function resetAssignmentState() {
+      assignedTiles.clear();
+      stroopErrors.clear();
+      hideStroopWarningPanel();
+      // Clear visual indicators
+      document.querySelectorAll('.puzzle-cell').forEach(cell => {
+        cell.classList.remove('assigned', 'stroop-warning');
+      });
+    }
+
     // Handle auto-fill when color swatch is clicked
     function handleSwatchClick(token) {
-      const input = document.getElementById(`answer-${token}`);
-      if (input) {
-        input.value = String(selectedTiles.size);
+      // Hide any previous warning
+      hideStroopWarningPanel();
+
+      // If no tiles selected, show a message (but don't block - allow manual entry)
+      if (selectedTiles.size === 0) {
+        // Just return silently - user may want to manually enter a count
+        return;
       }
+
+      const input = document.getElementById(`answer-${token}`);
+      if (!input) return;
+
+      // Initialize set for this color if needed
+      if (!assignedTiles.has(token)) {
+        assignedTiles.set(token, new Set());
+      }
+
+      // Check for tiles already assigned to other colors
+      const conflicts = checkForConflicts(selectedTiles, token);
+      if (conflicts.length > 0) {
+        handleConflicts(conflicts, token);
+      }
+
+      // Validate each selected tile and track Stroop errors
+      const errors = validateTileAssignment(selectedTiles, token);
+
+      // Add tiles to assignment
+      selectedTiles.forEach(index => {
+        assignedTiles.get(token).add(index);
+      });
+
+      // Update count input
+      input.value = String(assignedTiles.get(token).size);
+
+      // Mark tiles as assigned visually
+      markTilesAsAssigned(selectedTiles, token);
+
+      // Show Stroop warnings if any
+      if (errors.length > 0) {
+        markStroopWarnings(errors);
+        showStroopWarnings(errors, token);
+      }
+
+      // Clear selection for next color
+      selectedTiles.clear();
     }
 
     // Render the puzzle grid display (without regenerating data)
@@ -3080,6 +3394,7 @@
       answerKeyRevealed = false;
       selectedTiles.clear();
       resetIdentificationState();
+      resetAssignmentState();
       focusedTileIndex = 0;
       document.getElementById('answerKeyContent').classList.remove('revealed');
       document.getElementById('revealBtn').textContent = getUIText('reveal_btn');
@@ -3219,6 +3534,7 @@
         input.min = '0';
         input.max = String(maxInputValue);
         input.placeholder = '?';
+        input.readOnly = true;
         item.appendChild(input);
 
         // Create correct value span
@@ -3275,6 +3591,26 @@
     // Check answers
     function checkAnswers() {
       if (!currentPuzzle) return;
+
+      // Check if all tiles are assigned
+      const totalTiles = currentGridSize * currentGridSize;
+      const totalAssigned = getTotalAssignedCount();
+
+      if (totalAssigned < totalTiles) {
+        // User has started assigning tiles but hasn't finished
+        const remaining = totalTiles - totalAssigned;
+        let message = getUIText('tiles_remaining') || "Please assign all tiles first. {count} tile(s) remaining.";
+        message = message.replace('{count}', String(remaining));
+
+        // Show warning in the Stroop warning panel
+        const panel = document.getElementById('stroopWarningPanel');
+        const titleEl = document.getElementById('stroopWarningTitle');
+        const messageEl = document.getElementById('stroopWarningMessage');
+        titleEl.textContent = getUIText('assignment_incomplete_title') || 'Assignment Incomplete';
+        messageEl.textContent = message;
+        panel.classList.add('visible');
+        return;
+      }
 
       hasChecked = true;
       let correctCount = 0;
@@ -3406,6 +3742,10 @@
 
       document.getElementById('resultsSection').classList.remove('visible');
       hasChecked = false;
+
+      // Reset assignment state
+      resetAssignmentState();
+      selectedTiles.clear();
 
       // Hide identify mistakes button
       document.getElementById('identifyMistakesBtn').classList.remove('visible');
@@ -3987,6 +4327,9 @@
     document.getElementById('identificationDoneBtn').addEventListener('click', handleIdentificationDone);
     document.getElementById('identificationCancelBtn').addEventListener('click', handleIdentificationCancel);
     document.getElementById('closeSummaryBtn').addEventListener('click', closeSummaryPanel);
+
+    // Stroop warning panel dismiss button
+    document.getElementById('dismissWarningBtn').addEventListener('click', hideStroopWarningPanel);
 
     // Global keyboard handler for identification mode (Escape to cancel)
     document.addEventListener('keydown', handleGlobalKeydown);
