@@ -352,6 +352,65 @@
       background: var(--color-bg-hover);
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08), 0 0 0 3px rgba(0, 113, 227, 0.3);
     }
+    /* ========================================
+       TILE MARKING CLASSES (Mistake Visualization)
+       ======================================== */
+    .puzzle-cell.tile-correct-id {
+      position: relative;
+      box-shadow: inset 0 0 0 3px var(--color-success);
+    }
+    .puzzle-cell.tile-correct-id::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 12px;
+      height: 12px;
+      background: var(--color-success);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+      background-size: 8px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .puzzle-cell.tile-incorrect-id {
+      position: relative;
+      box-shadow: inset 0 0 0 3px var(--color-error);
+    }
+    .puzzle-cell.tile-incorrect-id::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 12px;
+      height: 12px;
+      background: var(--color-error);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E");
+      background-size: 8px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .puzzle-cell.tile-stroop-influenced {
+      position: relative;
+    }
+    .puzzle-cell.tile-stroop-influenced::before {
+      content: 'S';
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      width: 14px;
+      height: 14px;
+      background: #FF9500;
+      border-radius: 50%;
+      color: white;
+      font-size: 9px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
     .metadata {
       display: flex;
       gap: var(--space-2xl);
@@ -566,8 +625,271 @@
       background: var(--color-error-bg);
       color: #CC2F26;
     }
-
-    /* Answer Key Section (Hidden by Default) */
+    /* ========================================
+       IDENTIFICATION MODE UI
+       ======================================== */
+    .identification-prompt {
+      background: var(--color-bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-xl);
+      display: none;
+    }
+    .identification-prompt.visible {
+      display: block;
+    }
+    .identification-prompt-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    .identification-color-swatch {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--color-border);
+      flex-shrink: 0;
+    }
+    .identification-prompt-text {
+      font-size: 1rem;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+      flex: 1;
+    }
+    .identification-next-indicator {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+    }
+    .identification-buttons {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+    .results-buttons {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      margin-top: var(--space-lg);
+    }
+    .identify-mistakes-btn {
+      display: none;
+    }
+    .identify-mistakes-btn.visible {
+      display: inline-flex;
+    }
+    @media (max-width: 480px) {
+      .identification-prompt {
+        padding: var(--space-md);
+      }
+      .identification-color-swatch {
+        width: 28px;
+        height: 28px;
+      }
+      .identification-prompt-text {
+        font-size: 0.9rem;
+      }
+      .identification-buttons button {
+        flex: 1;
+        min-width: 0;
+      }
+      .results-buttons button {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+    /* ========================================
+       MISTAKE SUMMARY AND LEGEND
+       ======================================== */
+    .mistake-summary-section {
+      background: var(--color-bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-xl);
+      display: none;
+    }
+    .mistake-summary-section.visible {
+      display: block;
+    }
+    .mistake-summary-section h2 {
+      font-size: 1rem;
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-lg);
+      color: var(--color-text-primary);
+    }
+    .summary-stats {
+      display: flex;
+      gap: var(--space-xl);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-xl);
+    }
+    .summary-stat {
+      text-align: center;
+      min-width: 80px;
+    }
+    .summary-stat .value {
+      font-size: 2rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      line-height: 1.2;
+    }
+    .summary-stat .value.stroop {
+      color: #FF9500;
+    }
+    .summary-stat .value.error {
+      color: var(--color-error);
+    }
+    .summary-stat .label {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: var(--space-xs);
+    }
+    .mistake-legend {
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+    .mistake-legend h3 {
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-md);
+      color: var(--color-text-primary);
+    }
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .legend-indicator {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg-card);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .legend-indicator.correct {
+      box-shadow: inset 0 0 0 3px var(--color-success);
+    }
+    .legend-indicator.correct::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-success);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+      background-size: 6px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .legend-indicator.incorrect {
+      box-shadow: inset 0 0 0 3px var(--color-error);
+    }
+    .legend-indicator.incorrect::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-error);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E");
+      background-size: 6px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .legend-indicator.stroop::before {
+      content: 'S';
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      width: 12px;
+      height: 12px;
+      background: #FF9500;
+      border-radius: 50%;
+      color: white;
+      font-size: 8px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .legend-text {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+    .summary-metadata {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--color-border);
+    }
+    .summary-metadata-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-lg);
+    }
+    .summary-metadata-item {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    .summary-metadata-item .label {
+      color: var(--color-text-tertiary);
+    }
+    .summary-metadata-item .value {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    .summary-buttons {
+      display: flex;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+    @media (max-width: 480px) {
+      .mistake-summary-section {
+        padding: var(--space-md);
+      }
+      .summary-stats {
+        gap: var(--space-lg);
+      }
+      .summary-stat .value {
+        font-size: 1.5rem;
+      }
+      .summary-stat .label {
+        font-size: 0.7rem;
+      }
+      .mistake-legend {
+        padding: var(--space-md);
+      }
+      .legend-indicator {
+        width: 28px;
+        height: 28px;
+      }
+      .legend-text {
+        font-size: 0.8rem;
+      }
+      .summary-buttons button {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+/* Answer Key Section (Hidden by Default) */
     .answer-key-section {
       background: var(--color-bg-card);
       border-radius: var(--radius-lg);
@@ -1202,6 +1524,78 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
+
+    /* ========================================
+       PRINT STYLES
+       ======================================== */
+    @media print {
+      /* Hide unnecessary UI elements */
+      .auth-section,
+      .controls,
+      .answer-section,
+      .answer-key-section,
+      .donation-section,
+      .modal-backdrop,
+      .modal,
+      .identification-prompt,
+      .results-buttons,
+      .summary-buttons,
+      button,
+      .skip-link {
+        display: none !important;
+      }
+      /* Reset page layout */
+      body {
+        padding: 0;
+        max-width: none;
+        background: white;
+      }
+      /* Show puzzle and summary clearly */
+      .puzzle-container,
+      .mistake-summary-section,
+      .results-section {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+        margin-bottom: 1rem;
+      }
+      .puzzle-cell {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      /* Ensure tile markers print correctly */
+      .puzzle-cell.tile-correct-id,
+      .puzzle-cell.tile-incorrect-id,
+      .puzzle-cell.tile-stroop-influenced {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      /* Summary section print styles */
+      .mistake-summary-section.visible {
+        display: block !important;
+      }
+      .mistake-legend {
+        background: #f8f8f8;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .summary-metadata {
+        font-size: 0.9rem;
+      }
+      /* Results section print */
+      .results-section.visible {
+        display: block !important;
+      }
+      /* Ensure colors print */
+      .legend-indicator.correct,
+      .legend-indicator.incorrect,
+      .legend-indicator.stroop::before {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+    }
     }
   </style>
 </head>
@@ -1312,7 +1706,84 @@
     <h2 id="resultsHeader">Results</h2>
     <div class="results-summary" id="resultsSummary"></div>
     <div class="result-message" id="resultMessage"></div>
+    <div class="results-buttons">
+      <button class="secondary identify-mistakes-btn" id="identifyMistakesBtn">Identify Mistakes</button>
+    </div>
   </div>
+
+  <!-- Identification Mode Prompt -->
+  <div class="identification-prompt" id="identificationPrompt">
+    <div class="identification-prompt-header">
+      <div class="identification-color-swatch" id="identificationColorSwatch"></div>
+      <span class="identification-prompt-text" id="identificationPromptText">Select the tiles you thought were this color</span>
+    </div>
+    <div class="identification-next-indicator" id="identificationNextIndicator"></div>
+    <div class="identification-buttons">
+      <button class="success" id="identificationDoneBtn">Done</button>
+      <button class="secondary" id="identificationCancelBtn">Cancel</button>
+    </div>
+
+  </div>
+
+  <!-- Mistake Analysis Summary Panel -->
+  <div class="mistake-summary-section" id="mistakeSummarySection">
+    <h2 id="summaryHeader">Mistake Analysis Summary</h2>
+    <div class="summary-stats" id="summaryStats">
+      <div class="summary-stat">
+        <div class="value error" id="totalMistakesValue">0</div>
+        <div class="label" id="totalMistakesLabel">Total Mistakes</div>
+      </div>
+      <div class="summary-stat">
+        <div class="value stroop" id="stroopInfluencedValue">0</div>
+        <div class="label" id="stroopInfluencedLabel">Stroop-Influenced</div>
+      </div>
+      <div class="summary-stat">
+        <div class="value" id="nonStroopValue">0</div>
+        <div class="label" id="nonStroopLabel">Other Mistakes</div>
+      </div>
+    </div>
+    <div class="mistake-legend" id="mistakeLegend">
+      <h3 id="legendHeader">Legend</h3>
+      <div class="legend-items">
+        <div class="legend-item">
+          <div class="legend-indicator correct" aria-hidden="true"></div>
+          <span class="legend-text" id="legendCorrectText">Correctly identified</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-indicator incorrect" aria-hidden="true"></div>
+          <span class="legend-text" id="legendIncorrectText">Incorrectly identified</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-indicator stroop" aria-hidden="true"></div>
+          <span class="legend-text" id="legendStroopText">Stroop interference likely</span>
+        </div>
+      </div>
+    </div>
+    <div class="summary-metadata" id="summaryMetadata">
+      <div class="summary-metadata-grid">
+        <div class="summary-metadata-item">
+          <span class="label" id="metaSeedLabel">Seed:</span>
+          <span class="value" id="metaSeedValue"></span>
+        </div>
+        <div class="summary-metadata-item">
+          <span class="label" id="metaGridLabel">Grid:</span>
+          <span class="value" id="metaGridValue"></span>
+        </div>
+        <div class="summary-metadata-item">
+          <span class="label" id="metaLanguageLabel">Language:</span>
+          <span class="value" id="metaLanguageValue"></span>
+        </div>
+        <div class="summary-metadata-item">
+          <span class="label" id="metaDifficultyLabel">Difficulty:</span>
+          <span class="value" id="metaDifficultyValue"></span>
+        </div>
+      </div>
+    </div>
+    <div class="summary-buttons">
+      <button class="secondary" id="closeSummaryBtn">Close Analysis</button>
+    </div>
+  </div>
+
 
   <!-- Answer Key Section (Hidden by Default) -->
   <div class="answer-key-section">
@@ -1642,6 +2113,22 @@
     let audioContext = null;
 
     // ===========================================
+    // MISTAKE IDENTIFICATION STATE
+    // ===========================================
+    // Whether identification mode is active (user selecting tiles they thought were a color)
+    let identificationMode = false;
+    // Current step in identification flow (color being identified, index in queue)
+    let identificationStep = { currentColor: null, queueIndex: -1 };
+    // Map of color tokens to discrepancy data {userCount, correctCount, difference}
+    let discrepancyData = new Map();
+    // Array of colors with discrepancies to process in order
+    let colorQueue = [];
+    // Map of color tokens to Set of selected tile indices (user's identifications)
+    let identificationResults = new Map();
+    // Tile-level analysis results {correct, incorrect, stroopInfluenced}
+    let mistakeAnalysis = new Map();
+
+    // ===========================================
     // AUTH STATE AND FUNCTIONS
     // ===========================================
     let currentUser = null;
@@ -1947,6 +2434,9 @@
       // Update clear selections button text
       document.getElementById('clearSelectionsBtn').textContent = getUIText('clear_selections_btn');
 
+      // Update identification mode button text
+      document.getElementById('identifyMistakesBtn').textContent = getUIText('identify_mistakes_btn');
+
       // Update Settings Modal
       document.getElementById('settingsModalTitle').textContent = getUIText('settings_title');
       document.getElementById('settingsDisplayTitle').textContent = getUIText('settings_display_section');
@@ -2183,6 +2673,189 @@
         cell.classList.remove('selected');
         cell.setAttribute('aria-pressed', 'false');
       });
+      // Also reset identification state if active
+      if (identificationMode) {
+        resetIdentificationState();
+      }
+    }
+
+    // ===========================================
+    // MISTAKE IDENTIFICATION FUNCTIONS
+    // ===========================================
+
+    /**
+     * Calculate discrepancies between user answers and correct answers
+     * @returns Array of color tokens that have discrepancies (for the color queue)
+     */
+    function calculateDiscrepancies() {
+      discrepancyData.clear();
+      const colorsWithDiscrepancies = [];
+
+      // Calculate max value based on current grid size
+      const maxValue = currentGridSize * currentGridSize;
+
+      activeColors.forEach(token => {
+        const input = document.getElementById(`answer-${token}`);
+        const userCount = input ? sanitizeNumber(input.value, 0, maxValue, 0) : 0;
+        const correctCount = correctAnswers[token] || 0;
+        const difference = userCount - correctCount;
+
+        // Store discrepancy data for all colors
+        discrepancyData.set(token, {
+          userCount,
+          correctCount,
+          difference
+        });
+
+        // Only add to queue if there's a discrepancy (non-zero difference)
+        if (difference !== 0) {
+          colorsWithDiscrepancies.push(token);
+        }
+      });
+
+      return colorsWithDiscrepancies;
+    }
+
+    /**
+     * Enter identification mode with the calculated discrepancies
+     * @param discrepancyColors - Array of color tokens with discrepancies
+     */
+    function enterIdentificationMode(discrepancyColors) {
+      if (discrepancyColors.length === 0) {
+        return; // No discrepancies, don't enter identification mode
+      }
+
+      identificationMode = true;
+      colorQueue = [...discrepancyColors];
+      identificationStep = {
+        currentColor: colorQueue[0],
+        queueIndex: 0
+      };
+
+      // Initialize empty sets for each color in the queue
+      colorQueue.forEach(color => {
+        identificationResults.set(color, new Set());
+      });
+    }
+
+    /**
+     * Advance to the next color in the identification queue
+     * Stores current selections and moves to next color
+     * @returns true if advanced to next color, false if queue is complete
+     */
+    function advanceToNextColor() {
+      if (!identificationMode || identificationStep.queueIndex < 0) {
+        return false;
+      }
+
+      // Store current selections for the current color
+      const currentColor = identificationStep.currentColor;
+      if (currentColor) {
+        identificationResults.set(currentColor, new Set(selectedTiles));
+      }
+
+      // Clear selections for next color
+      selectedTiles.clear();
+      document.querySelectorAll('.puzzle-cell.selected').forEach(cell => {
+        cell.classList.remove('selected');
+        cell.setAttribute('aria-pressed', 'false');
+      });
+
+      // Advance to next color
+      const nextIndex = identificationStep.queueIndex + 1;
+      if (nextIndex >= colorQueue.length) {
+        // Queue complete
+        identificationStep = { currentColor: null, queueIndex: -1 };
+        return false;
+      }
+
+      identificationStep = {
+        currentColor: colorQueue[nextIndex],
+        queueIndex: nextIndex
+      };
+      return true;
+    }
+
+    /**
+     * Exit identification mode and reset state
+     */
+    function exitIdentificationMode() {
+      identificationMode = false;
+      identificationStep = { currentColor: null, queueIndex: -1 };
+      colorQueue = [];
+      identificationResults.clear();
+      mistakeAnalysis.clear();
+      clearAllSelections();
+    }
+
+    /**
+     * Reset all identification state (called on new puzzle generation)
+     */
+    function resetIdentificationState() {
+      identificationMode = false;
+      identificationStep = { currentColor: null, queueIndex: -1 };
+      discrepancyData.clear();
+      colorQueue = [];
+      identificationResults.clear();
+      mistakeAnalysis.clear();
+      // Also remove any identification-related CSS classes from tiles
+      document.querySelectorAll('.puzzle-cell').forEach(cell => {
+        cell.classList.remove('tile-correct-id', 'tile-incorrect-id', 'tile-stroop-influenced');
+      });
+    }
+
+    /**
+     * Get orthogonally adjacent tile indices for a given tile
+     * @param tileIndex - The index of the tile to find neighbors for
+     * @returns Array of valid adjacent tile indices (up, down, left, right)
+     */
+    function getAdjacentTileIndices(tileIndex) {
+      const row = Math.floor(tileIndex / currentGridSize);
+      const col = tileIndex % currentGridSize;
+      const adjacent = [];
+
+      // Up
+      if (row > 0) {
+        adjacent.push(tileIndex - currentGridSize);
+      }
+      // Down
+      if (row < currentGridSize - 1) {
+        adjacent.push(tileIndex + currentGridSize);
+      }
+      // Left
+      if (col > 0) {
+        adjacent.push(tileIndex - 1);
+      }
+      // Right
+      if (col < currentGridSize - 1) {
+        adjacent.push(tileIndex + 1);
+      }
+
+      return adjacent;
+    }
+
+    /**
+     * Analyze if Stroop interference likely occurred for a tile
+     * @param tileIndex - Index of the tile to analyze
+     * @param perceivedColor - The color the user thought the tile was
+     * @returns true if any adjacent tile's word text matches the perceived color
+     */
+    function analyzeStroopInfluence(tileIndex, perceivedColor) {
+      if (!currentPuzzle) return false;
+
+      const adjacentIndices = getAdjacentTileIndices(tileIndex);
+
+      // Check if any adjacent tile's word matches the user's perceived color
+      for (const adjIndex of adjacentIndices) {
+        if (adjIndex >= 0 && adjIndex < currentPuzzle.length) {
+          const adjacentTile = currentPuzzle[adjIndex];
+          if (adjacentTile.word === perceivedColor) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     }
 
     // Calculate new tile index based on arrow key direction
@@ -2355,6 +3028,7 @@
       hasChecked = false;
       answerKeyRevealed = false;
       selectedTiles.clear();
+      resetIdentificationState();
       focusedTileIndex = 0;
       document.getElementById('answerKeyContent').classList.remove('revealed');
       document.getElementById('revealBtn').textContent = getUIText('reveal_btn');
@@ -2650,6 +3324,12 @@
       resultMessage.textContent = message;
 
       resultsSection.classList.add('visible');
+
+      // Update identify mistakes button visibility
+      // Calculate discrepancies for the identify mistakes button
+      calculateDiscrepancies();
+      updateIdentifyMistakesButtonVisibility();
+
     }
 
     // Clear answers
@@ -2673,6 +3353,10 @@
 
       document.getElementById('resultsSection').classList.remove('visible');
       hasChecked = false;
+
+      // Hide identify mistakes button
+      document.getElementById('identifyMistakesBtn').classList.remove('visible');
+
     }
 
     // Toggle answer key visibility
@@ -2916,6 +3600,341 @@
         colorSelect.value = maxColors;
       }
     }
+    // ===========================================
+    // IDENTIFICATION MODE UI FUNCTIONS
+    // ===========================================
+
+    /**
+     * Check if discrepancies exist (at least one color has non-zero difference)
+     */
+    function hasDiscrepancies() {
+      for (const [, data] of discrepancyData) {
+        if (data.difference !== 0) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /**
+     * Update the visibility of the "Identify Mistakes" button
+     * Shows only when hasChecked is true AND discrepancies exist
+     */
+    function updateIdentifyMistakesButtonVisibility() {
+      const btn = document.getElementById('identifyMistakesBtn');
+      if (hasChecked && hasDiscrepancies()) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    /**
+     * Get the identification prompt text for the current color
+     */
+    function getIdentificationPromptText() {
+      if (!identificationMode || !identificationStep.currentColor) {
+        return '';
+      }
+
+      const colorToken = identificationStep.currentColor;
+      const colorLabel = colorLabelsJson[colorToken]?.[currentLanguage] ?? colorToken;
+      const promptTemplate = getUIText('identification_prompt');
+
+      return promptTemplate.replace('{color}', colorLabel);
+    }
+
+    /**
+     * Get the "Next" indicator text showing the next color in queue
+     */
+    function getNextColorIndicator() {
+      if (!identificationMode || identificationStep.queueIndex < 0) {
+        return '';
+      }
+
+      const nextIndex = identificationStep.queueIndex + 1;
+      if (nextIndex >= colorQueue.length) {
+        return '';
+      }
+
+      const nextColor = colorQueue[nextIndex];
+      const colorLabel = colorLabelsJson[nextColor]?.[currentLanguage] ?? nextColor;
+      const template = getUIText('identification_next_color');
+
+      return template.replace('{color}', colorLabel);
+    }
+
+    /**
+     * Update the identification prompt UI with current color info
+     */
+    function updateIdentificationPromptUI() {
+      const promptPanel = document.getElementById('identificationPrompt');
+      const swatch = document.getElementById('identificationColorSwatch');
+      const promptText = document.getElementById('identificationPromptText');
+      const nextIndicator = document.getElementById('identificationNextIndicator');
+      const doneBtn = document.getElementById('identificationDoneBtn');
+      const cancelBtn = document.getElementById('identificationCancelBtn');
+
+      if (identificationMode && identificationStep.currentColor) {
+        // Show the prompt panel
+        promptPanel.classList.add('visible');
+
+        // Update swatch color
+        swatch.style.backgroundColor = colorsJson[identificationStep.currentColor] || '';
+
+        // Update prompt text
+        promptText.textContent = getIdentificationPromptText();
+
+        // Update next indicator
+        const nextText = getNextColorIndicator();
+        nextIndicator.textContent = nextText;
+        nextIndicator.style.display = nextText ? 'block' : 'none';
+
+        // Update button text
+        doneBtn.textContent = getUIText('identification_done_btn');
+        cancelBtn.textContent = getUIText('identification_cancel_btn');
+
+        // Focus management: focus Done button for keyboard accessibility
+        setTimeout(() => doneBtn.focus(), 100);
+      } else {
+        // Hide the prompt panel
+        promptPanel.classList.remove('visible');
+      }
+    }
+
+    /**
+     * Start the identification mode flow
+     */
+    function startIdentificationMode() {
+      // Calculate discrepancies and enter identification mode
+      const discrepancyColors = calculateDiscrepancies();
+      if (discrepancyColors.length === 0) {
+        return; // No discrepancies to identify
+      }
+
+      // Clear any existing tile selections BEFORE entering identification mode
+      // (clearAllSelections resets identification state if identificationMode is true)
+      selectedTiles.clear();
+      document.querySelectorAll('.puzzle-cell.selected').forEach(cell => {
+        cell.classList.remove('selected');
+        cell.setAttribute('aria-pressed', 'false');
+      });
+
+      enterIdentificationMode(discrepancyColors);
+
+      // Update UI
+      updateIdentificationPromptUI();
+    }
+
+    /**
+     * Handle "Done" button click - advance to next color or complete flow
+     */
+    function handleIdentificationDone() {
+      if (!identificationMode) {
+        return;
+      }
+
+      // Store current selections for the current color before advancing
+      const currentColor = identificationStep.currentColor;
+      if (currentColor) {
+        identificationResults.set(currentColor, new Set(selectedTiles));
+      }
+
+      // Clear selections for next color
+      selectedTiles.clear();
+      document.querySelectorAll('.puzzle-cell.selected').forEach(cell => {
+        cell.classList.remove('selected');
+        cell.setAttribute('aria-pressed', 'false');
+      });
+
+      // Advance to next color
+      const nextIndex = identificationStep.queueIndex + 1;
+      if (nextIndex >= colorQueue.length) {
+        // Flow complete - will trigger analysis in Task Group 3
+        identificationStep = { currentColor: null, queueIndex: -1 };
+        updateIdentificationPromptUI();
+        // Flow complete - run analysis and visualization
+        analyzeAndVisualizeMistakes();
+        return;
+      }
+
+      // Move to next color
+      identificationStep = {
+        currentColor: colorQueue[nextIndex],
+        queueIndex: nextIndex
+      };
+
+      // Update UI for next color
+      updateIdentificationPromptUI();
+    }
+
+    /**
+     * Handle "Cancel" button click - exit identification mode
+     */
+    function handleIdentificationCancel() {
+      exitIdentificationMode();
+      updateIdentificationPromptUI();
+    }
+
+    /**
+     * Handle global keyboard events for identification mode
+     * Escape key cancels identification mode when active
+     */
+    function handleGlobalKeydown(e) {
+      // Handle Escape key to cancel identification mode
+      if (e.key === 'Escape' && identificationMode) {
+        e.preventDefault();
+        handleIdentificationCancel();
+      }
+    }
+
+
+    // ===========================================
+    // VISUALIZATION AND SUMMARY FUNCTIONS
+    // ===========================================
+
+    /**
+     * Analyze identification results and mark tiles with appropriate classes
+     * For each tile in identificationResults, check if the tile's actual inkColor
+     * matches the color the user selected it for.
+     */
+    function analyzeIdentificationResults() {
+      mistakeAnalysis.clear();
+
+      // Process each color and its selected tiles
+      identificationResults.forEach((selectedTileSet, perceivedColor) => {
+        selectedTileSet.forEach((tileIndex) => {
+          if (tileIndex >= 0 && tileIndex < currentPuzzle.length) {
+            const tile = currentPuzzle[tileIndex];
+            const actualColor = tile.inkColor;
+            const isCorrect = actualColor === perceivedColor;
+            const isIncorrect = !isCorrect;
+
+            // Check for Stroop influence on incorrect tiles
+            const isStroopInfluenced = isIncorrect
+              ? analyzeStroopInfluence(tileIndex, perceivedColor)
+              : false;
+
+            mistakeAnalysis.set(tileIndex, {
+              tileIndex,
+              isCorrect,
+              isIncorrect,
+              isStroopInfluenced,
+              perceivedColor,
+              actualColor
+            });
+          }
+        });
+      });
+    }
+
+
+
+    /**
+     * Apply visual marking classes to tiles based on analysis
+     */
+    function applyTileMarking() {
+      // First clear any existing tile markings
+      document.querySelectorAll('.puzzle-cell').forEach(cell => {
+        cell.classList.remove('tile-correct-id', 'tile-incorrect-id', 'tile-stroop-influenced');
+      });
+
+      // Apply markings based on analysis
+      const cells = document.querySelectorAll('.puzzle-cell');
+      mistakeAnalysis.forEach((result, tileIndex) => {
+        if (tileIndex >= 0 && tileIndex < cells.length) {
+          const cell = cells[tileIndex];
+          if (result.isCorrect) {
+            cell.classList.add('tile-correct-id');
+          }
+          if (result.isIncorrect) {
+            cell.classList.add('tile-incorrect-id');
+          }
+          if (result.isStroopInfluenced) {
+            cell.classList.add('tile-stroop-influenced');
+          }
+        }
+      });
+    }
+
+    /**
+     * Calculate and display summary data
+     */
+    function displaySummary() {
+      let totalMistakes = 0;
+      let stroopInfluencedCount = 0;
+
+      mistakeAnalysis.forEach((result) => {
+        if (result.isIncorrect) {
+          totalMistakes++;
+          if (result.isStroopInfluenced) {
+            stroopInfluencedCount++;
+          }
+        }
+      });
+
+      const nonStroopMistakes = totalMistakes - stroopInfluencedCount;
+
+      // Update summary values
+      document.getElementById('totalMistakesValue').textContent = totalMistakes;
+      document.getElementById('stroopInfluencedValue').textContent = stroopInfluencedCount;
+      document.getElementById('nonStroopValue').textContent = nonStroopMistakes;
+
+      // Update metadata
+      document.getElementById('metaSeedValue').textContent = document.getElementById('seed').value;
+      document.getElementById('metaGridValue').textContent = `${currentGridSize}x${currentGridSize}`;
+      document.getElementById('metaLanguageValue').textContent = currentLanguage;
+      document.getElementById('metaDifficultyValue').textContent = currentDifficulty;
+
+      // Update localized text
+      document.getElementById('summaryHeader').textContent = getUIText('summary_header');
+      document.getElementById('totalMistakesLabel').textContent = getUIText('summary_total_mistakes');
+      document.getElementById('stroopInfluencedLabel').textContent = getUIText('summary_stroop_influenced');
+      document.getElementById('nonStroopLabel').textContent = getUIText('summary_non_stroop');
+      document.getElementById('legendHeader').textContent = getUIText('legend_header');
+      document.getElementById('legendCorrectText').textContent = getUIText('legend_correct');
+      document.getElementById('legendIncorrectText').textContent = getUIText('legend_incorrect');
+      document.getElementById('legendStroopText').textContent = getUIText('legend_stroop');
+
+      // Show the summary panel
+      document.getElementById('mistakeSummarySection').classList.add('visible');
+    }
+
+    /**
+     * Main function to analyze and visualize mistakes after identification flow completes
+     */
+    function analyzeAndVisualizeMistakes() {
+      // Exit identification mode UI
+      identificationMode = false;
+
+      // Analyze the results
+      analyzeIdentificationResults();
+
+      // Apply visual markings to tiles
+      applyTileMarking();
+
+      // Display the summary panel
+      displaySummary();
+    }
+
+    /**
+     * Close the summary panel and clear markings
+     */
+    function closeSummaryPanel() {
+      // Hide summary panel
+      document.getElementById('mistakeSummarySection').classList.remove('visible');
+
+      // Clear tile markings
+      document.querySelectorAll('.puzzle-cell').forEach(cell => {
+        cell.classList.remove('tile-correct-id', 'tile-incorrect-id', 'tile-stroop-influenced');
+      });
+
+      // Clear analysis data
+      mistakeAnalysis.clear();
+      identificationResults.clear();
+    }
+
+
 
     // Wire up event listeners (security: avoid global function exposure)
     document.getElementById('generateBtn').addEventListener('click', generatePuzzle);
@@ -2924,6 +3943,15 @@
     document.getElementById('clearBtn').addEventListener('click', clearAnswers);
     document.getElementById('revealBtn').addEventListener('click', toggleAnswerKey);
     document.getElementById('clearSelectionsBtn').addEventListener('click', clearAllSelections);
+
+    // Identification mode event listeners
+    document.getElementById('identifyMistakesBtn').addEventListener('click', startIdentificationMode);
+    document.getElementById('identificationDoneBtn').addEventListener('click', handleIdentificationDone);
+    document.getElementById('identificationCancelBtn').addEventListener('click', handleIdentificationCancel);
+    document.getElementById('closeSummaryBtn').addEventListener('click', closeSummaryPanel);
+
+    // Global keyboard handler for identification mode (Escape to cancel)
+    document.addEventListener('keydown', handleGlobalKeydown);
 
     // Modal event listeners
     document.getElementById('settingsBtn').addEventListener('click', () => openModal('settingsModal'));

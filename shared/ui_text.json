@@ -436,5 +436,83 @@
     "english": "Support ColorFocus",
     "spanish": "Apoya ColorFocus",
     "vietnamese": "Ung ho ColorFocus"
+  },
+  "identify_mistakes_btn": {
+    "zh-TW": "識別錯誤",
+    "english": "Identify Mistakes",
+    "spanish": "Identificar Errores",
+    "vietnamese": "Xac dinh loi"
+  },
+  "identification_prompt": {
+    "zh-TW": "選擇您認為是{color}的方塊",
+    "english": "Select the tiles you thought were {color}",
+    "spanish": "Selecciona las celdas que pensaste que eran {color}",
+    "vietnamese": "Chon cac o ban nghi la {color}"
+  },
+  "identification_done_btn": {
+    "zh-TW": "完成",
+    "english": "Done",
+    "spanish": "Listo",
+    "vietnamese": "Xong"
+  },
+  "identification_cancel_btn": {
+    "zh-TW": "取消",
+    "english": "Cancel",
+    "spanish": "Cancelar",
+    "vietnamese": "Huy"
+  },
+  "identification_next_color": {
+    "zh-TW": "下一個：{color}",
+    "english": "Next: {color}",
+    "spanish": "Siguiente: {color}",
+    "vietnamese": "Tiep theo: {color}"
+  },
+  "summary_header": {
+    "zh-TW": "錯誤分析摘要",
+    "english": "Mistake Analysis Summary",
+    "spanish": "Resumen de Analisis de Errores",
+    "vietnamese": "Tom tat phan tich loi"
+  },
+  "summary_total_mistakes": {
+    "zh-TW": "總錯誤數",
+    "english": "Total Mistakes",
+    "spanish": "Errores Totales",
+    "vietnamese": "Tong so loi"
+  },
+  "summary_stroop_influenced": {
+    "zh-TW": "Stroop干擾",
+    "english": "Stroop-Influenced",
+    "spanish": "Influenciado por Stroop",
+    "vietnamese": "Anh huong Stroop"
+  },
+  "summary_non_stroop": {
+    "zh-TW": "其他錯誤",
+    "english": "Other Mistakes",
+    "spanish": "Otros Errores",
+    "vietnamese": "Loi khac"
+  },
+  "legend_correct": {
+    "zh-TW": "正確識別",
+    "english": "Correctly identified",
+    "spanish": "Identificado correctamente",
+    "vietnamese": "Xac dinh dung"
+  },
+  "legend_incorrect": {
+    "zh-TW": "錯誤識別",
+    "english": "Incorrectly identified",
+    "spanish": "Identificado incorrectamente",
+    "vietnamese": "Xac dinh sai"
+  },
+  "legend_stroop": {
+    "zh-TW": "可能受Stroop干擾",
+    "english": "Stroop interference likely",
+    "spanish": "Probable interferencia Stroop",
+    "vietnamese": "Co the bi nhieu Stroop"
+  },
+  "legend_header": {
+    "zh-TW": "圖例",
+    "english": "Legend",
+    "spanish": "Leyenda",
+    "vietnamese": "Chu thich"
   }
 }
