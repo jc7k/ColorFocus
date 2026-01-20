@@ -8,28 +8,17 @@ localization implementation.
 Updated for the accessible color palette replacement:
 - Language key "chinese" renamed to "zh-TW"
 - VALID_LANGUAGES now uses 'zh-TW' instead of 'chinese'
+
+Uses shared fixtures from conftest.py.
 """
 
-import json
-from pathlib import Path
-
-
-# Paths relative to project root
-PROJECT_ROOT = Path(__file__).parent.parent
-UI_TEXT_JSON_PATH = PROJECT_ROOT / "shared" / "ui_text.json"
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
-
-
-def load_ui_text() -> dict:
-    """Load the ui_text.json file."""
-    with open(UI_TEXT_JSON_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file content."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
+from conftest import (
+    load_ui_text,
+    load_puzzle_html,
+    load_color_labels,
+    REQUIRED_COLOR_TOKENS,
+    SUPPORTED_LANGUAGES,
+)
 
 
 class TestUILocalizationImplementation:
@@ -237,14 +226,10 @@ class TestMultiLanguageColorLabels:
         """
         Test that color_labels.json has labels for all 4 supported languages.
         """
-        color_labels_path = PROJECT_ROOT / "shared" / "color_labels.json"
-        with open(color_labels_path, "r", encoding="utf-8") as f:
-            color_labels = json.load(f)
-
-        expected_languages = ["zh-TW", "english", "spanish", "vietnamese"]
+        color_labels = load_color_labels()
 
         for color, labels in color_labels.items():
-            for lang in expected_languages:
+            for lang in SUPPORTED_LANGUAGES:
                 assert lang in labels, (
                     f"Color '{color}' missing '{lang}' label"
                 )
@@ -259,13 +244,9 @@ class TestMultiLanguageColorLabels:
         """
         Test that all 8 accessible palette colors have labels.
         """
-        color_labels_path = PROJECT_ROOT / "shared" / "color_labels.json"
-        with open(color_labels_path, "r", encoding="utf-8") as f:
-            color_labels = json.load(f)
+        color_labels = load_color_labels()
 
-        expected_colors = ["BLACK", "BROWN", "PURPLE", "BLUE", "GRAY", "PINK", "ORANGE", "YELLOW"]
-
-        for color in expected_colors:
+        for color in REQUIRED_COLOR_TOKENS:
             assert color in color_labels, (
                 f"Missing color label entry for: {color}"
             )

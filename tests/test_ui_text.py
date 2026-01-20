@@ -7,15 +7,12 @@ in the shared JSON and backend ui_text module.
 Updated for the accessible color palette replacement:
 - Language key "chinese" renamed to "zh-TW"
 - All language references updated accordingly
+
+Uses shared fixtures from conftest.py.
 """
 
-import json
-from pathlib import Path
+from conftest import load_ui_text, SUPPORTED_LANGUAGES
 
-
-# Paths relative to project root
-PROJECT_ROOT = Path(__file__).parent.parent
-UI_TEXT_JSON_PATH = PROJECT_ROOT / "shared" / "ui_text.json"
 
 # Required UI text keys that must be present for each language
 REQUIRED_UI_TEXT_KEYS = [
@@ -52,12 +49,6 @@ REQUIRED_UI_TEXT_KEYS = [
     "language_descriptor_english",
     "language_descriptor_vietnamese",
 ]
-
-
-def load_ui_text() -> dict:
-    """Load the ui_text.json file."""
-    with open(UI_TEXT_JSON_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
 
 
 class TestUITextDataLoading:
