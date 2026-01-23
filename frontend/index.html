@@ -91,32 +91,52 @@
   <script type="module">
     import colorsJson from '../shared/colors.json' with { type: 'json' };
 
+    // Validate hex color format to prevent injection
+    function isValidHexColor(hex) {
+      return /^#[0-9A-Fa-f]{6}$/.test(hex);
+    }
+
     const grid = document.getElementById('colorGrid');
 
     for (const [token, data] of Object.entries(colorsJson)) {
       const card = document.createElement('div');
       card.className = 'color-card';
 
+      // Create color name using safe textContent
+      const colorName = document.createElement('div');
+      colorName.className = 'color-name';
+      colorName.textContent = token;
+      card.appendChild(colorName);
+
+      // Create variants container
+      const variantsContainer = document.createElement('div');
+      variantsContainer.className = 'variants';
+
       const variants = data.variants;
       const variantNames = ['dark', 'base', 'bright'];
 
-      let variantsHtml = '';
-      for (const variant of variantNames) {
-        if (variants[variant]) {
-          variantsHtml += `
-            <div class="variant" style="background-color: ${variants[variant]}">
-              <span class="variant-label">${variant}</span>
-              <span class="hex-value">${variants[variant]}</span>
-            </div>
-          `;
+      for (const variantName of variantNames) {
+        const hexValue = variants[variantName];
+        if (hexValue && isValidHexColor(hexValue)) {
+          const variantDiv = document.createElement('div');
+          variantDiv.className = 'variant';
+          variantDiv.style.backgroundColor = hexValue;
+
+          const variantLabel = document.createElement('span');
+          variantLabel.className = 'variant-label';
+          variantLabel.textContent = variantName;
+          variantDiv.appendChild(variantLabel);
+
+          const hexSpan = document.createElement('span');
+          hexSpan.className = 'hex-value';
+          hexSpan.textContent = hexValue;
+          variantDiv.appendChild(hexSpan);
+
+          variantsContainer.appendChild(variantDiv);
         }
       }
 
-      card.innerHTML = `
-        <div class="color-name">${token}</div>
-        <div class="variants">${variantsHtml}</div>
-      `;
-
+      card.appendChild(variantsContainer);
       grid.appendChild(card);
     }
   </script>
