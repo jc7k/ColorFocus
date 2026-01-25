@@ -3,7 +3,9 @@ name = "colorfocus"
 version = "0.1.0"
 description = "Evidence-based visual attention and cognitive control puzzles, accessible by design"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "pyyaml>=6.0.3",
+]
 
 [project.optional-dependencies]
 dev = [

@@ -6,6 +6,14 @@ accessibility:
   visual-boundaries:
     description: Dark borders on colored elements for reduced color discrimination users
 
+agent-os:
+  folder-structure:
+    description: YYYY-MM-DD-feature-name folder layout with planning/ and verifications/
+  spec-format:
+    description: spec.md structure with Goal, User Stories, Requirements, Out of Scope
+  task-format:
+    description: Hierarchical task breakdown with groups, dependencies, acceptance criteria
+
 deployment:
   deploy-process:
     description: Pre-flight checks, deploy command, post-deploy verification
@@ -13,6 +21,14 @@ deployment:
     description: Production URL, preview deployments, environment variables
   vercel-config:
     description: vercel.json rewrites and static file serving setup
+
+documentation:
+  claude-md:
+    description: AI-first context file structure with Quick Start, Guidelines, Architecture sections
+  readme:
+    description: README structure with personal story, features, tech stack, AI attribution
+  roadmap:
+    description: Phased roadmap format with checkboxes and feature descriptions
 
 backend:
   api:
