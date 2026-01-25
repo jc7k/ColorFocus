@@ -514,5 +514,35 @@
     "english": "Legend",
     "spanish": "Leyenda",
     "vietnamese": "Chu thich"
+  },
+  "stroop_warning_title": {
+    "zh-TW": "Stroop干擾偵測",
+    "english": "Stroop Interference Detected",
+    "spanish": "Interferencia Stroop Detectada",
+    "vietnamese": "Phat hien nhieu Stroop"
+  },
+  "stroop_warning_message": {
+    "zh-TW": "{count}個方塊可能分配錯誤。顯示「{word}」的方塊實際上是用{actual}墨水印刷的。這就是Stroop效應！",
+    "english": "{count} tile(s) may be incorrectly assigned. The tile showing '{word}' is actually printed in {actual} ink. This is the Stroop effect!",
+    "spanish": "{count} casilla(s) pueden estar mal asignadas. La casilla que muestra '{word}' esta impresa en tinta {actual}. Este es el efecto Stroop!",
+    "vietnamese": "{count} o co the duoc gan sai. O hien thi '{word}' thuc te duoc in bang muc {actual}. Day la hieu ung Stroop!"
+  },
+  "tiles_remaining": {
+    "zh-TW": "請先分配所有方塊。還剩{count}個方塊。",
+    "english": "Please assign all tiles first. {count} tile(s) remaining.",
+    "spanish": "Por favor asigna todas las casillas primero. Quedan {count} casilla(s).",
+    "vietnamese": "Vui long gan tat ca cac o truoc. Con lai {count} o."
+  },
+  "assignment_incomplete_title": {
+    "zh-TW": "分配未完成",
+    "english": "Assignment Incomplete",
+    "spanish": "Asignacion Incompleta",
+    "vietnamese": "Phan cong chua hoan thanh"
+  },
+  "dismiss_warning_btn": {
+    "zh-TW": "知道了",
+    "english": "Got it",
+    "spanish": "Entendido",
+    "vietnamese": "Da hieu"
   }
 }
