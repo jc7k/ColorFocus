@@ -1,10 +1,37 @@
+# Vercel
 .vercel
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
 .venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
 node_modules/
+
+# Environment (security)
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Project-specific
 .playwright-mcp/
-# .claude - ignore local settings but track shared config
+.serena/
+*.backup*/
+
+# Claude Code - ignore local settings but track shared config
 .claude/settings.local.json
 .claude/statusline.sh
-.serena/
