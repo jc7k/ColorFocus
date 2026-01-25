@@ -544,5 +544,77 @@
     "english": "Got it",
     "spanish": "Entendido",
     "vietnamese": "Da hieu"
+  },
+  "guidance_education_header": {
+    "zh-TW": "了解Stroop效應",
+    "english": "Understanding the Stroop Effect",
+    "spanish": "Entendiendo el Efecto Stroop",
+    "vietnamese": "Hieu ve Hieu ung Stroop"
+  },
+  "guidance_education_text": {
+    "zh-TW": "當您看到一個顏色詞用不同顏色的墨水印刷時，您的大腦必須同時處理兩個相互衝突的信息：文字的含義和墨水的顏色。這種衝突被稱為Stroop干擾，它發生是因為閱讀是自動的——需要額外的精神努力來忽略文字並專注於墨水顏色。",
+    "english": "When you see a color word printed in a different ink color, your brain must process two conflicting pieces of information at once: the meaning of the word and the color of the ink. This conflict is called Stroop interference, and it happens because reading is automatic—it takes extra mental effort to ignore the word and focus on the ink color.",
+    "spanish": "Cuando ves una palabra de color impresa en un color de tinta diferente, tu cerebro debe procesar dos piezas de informacion contradictorias a la vez: el significado de la palabra y el color de la tinta. Este conflicto se llama interferencia Stroop, y ocurre porque la lectura es automatica—requiere un esfuerzo mental adicional ignorar la palabra y enfocarse en el color de la tinta.",
+    "vietnamese": "Khi ban nhin thay mot tu chi mau duoc in bang mau muc khac, nao cua ban phai xu ly dong thoi hai thong tin mau thuan: nghia cua tu va mau cua muc. Xung dot nay duoc goi la nhieu Stroop, va no xay ra vi doc la tu dong—can no luc tinh than them de bo qua tu va tap trung vao mau muc."
+  },
+  "guidance_pattern_header": {
+    "zh-TW": "您的結果顯示",
+    "english": "What Your Results Suggest",
+    "spanish": "Lo Que Sugieren Tus Resultados",
+    "vietnamese": "Ket qua cua ban cho thay"
+  },
+  "guidance_pattern_high_stroop": {
+    "zh-TW": "您的大部分錯誤都受到了Stroop效應的影響。這意味著文字含義強烈干擾了您識別墨水顏色的能力。這是完全正常的——事實上，這正是這個練習旨在幫助訓練的！",
+    "english": "Most of your mistakes were influenced by the Stroop effect. This means the word meanings strongly interfered with your ability to identify the ink colors. This is completely normal—in fact, this is exactly what this exercise is designed to help train!",
+    "spanish": "La mayoria de tus errores fueron influenciados por el efecto Stroop. Esto significa que los significados de las palabras interfirieron fuertemente con tu capacidad de identificar los colores de tinta. Esto es completamente normal—de hecho, esto es exactamente lo que este ejercicio esta disenado para ayudar a entrenar!",
+    "vietnamese": "Phan lon loi cua ban bi anh huong boi hieu ung Stroop. Dieu nay co nghia la nghia cua tu da can tro manh kha nang nhan dang mau muc cua ban. Day la hoan toan binh thuong—thuc te, day chinh la dieu bai tap nay duoc thiet ke de giup luyen tap!"
+  },
+  "guidance_pattern_moderate_stroop": {
+    "zh-TW": "您的一些錯誤受到了Stroop效應的影響，但不是全部。您的大腦在處理干擾方面已經有了一定的能力，但還有進步的空間。",
+    "english": "Some of your mistakes were influenced by the Stroop effect, but not all. Your brain is already showing some ability to handle the interference, but there is room for improvement.",
+    "spanish": "Algunos de tus errores fueron influenciados por el efecto Stroop, pero no todos. Tu cerebro ya muestra cierta capacidad para manejar la interferencia, pero hay espacio para mejorar.",
+    "vietnamese": "Mot so loi cua ban bi anh huong boi hieu ung Stroop, nhung khong phai tat ca. Nao cua ban da cho thay mot so kha nang xu ly nhieu, nhung van con cho de cai thien."
+  },
+  "guidance_pattern_mixed_errors": {
+    "zh-TW": "您的錯誤混合了不同類型。有些可能是由Stroop效應引起的，有些可能是因為計數或其他因素。專注於慢慢來，仔細數每種墨水顏色。",
+    "english": "Your errors were a mix of different types. Some may have been caused by the Stroop effect, and some may be due to counting or other factors. Focus on taking your time and carefully counting each ink color.",
+    "spanish": "Tus errores fueron una mezcla de diferentes tipos. Algunos pueden haber sido causados por el efecto Stroop, y algunos pueden deberse al conteo u otros factores. Concentrate en tomarte tu tiempo y contar cuidadosamente cada color de tinta.",
+    "vietnamese": "Cac loi cua ban la su ket hop cua cac loai khac nhau. Mot so co the do hieu ung Stroop gay ra, va mot so co the do dem hoac cac yeu to khac. Hay tap trung vao viec danh thoi gian va dem can than tung mau muc."
+  },
+  "guidance_pattern_non_stroop": {
+    "zh-TW": "您的錯誤似乎不是由Stroop干擾引起的。它們可能是簡單的計數錯誤或遺漏。試著更仔細地追蹤您計數的每個方塊。",
+    "english": "Your errors don't appear to be caused by Stroop interference. They may be simple counting mistakes or oversights. Try tracking each tile you count more carefully.",
+    "spanish": "Tus errores no parecen ser causados por la interferencia Stroop. Pueden ser simples errores de conteo u omisiones. Intenta hacer un seguimiento mas cuidadoso de cada casilla que cuentas.",
+    "vietnamese": "Cac loi cua ban khong co ve la do nhieu Stroop gay ra. Chung co the la loi dem don gian hoac su so suat. Hay thu theo doi can than hon moi o ban dem."
+  },
+  "guidance_tips_header": {
+    "zh-TW": "練習建議",
+    "english": "Practice Tips",
+    "spanish": "Consejos de Practica",
+    "vietnamese": "Meo luyen tap"
+  },
+  "guidance_tips_high_stroop": {
+    "zh-TW": "從較少的顏色（3-4種）開始，然後逐漸增加。放慢速度——給您的大腦時間處理顏色，而不是文字。每天練習幾分鐘比一次長時間練習更有效。",
+    "english": "Start with fewer colors (3-4) and work your way up. Slow down—give your brain time to process the color, not the word. A few minutes of daily practice is more effective than one long session.",
+    "spanish": "Comienza con menos colores (3-4) y ve aumentando. Ve despacio—dale a tu cerebro tiempo para procesar el color, no la palabra. Unos minutos de practica diaria son mas efectivos que una sesion larga.",
+    "vietnamese": "Bat dau voi it mau hon (3-4) va tang dan. Cham lai—cho nao cua ban thoi gian xu ly mau, khong phai tu. Vai phut luyen tap hang ngay hieu qua hon mot buoi dai."
+  },
+  "guidance_tips_moderate_stroop": {
+    "zh-TW": "您正在進步！嘗試專注於一種顏色來練習識別。使用選擇功能來幫助您組織計數。保持一致的練習以獲得最佳結果。",
+    "english": "You're making progress! Try focusing on one color at a time to practice identification. Use the selection feature to help organize your counting. Keep practicing consistently for best results.",
+    "spanish": "Estas progresando! Intenta enfocarte en un color a la vez para practicar la identificacion. Usa la funcion de seleccion para ayudar a organizar tu conteo. Sigue practicando consistentemente para mejores resultados.",
+    "vietnamese": "Ban dang tien bo! Hay thu tap trung vao mot mau mot luc de luyen tap nhan dien. Su dung tinh nang chon de giup to chuc viec dem. Tiep tuc luyen tap deu dan de co ket qua tot nhat."
+  },
+  "guidance_tips_mixed_errors": {
+    "zh-TW": "嘗試使用選擇功能來標記您數過的方塊。逐行或逐色系統地進行。如果需要，休息一下再繼續。",
+    "english": "Try using the selection feature to mark tiles as you count them. Work systematically row by row, or color by color. Take a break and come back if needed.",
+    "spanish": "Intenta usar la funcion de seleccion para marcar las casillas mientras las cuentas. Trabaja sistematicamente fila por fila, o color por color. Toma un descanso y regresa si es necesario.",
+    "vietnamese": "Hay thu su dung tinh nang chon de danh dau cac o khi ban dem. Lam viec co he thong tung hang mot, hoac tung mau mot. Nghi ngoi va quay lai neu can."
+  },
+  "guidance_tips_non_stroop": {
+    "zh-TW": "嘗試使用選擇功能來標記和追蹤方塊。按顏色組織您的計數，並在移動到下一個之前雙重檢查每個計數。",
+    "english": "Try using the selection feature to mark and track tiles. Organize your counting by color and double-check each count before moving to the next.",
+    "spanish": "Intenta usar la funcion de seleccion para marcar y seguir las casillas. Organiza tu conteo por color y verifica cada conteo antes de pasar al siguiente.",
+    "vietnamese": "Hay thu su dung tinh nang chon de danh dau va theo doi cac o. To chuc viec dem theo mau va kiem tra kep moi so dem truoc khi chuyen sang mau tiep theo."
   }
 }

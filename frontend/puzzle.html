@@ -966,6 +966,58 @@
         min-width: 0;
       }
     }
+    /* ========================================
+       STROOP GUIDANCE SECTION
+       ======================================== */
+    .stroop-guidance-section {
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      display: none;
+    }
+    .stroop-guidance-section.visible {
+      display: block;
+    }
+    .stroop-guidance-section h3 {
+      font-size: 0.9375rem;
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-md);
+      color: var(--color-text-primary);
+    }
+    .guidance-subsection {
+      margin-bottom: var(--space-lg);
+    }
+    .guidance-subsection:last-child {
+      margin-bottom: 0;
+    }
+    .guidance-subsection h4 {
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-sm);
+      color: var(--color-text-primary);
+    }
+    .guidance-subsection p {
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+    @media (max-width: 480px) {
+      .stroop-guidance-section {
+        padding: var(--space-md);
+      }
+      .stroop-guidance-section h3 {
+        font-size: 0.875rem;
+      }
+      .guidance-subsection h4 {
+        font-size: 0.8125rem;
+      }
+      .guidance-subsection p {
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+    }
 /* Answer Key Section (Hidden by Default) */
     .answer-key-section {
       background: var(--color-bg-card);
@@ -1850,6 +1902,22 @@
           <div class="legend-indicator stroop" aria-hidden="true"></div>
           <span class="legend-text" id="legendStroopText">Stroop interference likely</span>
         </div>
+      </div>
+    </div>
+    <!-- Stroop Guidance Section -->
+    <div class="stroop-guidance-section" id="stroopGuidanceSection">
+      <h3 id="guidanceTitle">Understanding Your Results</h3>
+      <div class="guidance-subsection" id="guidanceEducation">
+        <h4 id="guidanceEducationHeader">Understanding the Stroop Effect</h4>
+        <p id="guidanceEducationText"></p>
+      </div>
+      <div class="guidance-subsection" id="guidancePattern">
+        <h4 id="guidancePatternHeader">What Your Results Suggest</h4>
+        <p id="guidancePatternText"></p>
+      </div>
+      <div class="guidance-subsection" id="guidanceTips">
+        <h4 id="guidanceTipsHeader">Practice Tips</h4>
+        <p id="guidanceTipsText"></p>
       </div>
     </div>
     <div class="summary-metadata" id="summaryMetadata">
@@ -4237,6 +4305,63 @@
     }
 
     /**
+     * Calculate the pattern category based on mistake distribution
+     * @param {number} totalMistakes - Total number of mistakes
+     * @param {number} stroopCount - Number of Stroop-influenced mistakes
+     * @returns {string} Pattern category: 'high_stroop', 'moderate_stroop', 'mixed_errors', or 'non_stroop'
+     */
+    function calculateStroopPattern(totalMistakes, stroopCount) {
+      if (totalMistakes === 0) {
+        return 'non_stroop';
+      }
+
+      const stroopPercentage = (stroopCount / totalMistakes) * 100;
+
+      if (stroopPercentage >= 70) {
+        return 'high_stroop';
+      } else if (stroopPercentage >= 40) {
+        return 'moderate_stroop';
+      } else if (stroopCount > 0) {
+        return 'mixed_errors';
+      } else {
+        return 'non_stroop';
+      }
+    }
+
+    /**
+     * Display the Stroop guidance section with educational content and personalized feedback
+     * @param {number} totalMistakes - Total number of mistakes
+     * @param {number} stroopCount - Number of Stroop-influenced mistakes
+     */
+    function displayStroopGuidance(totalMistakes, stroopCount) {
+      const guidanceSection = document.getElementById('stroopGuidanceSection');
+
+      // Hide guidance if no mistakes
+      if (totalMistakes === 0) {
+        guidanceSection.classList.remove('visible');
+        return;
+      }
+
+      // Calculate pattern
+      const pattern = calculateStroopPattern(totalMistakes, stroopCount);
+
+      // Update education section (always shown when there are mistakes)
+      document.getElementById('guidanceEducationHeader').textContent = getUIText('guidance_education_header');
+      document.getElementById('guidanceEducationText').textContent = getUIText('guidance_education_text');
+
+      // Update pattern feedback section
+      document.getElementById('guidancePatternHeader').textContent = getUIText('guidance_pattern_header');
+      document.getElementById('guidancePatternText').textContent = getUIText(`guidance_pattern_${pattern}`);
+
+      // Update tips section
+      document.getElementById('guidanceTipsHeader').textContent = getUIText('guidance_tips_header');
+      document.getElementById('guidanceTipsText').textContent = getUIText(`guidance_tips_${pattern}`);
+
+      // Show the guidance section
+      guidanceSection.classList.add('visible');
+    }
+
+    /**
      * Calculate and display summary data
      */
     function displaySummary() {
@@ -4274,6 +4399,9 @@
       document.getElementById('legendCorrectText').textContent = getUIText('legend_correct');
       document.getElementById('legendIncorrectText').textContent = getUIText('legend_incorrect');
       document.getElementById('legendStroopText').textContent = getUIText('legend_stroop');
+
+      // Display Stroop guidance based on mistake pattern
+      displayStroopGuidance(totalMistakes, stroopInfluencedCount);
 
       // Show the summary panel
       document.getElementById('mistakeSummarySection').classList.add('visible');
