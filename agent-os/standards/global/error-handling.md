@@ -1,9 +1,35 @@
-## Error handling best practices
+# Error Handling
 
-- **User-Friendly Messages**: Provide clear, actionable error messages to users without exposing technical details or security information
-- **Fail Fast and Explicitly**: Validate input and check preconditions early; fail with clear error messages rather than allowing invalid state
-- **Specific Exception Types**: Use specific exception/error types rather than generic ones to enable targeted handling
-- **Centralized Error Handling**: Handle errors at appropriate boundaries (controllers, API layers) rather than scattering try-catch blocks everywhere
-- **Graceful Degradation**: Design systems to degrade gracefully when non-critical services fail rather than breaking entirely
-- **Retry Strategies**: Implement exponential backoff for transient failures in external service calls
-- **Clean Up Resources**: Always clean up resources (file handles, connections) in finally blocks or equivalent mechanisms
+Pattern for handling failures gracefully while maintaining visibility.
+
+## Core Pattern
+
+**Log + Return Default**
+
+```python
+def get_language(code: str) -> Language:
+    if code not in VALID_CODES:
+        logger.warning("Invalid language code: %s, using default", code)
+        return Language.ZH_TW
+    return Language(code)
+```
+
+## Rules
+
+1. **Always log unexpected failures** — Use `logger.warning()` for recoverable issues
+2. **Return safe defaults** — Never crash on invalid input
+3. **Be specific in log messages** — Include the invalid value and what default was used
+4. **Don't log expected validation** — Normal input validation doesn't need logging
+
+## JavaScript Pattern
+
+```javascript
+function sanitizeNumber(value, min, max, defaultValue) {
+  const num = parseFloat(value);
+  if (isNaN(num)) {
+    console.warn(`Invalid number: ${value}, using default: ${defaultValue}`);
+    return defaultValue;
+  }
+  return Math.max(min, Math.min(max, num));
+}
+```

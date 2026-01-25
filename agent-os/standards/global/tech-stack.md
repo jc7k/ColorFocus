@@ -1,31 +1,35 @@
-## Tech stack
+# Technology Stack
 
-Define your technical stack below. This serves as a reference for all team members and helps maintain consistency across the project.
+Core technology decisions and rationale.
 
-### Framework & Runtime
-- **Application Framework:** [e.g., Rails, Django, Next.js, Express]
-- **Language/Runtime:** [e.g., Ruby, Python, Node.js, Java]
-- **Package Manager:** [e.g., bundler, pip, npm, yarn]
+## Frontend
 
-### Frontend
-- **JavaScript Framework:** [e.g., React, Vue, Svelte, Alpine, vanilla JS]
-- **CSS Framework:** [e.g., Tailwind CSS, Bootstrap, custom]
-- **UI Components:** [e.g., shadcn/ui, Material UI, custom library]
+| Choice | Decision | Why |
+|--------|----------|-----|
+| Framework | Vanilla JS | Simplicity + performance for elderly users |
+| Build step | None | Single-file deployment to Vercel |
+| CSS | Plain CSS with variables | No preprocessor needed |
+| State | localStorage | Simple persistence without backend |
 
-### Database & Storage
-- **Database:** [e.g., PostgreSQL, MySQL, MongoDB]
-- **ORM/Query Builder:** [e.g., ActiveRecord, Prisma, Sequelize]
-- **Caching:** [e.g., Redis, Memcached]
+## Backend
 
-### Testing & Quality
-- **Test Framework:** [e.g., Jest, RSpec, pytest]
-- **Linting/Formatting:** [e.g., ESLint, Prettier, RuboCop]
+| Choice | Decision | Why |
+|--------|----------|-----|
+| Language | Python 3.11+ | Type hints, StrEnum support |
+| Package manager | uv | Speed + simplicity |
+| Testing | pytest | Standard, well-supported |
+| Database | Supabase (future) | Managed PostgreSQL + Auth |
 
-### Deployment & Infrastructure
-- **Hosting:** [e.g., Heroku, AWS, Vercel, Railway]
-- **CI/CD:** [e.g., GitHub Actions, CircleCI]
+## Hosting
 
-### Third-Party Services
-- **Authentication:** [e.g., Auth0, Devise, NextAuth]
-- **Email:** [e.g., SendGrid, Postmark]
-- **Monitoring:** [e.g., Sentry, Datadog]
+| Choice | Decision | Why |
+|--------|----------|-----|
+| Platform | Vercel | Free tier, automatic deployments |
+| Architecture | Static files | No server runtime needed |
+
+## Constraints
+
+- No heavy frameworks (React, Vue, Angular)
+- No build tools (Webpack, Vite for bundling)
+- No external CSS libraries (Tailwind in HTML, Bootstrap)
+- Minimize dependencies — fewer things to break

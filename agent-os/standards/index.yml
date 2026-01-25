@@ -1,0 +1,99 @@
+accessibility:
+  color-palette:
+    description: Luminance-ordered color palette optimized for color vision deficiencies
+  touch-and-fonts:
+    description: 44px touch targets and language-specific font sizing for elderly users
+  visual-boundaries:
+    description: Dark borders on colored elements for reduced color discrimination users
+
+deployment:
+  deploy-process:
+    description: Pre-flight checks, deploy command, post-deploy verification
+  environments:
+    description: Production URL, preview deployments, environment variables
+  vercel-config:
+    description: vercel.json rewrites and static file serving setup
+
+backend:
+  api:
+    description: API endpoint conventions and response formats
+  migrations:
+    description: Database migration patterns
+  models:
+    description: Data model definitions
+  queries:
+    description: Database query patterns
+
+git:
+  branch-strategy:
+    description: When to use feature branches vs direct main commits
+  commit-messages:
+    description: Imperative mood, concise format, co-author tags
+  safety-rules:
+    description: Protections against force push, reset, and conflict handling
+
+frontend:
+  accessibility:
+    description: Accessibility requirements and patterns
+  components:
+    description: UI component conventions
+  css:
+    description: CSS styling patterns
+  css-design-system:
+    description: Apple-esque CSS variables and design principles for elderly users
+  responsive:
+    description: Responsive design breakpoints and patterns
+  single-file-architecture:
+    description: Single HTML file with embedded CSS/JS for static Vercel deployment
+  state-management:
+    description: Vanilla JS state with localStorage persistence and validation
+
+python:
+  code-style:
+    description: Type hints, StrEnum, dataclasses, Google-style docstrings
+  module-organization:
+    description: Backend package structure with constants, models, services layers
+  tooling:
+    description: uv package manager, pyproject.toml, Python 3.11+
+
+security:
+  auth-patterns:
+    description: Supabase OAuth integration, session handling, API key safety
+  content-security-policy:
+    description: CSP header configuration for XSS prevention
+  input-sanitization:
+    description: XSS prevention, numeric validation, allowlist patterns
+
+localization:
+  adding-new-languages:
+    description: Process and checklist for adding new language support
+  language-keys:
+    description: Language code conventions and BCP 47 migration plan
+  ui-text-structure:
+    description: JSON structure for localized strings with fallback chain
+
+global:
+  error-handling:
+    description: Log warnings and return safe defaults for recoverable failures
+  naming-conventions:
+    description: snake_case Python, camelCase JS, kebab-case CSS naming rules
+  tech-stack:
+    description: Vanilla JS, Python 3.11+, uv, Vercel static hosting decisions
+
+shared-data:
+  platform-consumers:
+    description: How Python and TypeScript load shared JSON with StrEnum pattern
+  source-of-truth:
+    description: JSON files in /shared as single source of truth for cross-platform data
+  sync-tests:
+    description: Tests to catch drift between source JSON and platform consumers
+
+testing:
+  file-organization:
+    description: Test file naming conventions and folder structure
+  frontend-patterns:
+    description: vitest conventions and JSON comparison patterns
+  python-patterns:
+    description: pytest conventions with class-based tests and docstrings
+  test-writing:
+    description: Test writing conventions and patterns
