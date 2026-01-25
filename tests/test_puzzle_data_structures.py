@@ -168,7 +168,7 @@ class TestJsonSerialization:
         assert grid_dict["metadata"]["seed"] == 42
         assert grid_dict["metadata"]["rows"] == 2
         assert grid_dict["metadata"]["cols"] == 2
-        assert grid_dict["metadata"]["congruence_percentage"] == 0.5
+        assert grid_dict["metadata"]["congruencePercentage"] == 0.5
 
         # Check grid structure
         assert len(grid_dict["grid"]) == 2

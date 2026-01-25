@@ -79,14 +79,14 @@ class PuzzleMetadata:
         Serialize the metadata to a JSON-compatible dictionary.
 
         Returns:
-            Dictionary with seed, rows, cols, congruence_percentage, and color_count keys.
+            Dictionary with camelCase keys for frontend consumption.
         """
         return {
             "seed": self.seed,
             "rows": self.rows,
             "cols": self.cols,
-            "congruence_percentage": self.congruence_percentage,
-            "color_count": self.color_count,
+            "congruencePercentage": self.congruence_percentage,
+            "colorCount": self.color_count,
         }
 
 

@@ -110,7 +110,7 @@ class TestJsonSerialization:
         assert "seed" in meta
         assert "rows" in meta
         assert "cols" in meta
-        assert "congruence_percentage" in meta
+        assert "congruencePercentage" in meta
 
     def test_to_dict_produces_json_serializable_output(self):
         """Test that to_dict() produces JSON-serializable output."""
