@@ -12,8 +12,10 @@ Steps to deploy to production.
 ## Deploy Command
 
 ```bash
-vercel --prod
+vercel --prod --yes
 ```
+
+The `--yes` flag skips confirmation prompts for CLI automation.
 
 Or use `/deploy` slash command.
 

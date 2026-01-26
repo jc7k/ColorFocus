@@ -8,15 +8,7 @@ Tests verify language support, spacing options, and difficulty presets.
 import re
 from pathlib import Path
 
-
-PROJECT_ROOT = Path(__file__).parent.parent
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
+from conftest import load_puzzle_js
 
 
 class TestAllLanguagesAtGridSizes:
@@ -26,10 +18,10 @@ class TestAllLanguagesAtGridSizes:
 
     def test_calculate_puzzle_font_size_handles_all_languages(self):
         """Test that calculatePuzzleFontSize handles all four languages."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         width_multipliers_section = re.search(
             r'widthMultipliers\s*=\s*\{[^}]+\}',
-            html,
+            js_content,
             re.DOTALL
         )
         assert width_multipliers_section is not None, (
@@ -49,17 +41,17 @@ class TestSpacingOptionsIntegration:
 
     def test_spacing_values_constant_has_all_options(self):
         """Test that SPACING_VALUES constant has all spacing options."""
-        html = load_puzzle_html()
-        assert 'compact: 1' in html or 'compact:1' in html, (
+        js_content = load_puzzle_js()
+        assert 'compact: 1' in js_content or 'compact:1' in js_content, (
             "SPACING_VALUES should have compact: 1"
         )
-        assert 'normal: 2' in html or 'normal:2' in html, (
+        assert 'normal: 2' in js_content or 'normal:2' in js_content, (
             "SPACING_VALUES should have normal: 2"
         )
-        assert 'relaxed: 6' in html or 'relaxed:6' in html, (
+        assert 'relaxed: 6' in js_content or 'relaxed:6' in js_content, (
             "SPACING_VALUES should have relaxed: 6"
         )
-        assert 'spacious: 12' in html or 'spacious:12' in html, (
+        assert 'spacious: 12' in js_content or 'spacious:12' in js_content, (
             "SPACING_VALUES should have spacious: 12"
         )
 
@@ -73,29 +65,29 @@ class TestDifficultyPresetsCongruenceOnly:
 
     def test_difficulty_presets_constant_exists(self):
         """Test that DIFFICULTY_PRESETS constant exists with all levels."""
-        html = load_puzzle_html()
-        assert 'DIFFICULTY_PRESETS' in html, (
+        js_content = load_puzzle_js()
+        assert 'DIFFICULTY_PRESETS' in js_content, (
             "DIFFICULTY_PRESETS constant should exist"
         )
-        assert 'easy:' in html or 'easy :' in html, (
+        assert 'easy:' in js_content or 'easy :' in js_content, (
             "Easy preset should exist"
         )
-        assert 'medium:' in html or 'medium :' in html, (
+        assert 'medium:' in js_content or 'medium :' in js_content, (
             "Medium preset should exist"
         )
-        assert 'hard:' in html or 'hard :' in html, (
+        assert 'hard:' in js_content or 'hard :' in js_content, (
             "Hard preset should exist"
         )
-        assert 'expert:' in html or 'expert :' in html, (
+        assert 'expert:' in js_content or 'expert :' in js_content, (
             "Expert preset should exist"
         )
 
     def test_easy_preset_has_75_percent_congruence(self):
         """Test that easy preset uses 75% congruence (low Stroop interference)."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         easy_section = re.search(
             r'easy:\s*\{[^}]+\}',
-            html,
+            js_content,
             re.DOTALL
         )
         assert easy_section is not None, (
@@ -108,10 +100,10 @@ class TestDifficultyPresetsCongruenceOnly:
 
     def test_expert_preset_has_0_percent_congruence(self):
         """Test that expert preset uses 0% congruence (max Stroop interference)."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         expert_section = re.search(
             r'expert:\s*\{[^}]+\}',
-            html,
+            js_content,
             re.DOTALL
         )
         assert expert_section is not None, (
@@ -124,11 +116,11 @@ class TestDifficultyPresetsCongruenceOnly:
 
     def test_presets_do_not_include_grid_size(self):
         """Test that presets only control congruence, not grid size."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         # Find the DIFFICULTY_PRESETS block
         presets_match = re.search(
             r'const DIFFICULTY_PRESETS\s*=\s*\{[^;]+\};',
-            html,
+            js_content,
             re.DOTALL
         )
         assert presets_match is not None, (

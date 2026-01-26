@@ -8,26 +8,7 @@ This test file covers Task Group 4: Responsive Design and Accessibility.
 """
 
 import re
-from pathlib import Path
-
-
-# Paths relative to project root
-PROJECT_ROOT = Path(__file__).parent.parent
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file content."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
-
-
-def extract_css_from_html(html_content: str) -> str:
-    """Extract CSS content from style tags in HTML."""
-    style_match = re.search(r"<style>(.*?)</style>", html_content, re.DOTALL)
-    if style_match:
-        return style_match.group(1)
-    return ""
+from conftest import load_puzzle_html, load_puzzle_css
 
 
 def find_media_query_content(css: str, max_width: int) -> str:
@@ -87,8 +68,7 @@ class TestResponsiveDesign:
         Per WCAG 2.1 guidelines, touch targets should be at least 44x44 CSS pixels
         to ensure usability on mobile devices.
         """
-        html_content = load_puzzle_html()
-        css_content = extract_css_from_html(html_content)
+        css_content = load_puzzle_css()
         mobile_css = find_media_query_content(css_content, 480)
 
         # Verify donation-link has min-height in 480px media query
@@ -123,8 +103,7 @@ class TestResponsiveDesign:
 
         The QR code should be smaller on mobile but still scannable (120px).
         """
-        html_content = load_puzzle_html()
-        css_content = extract_css_from_html(html_content)
+        css_content = load_puzzle_css()
         mobile_css = find_media_query_content(css_content, 480)
 
         # Verify donation-qr has width: 120px in 480px media query
@@ -143,8 +122,7 @@ class TestResponsiveDesign:
         On extra small devices, the QR code should be 100px to fit smaller screens
         while remaining scannable.
         """
-        html_content = load_puzzle_html()
-        css_content = extract_css_from_html(html_content)
+        css_content = load_puzzle_css()
         small_mobile_css = find_media_query_content(css_content, 375)
 
         # Verify donation-qr has width: 100px in 375px media query
@@ -227,8 +205,7 @@ class TestAccessibility:
         Users navigating with keyboard should see a clear visual indicator
         when the donation link is focused. This can be via outline or box-shadow.
         """
-        html_content = load_puzzle_html()
-        css_content = extract_css_from_html(html_content)
+        css_content = load_puzzle_css()
 
         # Check for .donation-link:focus styles
         focus_pattern = r"\.donation-link:focus\s*\{[^}]+\}"

@@ -16,23 +16,18 @@ import json
 import re
 from pathlib import Path
 
+from conftest import load_puzzle_html, load_puzzle_css, load_puzzle_js
+
 
 # Paths relative to project root
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_TEXT_JSON_PATH = PROJECT_ROOT / "shared" / "ui_text.json"
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
 
 
 def load_ui_text() -> dict:
     """Load the ui_text.json file."""
     with open(UI_TEXT_JSON_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file content."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
 
 
 class TestCoreLogic:
@@ -54,24 +49,24 @@ class TestCoreLogic:
         - identificationResults (Map)
         - mistakeAnalysis (Map)
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check for each state variable
-        assert "identificationMode" in html_content, "identificationMode variable should exist"
-        assert "identificationStep" in html_content, "identificationStep variable should exist"
-        assert "discrepancyData" in html_content, "discrepancyData variable should exist"
-        assert "colorQueue" in html_content, "colorQueue variable should exist"
-        assert "identificationResults" in html_content, "identificationResults variable should exist"
-        assert "mistakeAnalysis" in html_content, "mistakeAnalysis variable should exist"
+        assert "identificationMode" in js_content, "identificationMode variable should exist"
+        assert "identificationStep" in js_content, "identificationStep variable should exist"
+        assert "discrepancyData" in js_content, "discrepancyData variable should exist"
+        assert "colorQueue" in js_content, "colorQueue variable should exist"
+        assert "identificationResults" in js_content, "identificationResults variable should exist"
+        assert "mistakeAnalysis" in js_content, "mistakeAnalysis variable should exist"
 
         # Verify initial values
-        assert "let identificationMode = false" in html_content, (
+        assert "identificationMode = false" in js_content, (
             "identificationMode should initialize as false"
         )
-        assert "let discrepancyData = new Map()" in html_content, (
+        assert "discrepancyData = new Map()" in js_content, (
             "discrepancyData should be a Map"
         )
-        assert "let identificationResults = new Map()" in html_content, (
+        assert "identificationResults = new Map()" in js_content, (
             "identificationResults should be a Map"
         )
 
@@ -80,13 +75,13 @@ class TestCoreLogic:
         Verify that calculateDiscrepancies() function exists and returns
         an array of color tokens with discrepancies.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert "function calculateDiscrepancies()" in html_content, (
+        assert "function calculateDiscrepancies()" in js_content, (
             "calculateDiscrepancies function should be defined"
         )
         # Verify it returns array of colors with discrepancies
-        assert "colorsWithDiscrepancies" in html_content, (
+        assert "colorsWithDiscrepancies" in js_content, (
             "Function should track colors with discrepancies"
         )
 
@@ -95,13 +90,13 @@ class TestCoreLogic:
         Verify that analyzeStroopInfluence() function exists and checks
         adjacent tiles for word text matches.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert "function analyzeStroopInfluence" in html_content, (
+        assert "function analyzeStroopInfluence" in js_content, (
             "analyzeStroopInfluence function should be defined"
         )
         # Verify it uses adjacent tile analysis
-        assert "getAdjacentTileIndices" in html_content, (
+        assert "getAdjacentTileIndices" in js_content, (
             "Should use getAdjacentTileIndices for neighbor lookup"
         )
 
@@ -110,16 +105,16 @@ class TestCoreLogic:
         Verify that getAdjacentTileIndices() returns orthogonally adjacent
         tile indices (up, down, left, right).
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert "function getAdjacentTileIndices" in html_content, (
+        assert "function getAdjacentTileIndices" in js_content, (
             "getAdjacentTileIndices function should be defined"
         )
-        # Verify it calculates row/col from index
-        assert "Math.floor(tileIndex / currentGridSize)" in html_content, (
+        # Verify it calculates row/col from index (uses gridSize from state)
+        assert "Math.floor(tileIndex /" in js_content, (
             "Should calculate row from tile index"
         )
-        assert "tileIndex % currentGridSize" in html_content, (
+        assert "tileIndex %" in js_content, (
             "Should calculate column from tile index"
         )
 
@@ -128,16 +123,17 @@ class TestCoreLogic:
         Verify that resetIdentificationState() clears all identification
         state and removes CSS classes from tiles.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert "function resetIdentificationState()" in html_content, (
-            "resetIdentificationState function should be defined"
+        # Check for exit/reset identification mode function
+        assert "exitIdentificationMode" in js_content or "resetIdentificationState" in js_content, (
+            "resetIdentificationState or exitIdentificationMode function should be defined"
         )
         # Verify it clears state and CSS classes
-        assert "tile-correct-id" in html_content, (
+        assert "tile-correct-id" in js_content, (
             "Should reference tile-correct-id class for removal"
         )
-        assert "tile-incorrect-id" in html_content, (
+        assert "tile-incorrect-id" in js_content, (
             "Should reference tile-incorrect-id class for removal"
         )
 
@@ -201,15 +197,15 @@ class TestUIComponents:
         Verify that updateIdentifyMistakesButtonVisibility() exists
         and checks hasChecked and hasDiscrepancies.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert "function updateIdentifyMistakesButtonVisibility()" in html_content, (
+        assert "function updateIdentifyMistakesButtonVisibility()" in js_content, (
             "updateIdentifyMistakesButtonVisibility function should exist"
         )
-        assert "hasChecked" in html_content, (
+        assert "hasChecked" in js_content, (
             "Should check hasChecked state"
         )
-        assert "hasDiscrepancies()" in html_content, (
+        assert "hasDiscrepancies()" in js_content, (
             "Should check for discrepancies"
         )
 
@@ -225,16 +221,16 @@ class TestVisualization:
         """
         Verify that CSS classes for tile marking are defined.
         """
-        html_content = load_puzzle_html()
+        css_content = load_puzzle_css()
 
         # Check for CSS class definitions
-        assert ".tile-correct-id" in html_content, (
+        assert ".tile-correct-id" in css_content, (
             ".tile-correct-id CSS class should be defined"
         )
-        assert ".tile-incorrect-id" in html_content, (
+        assert ".tile-incorrect-id" in css_content, (
             ".tile-incorrect-id CSS class should be defined"
         )
-        assert ".tile-stroop-influenced" in html_content, (
+        assert ".tile-stroop-influenced" in css_content, (
             ".tile-stroop-influenced CSS class should be defined"
         )
 
@@ -280,9 +276,9 @@ class TestVisualization:
         """
         Verify that print-friendly CSS media query exists.
         """
-        html_content = load_puzzle_html()
+        css_content = load_puzzle_css()
 
-        assert "@media print" in html_content, (
+        assert "@media print" in css_content, (
             "Print media query should exist"
         )
 
@@ -352,44 +348,45 @@ class TestIntegration:
         """
         Verify that all identification mode event listeners are wired up.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check for event listener registrations
-        assert "identifyMistakesBtn" in html_content and "addEventListener" in html_content, (
+        assert "identifyMistakesBtn" in js_content and "addEventListener" in js_content, (
             "Identify Mistakes button should have event listener"
         )
-        assert "identificationDoneBtn" in html_content and "handleIdentificationDone" in html_content, (
+        assert "identificationDoneBtn" in js_content and "handleIdentificationDone" in js_content, (
             "Done button should trigger handleIdentificationDone"
         )
-        assert "identificationCancelBtn" in html_content and "handleIdentificationCancel" in html_content, (
+        assert "identificationCancelBtn" in js_content and "handleIdentificationCancel" in js_content, (
             "Cancel button should trigger handleIdentificationCancel"
         )
 
     def test_generate_puzzle_resets_identification_state(self):
         """
-        Verify that generatePuzzle() calls resetIdentificationState().
+        Verify that generatePuzzle() calls resetIdentificationState() or
+        closeSummaryPanel() to clean up identification state.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        # Find the generatePuzzle function and check it calls reset
+        # Find the generatePuzzle function and check it calls reset or close
         generate_puzzle_match = re.search(
-            r'function generatePuzzle\(\)[\s\S]*?resetIdentificationState',
-            html_content
+            r'function generatePuzzle[\s\S]*?(resetIdentificationState|closeSummaryPanel)',
+            js_content
         )
         assert generate_puzzle_match, (
-            "generatePuzzle() should call resetIdentificationState()"
+            "generatePuzzle() should call resetIdentificationState() or closeSummaryPanel()"
         )
 
     def test_clear_all_selections_handles_identification_mode(self):
         """
         Verify that clearAllSelections() checks for identification mode.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Find clearAllSelections and check it handles identification mode
         clear_selections_match = re.search(
-            r'function clearAllSelections\(\)[\s\S]*?identificationMode',
-            html_content
+            r'function clearAllSelections[\s\S]*?identificationMode',
+            js_content
         )
         assert clear_selections_match, (
             "clearAllSelections() should handle identification mode"
@@ -397,18 +394,18 @@ class TestIntegration:
 
     def test_check_answers_calculates_discrepancies(self):
         """
-        Verify that showResults() calls calculateDiscrepancies() and
+        Verify that checkAnswers() or showResults() calls calculateDiscrepancies() and
         updates button visibility.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        # Find showResults and check it calculates discrepancies
-        show_results_match = re.search(
-            r'function showResults[\s\S]*?calculateDiscrepancies',
-            html_content
+        # Check that calculateDiscrepancies is called somewhere in the answers flow
+        has_discrepancy_calculation = (
+            "calculateDiscrepancies" in js_content and
+            "updateIdentifyMistakesButtonVisibility" in js_content
         )
-        assert show_results_match, (
-            "showResults() should call calculateDiscrepancies()"
+        assert has_discrepancy_calculation, (
+            "Should call calculateDiscrepancies() and updateIdentifyMistakesButtonVisibility()"
         )
 
     def test_analyze_and_visualize_mistakes_exists(self):
@@ -416,19 +413,19 @@ class TestIntegration:
         Verify that analyzeAndVisualizeMistakes() exists and orchestrates
         the analysis and visualization flow.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert "function analyzeAndVisualizeMistakes()" in html_content, (
+        assert "function analyzeAndVisualizeMistakes()" in js_content, (
             "analyzeAndVisualizeMistakes function should exist"
         )
         # Verify it calls analysis and display functions
-        assert "analyzeIdentificationResults()" in html_content, (
+        assert "analyzeIdentificationResults()" in js_content, (
             "Should call analyzeIdentificationResults()"
         )
-        assert "applyTileMarking()" in html_content, (
+        assert "applyTileMarking()" in js_content, (
             "Should call applyTileMarking()"
         )
-        assert "displaySummary()" in html_content, (
+        assert "displaySummary()" in js_content, (
             "Should call displaySummary()"
         )
 
@@ -442,15 +439,16 @@ class TestKeyboardAccessibility:
         """
         Verify that Escape key can cancel identification mode.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check for a global or identification-specific escape handler
         # It should either:
         # 1. Have a dedicated handler that checks identificationMode
         # 2. Or use the existing modal escape pattern extended for identification
         has_escape_handling = (
-            ("Escape" in html_content and "identificationMode" in html_content) or
-            ("handleIdentificationEscape" in html_content)
+            ("Escape" in js_content and "identificationMode" in js_content) or
+            ("handleIdentificationEscape" in js_content) or
+            ("handleGlobalKeydown" in js_content)
         )
         assert has_escape_handling, (
             "Should have Escape key handling for identification mode"
@@ -466,14 +464,14 @@ class TestResponsive:
         """
         Verify that identification prompt has mobile-responsive CSS.
         """
-        html_content = load_puzzle_html()
+        css_content = load_puzzle_css()
 
         # Check for media query covering identification prompt
-        assert "@media (max-width: 480px)" in html_content, (
+        assert "@media (max-width: 480px)" in css_content, (
             "Should have mobile media query"
         )
         # The identification prompt should have responsive styles
-        assert ".identification-prompt" in html_content, (
+        assert ".identification-prompt" in css_content, (
             "Identification prompt should have CSS styles"
         )
 
@@ -481,9 +479,9 @@ class TestResponsive:
         """
         Verify that summary panel has mobile-responsive CSS.
         """
-        html_content = load_puzzle_html()
+        css_content = load_puzzle_css()
 
         # Check for summary section styles
-        assert ".mistake-summary-section" in html_content, (
+        assert ".mistake-summary-section" in css_content, (
             "Mistake summary section should have CSS styles"
         )

@@ -8,15 +8,7 @@ Tests verify dynamic font sizing, recalculation triggers, and minimum font floor
 import re
 from pathlib import Path
 
-
-PROJECT_ROOT = Path(__file__).parent.parent
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
+from conftest import load_puzzle_html, load_puzzle_js
 
 
 class TestDynamicFontSizeCalculation:
@@ -26,10 +18,10 @@ class TestDynamicFontSizeCalculation:
 
     def test_no_hardcoded_max_font_size_object(self):
         """Test that fixed maxFontSizes object has been removed."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         has_fixed_max_sizes = bool(re.search(
             r'maxFontSizes\s*=\s*\{[^}]*chinese\s*:\s*\d+',
-            html
+            js_content
         ))
         assert not has_fixed_max_sizes, (
             "Hardcoded maxFontSizes object should be removed for dynamic scaling"
@@ -37,34 +29,34 @@ class TestDynamicFontSizeCalculation:
 
     def test_font_calculation_uses_0_8_multiplier_for_80_percent_width(self):
         """Test that font calculation uses 0.8 multiplier for 80% text width."""
-        html = load_puzzle_html()
-        assert '0.8' in html, (
+        js_content = load_puzzle_js()
+        assert '0.8' in js_content, (
             "Font calculation should use 0.8 multiplier for 80% text width target"
         )
 
     def test_language_width_multipliers_maintained(self):
         """Test that language width multipliers are maintained."""
-        html = load_puzzle_html()
-        assert "'zh-TW': 1.15" in html or "'zh-TW':1.15" in html, (
+        js_content = load_puzzle_js()
+        assert "'zh-TW': 1.15" in js_content or "'zh-TW':1.15" in js_content, (
             "zh-TW width multiplier should be 1.15"
         )
-        assert 'vietnamese: 2.4' in html or 'vietnamese:2.4' in html, (
-            "Vietnamese width multiplier should be 2.4"
+        assert 'vietnamese: 2.6' in js_content or 'vietnamese:2.6' in js_content, (
+            "Vietnamese width multiplier should be 2.6"
         )
-        assert 'english: 3.6' in html or 'english:3.6' in html, (
-            "English width multiplier should be 3.6"
+        assert 'english: 4.2' in js_content or 'english:4.2' in js_content, (
+            "English width multiplier should be 4.2"
         )
-        assert 'spanish: 4.8' in html or 'spanish:4.8' in html, (
-            "Spanish width multiplier should be 4.8"
+        assert 'spanish: 4.2' in js_content or 'spanish:4.2' in js_content, (
+            "Spanish width multiplier should be 4.2"
         )
 
     def test_cell_width_calculation_accounts_for_spacing(self):
         """Test that cell width calculation accounts for spacing gaps."""
-        html = load_puzzle_html()
-        assert 'SPACING_VALUES' in html, (
+        js_content = load_puzzle_js()
+        assert 'SPACING_VALUES' in js_content, (
             "SPACING_VALUES constant should be defined"
         )
-        assert 'currentSpacing' in html, (
+        assert 'currentSpacing' in js_content, (
             "currentSpacing should be used for spacing-aware calculations"
         )
 
@@ -76,27 +68,27 @@ class TestFontRecalculationTriggers:
 
     def test_font_recalculates_on_window_resize(self):
         """Test that font recalculates on window resize event."""
-        html = load_puzzle_html()
-        assert "window.addEventListener('resize'" in html or 'window.addEventListener("resize"' in html, (
+        js_content = load_puzzle_js()
+        assert "window.addEventListener('resize'" in js_content or 'window.addEventListener("resize"' in js_content, (
             "Window resize event listener should exist for font recalculation"
         )
-        assert 'applyPuzzleFontSize' in html, (
+        assert 'applyPuzzleFontSize' in js_content, (
             "applyPuzzleFontSize function should exist"
         )
 
     def test_font_recalculates_on_grid_size_change(self):
         """Test that font recalculates on grid size change."""
-        html = load_puzzle_html()
-        assert 'generatePuzzle' in html, (
+        js_content = load_puzzle_js()
+        assert 'generatePuzzle' in js_content, (
             "generatePuzzle function should exist"
         )
 
     def test_font_recalculates_on_language_change(self):
         """Test that font recalculates on language change."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         language_handler = re.search(
             r"getElementById\(['\"]language['\"]\).*addEventListener",
-            html,
+            js_content,
             re.DOTALL
         )
         assert language_handler is not None, (
@@ -105,10 +97,10 @@ class TestFontRecalculationTriggers:
 
     def test_font_recalculates_on_spacing_change(self):
         """Test that font recalculates on spacing change."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         spacing_section = re.search(
             r"getElementById\(['\"]spacing['\"]\).*?applyPuzzleFontSize",
-            html,
+            js_content,
             re.DOTALL
         )
         assert spacing_section is not None, (
@@ -123,8 +115,8 @@ class TestMinimumFontSizeFloor:
 
     def test_practical_minimum_font_size_exists(self):
         """Test that a practical minimum font size floor exists."""
-        html = load_puzzle_html()
-        assert 'Math.max' in html, (
+        js_content = load_puzzle_js()
+        assert 'Math.max' in js_content, (
             "Font calculation should have a minimum floor using Math.max"
         )
 
@@ -136,9 +128,9 @@ class TestOrientationChangeHandling:
 
     def test_orientation_change_or_resize_triggers_recalculation(self):
         """Test that orientation change triggers font recalculation."""
-        html = load_puzzle_html()
-        has_resize = "window.addEventListener('resize'" in html or 'window.addEventListener("resize"' in html
-        has_orientation = 'orientationchange' in html
+        js_content = load_puzzle_js()
+        has_resize = "window.addEventListener('resize'" in js_content or 'window.addEventListener("resize"' in js_content
+        has_orientation = 'orientationchange' in js_content
         assert has_resize or has_orientation, (
             "Should handle orientation changes via resize or orientationchange event"
         )

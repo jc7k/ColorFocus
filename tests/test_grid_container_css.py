@@ -6,17 +6,7 @@ Tests verify container max-width, mobile behavior, and responsive scaling.
 """
 
 import re
-from pathlib import Path
-
-
-PROJECT_ROOT = Path(__file__).parent.parent
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
+from conftest import load_puzzle_css
 
 
 class TestContainerMaxWidth:
@@ -26,10 +16,10 @@ class TestContainerMaxWidth:
 
     def test_puzzle_grid_max_width_is_500px(self):
         """Test that .puzzle-grid max-width is set to 500px."""
-        html = load_puzzle_html()
+        css = load_puzzle_css()
         puzzle_grid_match = re.search(
             r'\.puzzle-grid\s*\{[^}]*max-width:\s*500px',
-            html,
+            css,
             re.DOTALL
         )
         assert puzzle_grid_match is not None, (
@@ -38,13 +28,13 @@ class TestContainerMaxWidth:
 
     def test_container_uses_max_width_not_fixed_width(self):
         """Test that container uses max-width (not fixed width) to allow scaling."""
-        html = load_puzzle_html()
-        assert 'max-width:' in html or 'max-width :' in html, (
+        css = load_puzzle_css()
+        assert 'max-width:' in css or 'max-width :' in css, (
             "Container should use max-width for responsive scaling"
         )
         puzzle_grid_section = re.search(
             r'\.puzzle-grid\s*\{[^}]+\}',
-            html,
+            css,
             re.DOTALL
         )
         if puzzle_grid_section:
@@ -56,10 +46,10 @@ class TestContainerMaxWidth:
 
     def test_container_centered_with_auto_margin(self):
         """Test that container remains centered with margin: 0 auto."""
-        html = load_puzzle_html()
+        css = load_puzzle_css()
         puzzle_grid_match = re.search(
             r'\.puzzle-grid\s*\{[^}]*margin:\s*0\s+auto',
-            html,
+            css,
             re.DOTALL
         )
         assert puzzle_grid_match is not None, (
@@ -74,17 +64,17 @@ class TestMobileContainerBehavior:
 
     def test_mobile_media_query_exists_for_480px(self):
         """Test that mobile media query exists for 480px viewport."""
-        html = load_puzzle_html()
-        assert '@media (max-width: 480px)' in html, (
+        css = load_puzzle_css()
+        assert '@media (max-width: 480px)' in css, (
             "Mobile media query for 480px should exist"
         )
 
     def test_mobile_puzzle_grid_uses_full_width(self):
         """Test that mobile puzzle grid uses 100% width."""
-        html = load_puzzle_html()
+        css = load_puzzle_css()
         mobile_section = re.search(
             r'@media\s*\(\s*max-width:\s*480px\s*\)\s*\{[^@]+',
-            html,
+            css,
             re.DOTALL
         )
         assert mobile_section is not None, (
@@ -97,10 +87,10 @@ class TestMobileContainerBehavior:
 
     def test_mobile_puzzle_grid_has_reduced_gap(self):
         """Test that mobile puzzle grid has reduced gap (1-2px for compact layout)."""
-        html = load_puzzle_html()
+        css = load_puzzle_css()
         mobile_section = re.search(
             r'@media\s*\(\s*max-width:\s*480px\s*\)\s*\{[^@]+',
-            html,
+            css,
             re.DOTALL
         )
         assert mobile_section is not None, (

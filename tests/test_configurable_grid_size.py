@@ -9,18 +9,7 @@ This test file covers Task Group 3: Configurable Grid Size.
 """
 
 import json
-from pathlib import Path
-
-
-# Paths relative to project root
-PROJECT_ROOT = Path(__file__).parent.parent
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
+from conftest import load_puzzle_html, load_puzzle_css, load_puzzle_js
 
 
 class TestGridSizeDropdownRendering:
@@ -92,18 +81,18 @@ class TestGridSizeStateManagement:
         The default value of 4 can be set directly or via a fallback mechanism
         (e.g., `validateGridSize(localStorage.getItem('colorFocusGridSize') || 4)`).
         """
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert 'currentGridSize' in html, (
+        assert 'currentGridSize' in js_content, (
             "currentGridSize state variable should be defined"
         )
 
         # Should have a default value of 4 (either directly or via fallback)
         # Accept patterns like: "currentGridSize = 4", "|| 4)", "4)" at end of validation
         has_default_4 = (
-            'currentGridSize = 4' in html or
-            'currentGridSize=4' in html or
-            '|| 4)' in html  # Fallback pattern used with validateGridSize
+            'currentGridSize = 4' in js_content or
+            'currentGridSize=4' in js_content or
+            '|| 4)' in js_content  # Fallback pattern used with validateGridSize
         )
         assert has_default_4, (
             "currentGridSize should default to 4 (directly or via fallback)"
@@ -113,9 +102,9 @@ class TestGridSizeStateManagement:
         """
         Test that grid size localStorage key is defined for persistence.
         """
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert 'colorFocusGridSize' in html, (
+        assert 'colorFocusGridSize' in js_content, (
             "localStorage key 'colorFocusGridSize' should be used for persistence"
         )
 
@@ -132,15 +121,18 @@ class TestDynamicGridCSS:
         The grid-template-columns should update dynamically based on
         the selected grid dimension.
         """
+        css = load_puzzle_css()
         html = load_puzzle_html()
 
-        # Check that the code handles dynamic grid-template-columns
-        assert 'grid-template-columns' in html, (
+        # Check that the CSS handles grid-template-columns
+        assert 'grid-template-columns' in css, (
             "CSS should include grid-template-columns"
         )
 
-        # Check for dynamic repeat pattern in JavaScript
-        assert 'repeat(' in html and '1fr)' in html, (
+        # Check for dynamic repeat pattern - either in CSS or JS
+        has_repeat_in_css = 'repeat(' in css and '1fr)' in css
+        has_dynamic_update_in_js = 'gridTemplateColumns' in html
+        assert has_repeat_in_css or has_dynamic_update_in_js, (
             "Grid should use repeat(N, 1fr) pattern for dynamic sizing"
         )
 
@@ -158,15 +150,15 @@ class TestColorCountAutoLimiting:
         For an 8x8 grid, max colors should be 8.
         Formula: maxColors = min(8, gridSize)
         """
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check for maxColors calculation
-        assert 'maxColors' in html or 'max_colors' in html.lower(), (
+        assert 'maxColors' in js_content or 'max_colors' in js_content.lower(), (
             "maxColors calculation should exist for color limiting"
         )
 
         # Should clamp to 8 maximum
-        assert 'Math.min(8' in html or 'min(8,' in html, (
+        assert 'Math.min(8' in js_content or 'min(8,' in js_content, (
             "Max colors should be capped at 8"
         )
 
@@ -182,10 +174,15 @@ class TestPuzzleGenerationForVariableGridSizes:
 
         totalCells should be gridSize * gridSize, not hardcoded 64.
         """
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        # Check that totalCells calculation uses gridSize
-        assert 'currentGridSize * currentGridSize' in html or 'gridSize * gridSize' in html, (
+        # Check that totalCells calculation uses gridSize (via state.currentGridSize)
+        has_dynamic_cells = (
+            'currentGridSize * currentGridSize' in js_content or
+            'state.currentGridSize * state.currentGridSize' in js_content or
+            'gridSize * gridSize' in js_content
+        )
+        assert has_dynamic_cells, (
             "totalCells should be calculated as gridSize * gridSize"
         )
 
@@ -202,19 +199,19 @@ class TestFontSizeCalculation:
         The calculatePuzzleFontSize function should use the current grid size
         for cell width calculation, not hardcoded 8.
         """
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check calculatePuzzleFontSize function exists
-        assert 'calculatePuzzleFontSize' in html, (
+        assert 'calculatePuzzleFontSize' in js_content, (
             "calculatePuzzleFontSize function should exist"
         )
 
         # Check that columns uses currentGridSize (not hardcoded 8)
         # Either through parameter or using the global currentGridSize
         assert (
-            'const columns = currentGridSize' in html or
-            'columns = currentGridSize' in html or
-            'currentGridSize' in html  # At minimum, currentGridSize should be referenced
+            'const columns = currentGridSize' in js_content or
+            'columns = currentGridSize' in js_content or
+            'currentGridSize' in js_content  # At minimum, currentGridSize should be referenced
         ), (
             "Font size calculation should use currentGridSize for column count"
         )

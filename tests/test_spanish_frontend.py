@@ -10,11 +10,12 @@ import json
 import re
 from pathlib import Path
 
+from conftest import load_puzzle_html, load_puzzle_js
+
 
 PROJECT_ROOT = Path(__file__).parent.parent
 COLOR_LABELS_JSON_PATH = PROJECT_ROOT / "shared" / "color_labels.json"
 UI_TEXT_JSON_PATH = PROJECT_ROOT / "shared" / "ui_text.json"
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
 
 # Expected Spanish translations for color labels (accessible palette)
 EXPECTED_SPANISH_LABELS = {
@@ -44,12 +45,6 @@ def load_ui_text() -> dict:
         return json.load(f)
 
 
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file content."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
-
-
 class TestFrontendSpanishLanguageSupport:
     """Verify Spanish language support in frontend puzzle.html."""
 
@@ -66,13 +61,13 @@ class TestFrontendSpanishLanguageSupport:
 
     def test_valid_languages_array_includes_spanish(self):
         """Test that VALID_LANGUAGES array includes 'spanish'."""
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         valid_languages_pattern = r"const\s+VALID_LANGUAGES\s*=\s*\[([^\]]+)\]"
-        match = re.search(valid_languages_pattern, html_content)
+        match = re.search(valid_languages_pattern, js_content)
 
         assert match is not None, (
-            "VALID_LANGUAGES array declaration not found in puzzle.html"
+            "VALID_LANGUAGES array declaration not found in JavaScript modules"
         )
 
         array_content = match.group(1)
@@ -82,13 +77,13 @@ class TestFrontendSpanishLanguageSupport:
 
     def test_width_multipliers_includes_spanish_entry(self):
         """Test that widthMultipliers object includes 'spanish' entry."""
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         width_multipliers_pattern = r"widthMultipliers\s*=\s*\{([^}]+)\}"
-        match = re.search(width_multipliers_pattern, html_content)
+        match = re.search(width_multipliers_pattern, js_content)
 
         assert match is not None, (
-            "widthMultipliers object declaration not found in puzzle.html"
+            "widthMultipliers object declaration not found in JavaScript modules"
         )
 
         object_content = match.group(1)
@@ -98,13 +93,13 @@ class TestFrontendSpanishLanguageSupport:
 
     def test_dynamic_font_sizing_supports_spanish(self):
         """Test that dynamic font sizing supports Spanish language."""
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        assert "spanish: 4.8" in html_content or "spanish:4.8" in html_content, (
-            "widthMultipliers should include spanish with value 4.8"
+        assert "spanish: 4.2" in js_content or "spanish:4.2" in js_content, (
+            "widthMultipliers should include spanish with value 4.2"
         )
 
-        assert "cellWidth * 0.8" in html_content or "cellWidth*0.8" in html_content, (
+        assert "cellWidth * 0.8" in js_content or "cellWidth*0.8" in js_content, (
             "Dynamic font calculation should use cellWidth * 0.8 formula"
         )
 

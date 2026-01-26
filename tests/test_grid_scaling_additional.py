@@ -6,17 +6,7 @@ Tests verify cell width formula, proportional scaling, and container limits.
 """
 
 import re
-from pathlib import Path
-
-
-PROJECT_ROOT = Path(__file__).parent.parent
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
+from conftest import load_puzzle_html, load_puzzle_css, load_puzzle_js
 
 
 class TestCellWidthCalculationFormula:
@@ -26,15 +16,15 @@ class TestCellWidthCalculationFormula:
 
     def test_cell_width_accounts_for_gaps_between_columns(self):
         """Test that cell width calculation subtracts gaps."""
-        html = load_puzzle_html()
-        assert 'columns - 1' in html or '(columns-1)' in html, (
+        js_content = load_puzzle_js()
+        assert 'columns - 1' in js_content or '(columns-1)' in js_content, (
             "Cell width should account for (columns - 1) gaps"
         )
 
     def test_cell_width_divided_by_columns(self):
         """Test that available width is divided by number of columns."""
-        html = load_puzzle_html()
-        assert '/ columns' in html or '/columns' in html, (
+        js_content = load_puzzle_js()
+        assert '/ columns' in js_content or '/columns' in js_content, (
             "Cell width should divide by number of columns"
         )
 
@@ -46,17 +36,17 @@ class TestFontSizeProportionalScaling:
 
     def test_font_size_calculation_based_on_cell_width(self):
         """Test that font size is calculated based on cell width."""
-        html = load_puzzle_html()
-        assert 'cellWidth' in html, (
+        js_content = load_puzzle_js()
+        assert 'cellWidth' in js_content, (
             "cellWidth should be used in font size calculation"
         )
 
     def test_chinese_multiplier_allows_larger_font(self):
         """Test that zh-TW has smallest multiplier (1.15) for largest font."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         width_multipliers_section = re.search(
             r'widthMultipliers\s*=\s*\{[^}]+\}',
-            html,
+            js_content,
             re.DOTALL
         )
         assert width_multipliers_section is not None, (
@@ -77,10 +67,10 @@ class TestFontSizeProportionalScaling:
 
     def test_chinese_font_approximately_3_to_4x_larger_than_english(self):
         """Test that zh-TW font is approximately 3x larger than English."""
-        html = load_puzzle_html()
+        js_content = load_puzzle_js()
         width_multipliers_section = re.search(
             r'widthMultipliers\s*=\s*\{[^}]+\}',
-            html,
+            js_content,
             re.DOTALL
         )
         assert width_multipliers_section is not None
@@ -104,18 +94,19 @@ class TestApplyPuzzleFontSizeFunction:
 
     def test_apply_puzzle_font_size_function_exists(self):
         """Test that applyPuzzleFontSize function is defined."""
-        html = load_puzzle_html()
-        assert 'function applyPuzzleFontSize' in html or 'applyPuzzleFontSize = function' in html or 'applyPuzzleFontSize()' in html, (
+        js_content = load_puzzle_js()
+        assert 'function applyPuzzleFontSize' in js_content or 'applyPuzzleFontSize = function' in js_content or 'applyPuzzleFontSize()' in js_content, (
             "applyPuzzleFontSize function should be defined"
         )
 
     def test_apply_puzzle_font_size_sets_style_on_cells(self):
         """Test that applyPuzzleFontSize sets fontSize style on cells."""
-        html = load_puzzle_html()
-        assert '.fontSize' in html or "fontSize =" in html or 'fontSize=' in html, (
+        js_content = load_puzzle_js()
+        css = load_puzzle_css()
+        assert '.fontSize' in js_content or "fontSize =" in js_content or 'fontSize=' in js_content, (
             "applyPuzzleFontSize should set fontSize style"
         )
-        assert '.puzzle-cell' in html, (
+        assert '.puzzle-cell' in css, (
             ".puzzle-cell selector should exist"
         )
 
@@ -127,13 +118,13 @@ class TestContainerNotFullViewportOnLargeScreens:
 
     def test_max_width_500px_prevents_excessive_width(self):
         """Test that 500px max-width prevents puzzle from being too wide."""
-        html = load_puzzle_html()
-        assert 'max-width: 500px' in html or 'max-width:500px' in html, (
+        css = load_puzzle_css()
+        assert 'max-width: 500px' in css or 'max-width:500px' in css, (
             "Container should have max-width: 500px to limit size on large screens"
         )
         puzzle_grid_section = re.search(
             r'\.puzzle-grid\s*\{[^}]+\}',
-            html,
+            css,
             re.DOTALL
         )
         if puzzle_grid_section:

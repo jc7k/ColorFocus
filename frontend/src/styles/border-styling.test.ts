@@ -1,13 +1,13 @@
 /**
  * Tests for CSS Styling - Apple-esque Design
  *
- * These tests verify that the frontend puzzle.html CSS follows the
+ * These tests verify that the frontend CSS follows the
  * Apple-esque design with subtle shadows and soft styling:
  * 1. .puzzle-cell uses subtle shadows instead of bold borders
  * 2. .color-swatch has soft border styling
  * 3. Design system uses CSS custom properties
  *
- * Note: These tests parse the CSS from puzzle.html to verify styling rules.
+ * Note: These tests parse the CSS from styles/puzzle.css to verify styling rules.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -18,15 +18,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load puzzle.html to parse CSS (path: frontend/src/styles -> frontend/puzzle.html)
-const puzzleHtmlPath = resolve(__dirname, '../../puzzle.html');
-const puzzleHtml = readFileSync(puzzleHtmlPath, 'utf-8');
-
-// Extract CSS from <style> tag
-function extractCSSFromHTML(html: string): string {
-  const styleMatch = html.match(/<style>([\s\S]*?)<\/style>/);
-  return styleMatch ? styleMatch[1] : '';
-}
+// Load CSS directly from styles/puzzle.css (path: frontend/src/styles -> frontend/styles/puzzle.css)
+const cssPath = resolve(__dirname, '../../styles/puzzle.css');
+const css = readFileSync(cssPath, 'utf-8');
 
 // Parse a CSS rule block for a specific selector
 // Returns the content between { and } for the first matching selector
@@ -57,8 +51,6 @@ function usesCustomProperty(ruleContent: string | null, varName?: string): boole
   }
   return ruleContent.includes('var(--');
 }
-
-const css = extractCSSFromHTML(puzzleHtml);
 
 describe('CSS Styling - Apple-esque Design', () => {
   describe('.puzzle-cell uses subtle shadow styling', () => {

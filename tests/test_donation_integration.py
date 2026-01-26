@@ -12,11 +12,12 @@ import json
 import re
 from pathlib import Path
 
+from conftest import load_puzzle_html, load_puzzle_js
+
 
 # Paths relative to project root
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_TEXT_JSON_PATH = PROJECT_ROOT / "shared" / "ui_text.json"
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
 QR_IMAGE_PATH = PROJECT_ROOT / "frontend" / "bmc_qr.png"
 
 
@@ -24,12 +25,6 @@ def load_ui_text() -> dict:
     """Load the ui_text.json file."""
     with open(UI_TEXT_JSON_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file content."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
 
 
 class TestDonationIntegration:
@@ -73,33 +68,25 @@ class TestDonationIntegration:
         donation-related elements when language changes.
 
         This verifies the integration between the localization system and
-        the donation feature UI elements.
+        the donation feature UI elements via data-i18n attribute.
         """
         html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
-        # Extract JavaScript from the script tag
-        script_match = re.search(
-            r'<script type="module">(.*?)</script>',
-            html_content,
-            re.DOTALL
+        # Verify HTML elements have data-i18n attributes
+        assert 'data-i18n="support_link_text"' in html_content, (
+            "donationLink should have data-i18n attribute"
         )
-        assert script_match, "Should find module script in puzzle.html"
-        js_content = script_match.group(1)
-
-        # Verify updateAllUIText function updates donationLink
-        assert "donationLink" in js_content, (
-            "JavaScript should reference donationLink element"
-        )
-        assert "support_link_text" in js_content, (
-            "JavaScript should use support_link_text localization key"
+        assert 'data-i18n="qr_code_label"' in html_content, (
+            "donationLabel should have data-i18n attribute"
         )
 
-        # Verify updateAllUIText function updates donationLabel
-        assert "donationLabel" in js_content, (
-            "JavaScript should reference donationLabel element"
+        # Verify updateAllUIText function uses data-i18n approach
+        assert "data-i18n" in js_content, (
+            "JavaScript should use data-i18n attribute approach for localization"
         )
-        assert "qr_code_label" in js_content, (
-            "JavaScript should use qr_code_label localization key"
+        assert "querySelectorAll" in js_content, (
+            "JavaScript should query elements with data-i18n"
         )
 
     def test_all_supported_languages_have_donation_translations(self):

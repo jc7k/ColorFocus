@@ -14,11 +14,12 @@ import json
 import re
 from pathlib import Path
 
+from conftest import load_puzzle_html, load_puzzle_js
+
 
 # Paths relative to project root
 PROJECT_ROOT = Path(__file__).parent.parent
 COLOR_LABELS_JSON_PATH = PROJECT_ROOT / "shared" / "color_labels.json"
-PUZZLE_HTML_PATH = PROJECT_ROOT / "frontend" / "puzzle.html"
 
 # Expected Vietnamese translations - ASCII-friendly versions (no diacritics)
 # Updated for accessible color palette
@@ -38,12 +39,6 @@ def load_color_labels() -> dict:
     """Load the color_labels.json file."""
     with open(COLOR_LABELS_JSON_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
-
-
-def load_puzzle_html() -> str:
-    """Load the puzzle.html file content."""
-    with open(PUZZLE_HTML_PATH, "r", encoding="utf-8") as f:
-        return f.read()
 
 
 class TestVietnameseLanguageData:
@@ -185,13 +180,13 @@ class TestLanguageSwitchingLogic:
 
         This verifies the language state management is implemented.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check for currentLanguage variable initialization with localStorage fallback
-        assert "currentLanguage" in html_content, (
+        assert "currentLanguage" in js_content, (
             "JavaScript should define currentLanguage variable"
         )
-        assert "localStorage.getItem('colorFocusLanguage')" in html_content, (
+        assert "localStorage.getItem('colorFocusLanguage')" in js_content, (
             "JavaScript should read language preference from localStorage"
         )
 
@@ -201,13 +196,13 @@ class TestLanguageSwitchingLogic:
 
         This verifies the dropdown change triggers re-rendering.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check for event listener on language selector
-        assert "addEventListener('change'" in html_content, (
+        assert "addEventListener('change'" in js_content, (
             "JavaScript should add change event listener for language switching"
         )
-        assert "localStorage.setItem('colorFocusLanguage'" in html_content, (
+        assert "localStorage.setItem('colorFocusLanguage'" in js_content, (
             "JavaScript should save language preference to localStorage on change"
         )
 
@@ -218,12 +213,12 @@ class TestLanguageSwitchingLogic:
         This verifies the dynamic instruction text can be updated per language.
         Now uses ui_text.json instead of hardcoded LANGUAGE_DESCRIPTORS.
         """
-        html_content = load_puzzle_html()
+        js_content = load_puzzle_js()
 
         # Check for getLanguageDescriptor function that looks up from ui_text.json
-        assert "getLanguageDescriptor" in html_content, (
+        assert "getLanguageDescriptor" in js_content, (
             "JavaScript should define getLanguageDescriptor function"
         )
-        assert "language_descriptor_" in html_content, (
+        assert "language_descriptor_" in js_content, (
             "JavaScript should reference language_descriptor_ keys from ui_text.json"
         )
