@@ -1073,11 +1073,19 @@
                             'User';
         userName.textContent = displayName;
 
-        // Use avatar URL or keep placeholder
+        // Use avatar URL or keep placeholder (validate origin for security)
         const avatarUrl = user.user_metadata?.avatar_url ||
                           user.user_metadata?.picture;
-        if (avatarUrl) {
-          userAvatar.src = avatarUrl;
+        if (avatarUrl && typeof avatarUrl === 'string') {
+          try {
+            const url = new URL(avatarUrl);
+            // Only allow HTTPS URLs from trusted Google CDN domain
+            if (url.protocol === 'https:' && url.hostname === 'lh3.googleusercontent.com') {
+              userAvatar.src = avatarUrl;
+            }
+          } catch {
+            // Invalid URL - keep placeholder
+          }
         }
         userAvatar.alt = `${displayName}'s avatar`;
       } else {
@@ -1095,7 +1103,6 @@
       }
 
       supabase.auth.onAuthStateChange((event, session) => {
-        console.log('Auth event:', event);
         if (session?.user) {
           currentUser = session.user;
           updateAuthUI(session.user);
@@ -1281,7 +1288,7 @@
 
     // Add language change event listener
     document.getElementById('language').addEventListener('change', (e) => {
-      currentLanguage = e.target.value;
+      currentLanguage = validateLanguage(e.target.value);
       localStorage.setItem('colorFocusLanguage', currentLanguage);
       updateAllUIText();
       renderPuzzleDisplay();
