@@ -100,22 +100,35 @@
       const variants = data.variants;
       const variantNames = ['dark', 'base', 'bright'];
 
-      let variantsHtml = '';
+      const name = document.createElement('div');
+      name.className = 'color-name';
+      name.textContent = token;
+      card.appendChild(name);
+
+      const variantsContainer = document.createElement('div');
+      variantsContainer.className = 'variants';
+
       for (const variant of variantNames) {
         if (variants[variant]) {
-          variantsHtml += `
-            <div class="variant" style="background-color: ${variants[variant]}">
-              <span class="variant-label">${variant}</span>
-              <span class="hex-value">${variants[variant]}</span>
-            </div>
-          `;
+          const variantRow = document.createElement('div');
+          variantRow.className = 'variant';
+          variantRow.style.backgroundColor = variants[variant];
+
+          const label = document.createElement('span');
+          label.className = 'variant-label';
+          label.textContent = variant;
+
+          const hexValue = document.createElement('span');
+          hexValue.className = 'hex-value';
+          hexValue.textContent = variants[variant];
+
+          variantRow.appendChild(label);
+          variantRow.appendChild(hexValue);
+          variantsContainer.appendChild(variantRow);
         }
       }
 
-      card.innerHTML = `
-        <div class="color-name">${token}</div>
-        <div class="variants">${variantsHtml}</div>
-      `;
+      card.appendChild(variantsContainer);
 
       grid.appendChild(card);
     }
